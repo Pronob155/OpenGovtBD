@@ -233,8 +233,8 @@ This platform strengthens trust between citizens and government by:
 
 | Role | Member |
 |---|---|
-| 👨‍💻 Team Lead / Backend Developer | *Add Name* |
-| 🎨 Frontend Developer | *Add Name* |
+| 👨‍💻 Team Lead / Backend Developer | *Pronob Das* |
+| 🎨 Frontend Developer | *Pritam Biswas* |
 | 🗄️ Database Engineer | *Add Name* |
 | 🔐 Security & Auth Developer | *Add Name* |
 | 🧪 QA / Documentation | *Add Name* |
