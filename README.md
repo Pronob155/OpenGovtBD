@@ -231,13 +231,13 @@ This platform strengthens trust between citizens and government by:
 
 <div align="center">
 
-| Role | Member |
+| Mambers | Name |
 |---|---|
-| 👨‍💻 Team Lead / Backend Developer | *Pronob Das* |
-| 🎨 Frontend Developer | *Pritam Biswas* |
-| 🗄️ Database Engineer | *Md Mahabub Rahaman* |
-| 🔐 Security & Auth Developer | *Add Name* |
-| 🧪 QA / Documentation | *Add Name* |
+| 👨‍💻 Team Member-1 (Lead) | *Pronob Das* |
+| 👨‍💻 Team Member-2 | *Pritam Biswas* |
+| 👨‍💻 Team Member-3 | *Md Mahabub Rahaman* |
+| 👨‍💻 Team Member-4 | *Add Name* |
+| 👨‍💻 Team Member-5 | *Add Name* |
 
 </div>
 
