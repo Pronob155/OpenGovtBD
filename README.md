@@ -235,7 +235,7 @@ This platform strengthens trust between citizens and government by:
 |---|---|
 | 👨‍💻 Team Lead / Backend Developer | *Pronob Das* |
 | 🎨 Frontend Developer | *Pritam Biswas* |
-| 🗄️ Database Engineer | *Add Name* |
+| 🗄️ Database Engineer | *Md Mahabub Rahaman* |
 | 🔐 Security & Auth Developer | *Add Name* |
 | 🧪 QA / Documentation | *Add Name* |
 
