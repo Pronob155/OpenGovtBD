@@ -236,7 +236,7 @@ This platform strengthens trust between citizens and government by:
 | 👨‍💻 Team Member-1 (Lead) | *Pronob Das* |
 | 👨‍💻 Team Member-2 | *Pritam Biswas* |
 | 👨‍💻 Team Member-3 | *Md Mahabub Rahaman* |
-| 👨‍💻 Team Member-4 | *Add Name* |
+| 👨‍💻 Team Member-4 | *Shreya Golder* |
 | 👨‍💻 Team Member-5 | *Add Name* |
 
 </div>
