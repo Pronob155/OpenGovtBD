@@ -2,7 +2,7 @@
 
 <!-- Animated Typing Header -->
 <a href="https://github.com/">
-  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=700&size=32&duration=3000&pause=1000&color=2E9EF7&center=true&vCenter=true&width=700&lines=OpenGovtBD;Government+%E2%80%93+Citizen+Communication+Platform;Bridging+the+Gap+Between+People+%26+Policy;Built+with+Java+%E2%98%95" alt="Typing SVG" />
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=350&size=16&duration=3000&pause=1000&color=2E9EF7&center=true&vCenter=true&width=700&lines=OpenGovtBD;Government+%E2%80%93+Citizen+Communication+Platform;Bridging+the+Gap+Between+People+%26+Policy;Built+with+Java+%E2%98%95" alt="Typing SVG" />
 </a>
 
 <br/>
