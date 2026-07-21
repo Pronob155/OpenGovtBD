@@ -1,4 +1,4 @@
-package com.nagoriksetu.model;
+package com.OenGovtBD.model;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.atomic.AtomicLong;
