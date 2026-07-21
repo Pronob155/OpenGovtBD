@@ -1,4 +1,4 @@
-package com.nagoriksetu.model;
+package com.OpenGovtBD.model;
 
 public class Officer extends User {
 
