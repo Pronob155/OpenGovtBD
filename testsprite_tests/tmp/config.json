@@ -1,0 +1,17 @@
+{
+  "status": "commited",
+  "type": "frontend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:8080",
+  "executionArgs": {
+    "projectName": "OpenGovtBD",
+    "projectPath": "c:\\Users\\Pritam\\Downloads\\OpenGovtBD1\\OpenGovtBD\\OpenGovtBD",
+    "testIds": [],
+    "additionalInstruction": "Find all bugs and errors in the application. Test all user roles (citizen, officer, admin). Use demo credentials from DataSeeder: citizen phone 01700000000 password citizen123, officer OFC-1001 kamrul.hasan@dhaka.gov.bd officer123, admin admin@opengovtbd.gov.bd admin123. Demo OTP is 123456.",
+    "serverMode": "development",
+    "envs": {
+      "API_KEY": "sk-user-sriNq8fFYItGCRR0_ro2eW2p9YBkgwwqmJ-l0dsgkNwuad-mK3rYs5MeY2zsmXDRJgjTNvW0Nyg5Exc6IMw_S-80ihfxaypCGlEFYiyjGct9uYfGDcViZWbYT4U8BNEItOM"
+    }
+  },
+  "serverPort": 59241
+}
