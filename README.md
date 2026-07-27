@@ -290,8 +290,8 @@ OpenGovtBD strengthens trust between citizens and government by:
 | | |
 |---|---|
 | 🎓 **Program** | B.Tech CSE, Daffodil International University (DIU) |
-| 🌐 **Portfolio** | [pritam-biswas-portfolio.netlify.app](https://pritam-biswas-portfolio.netlify.app) |
-| 💻 **GitHub** | [@pbs002-s](https://github.com/pbs002-s) |
+| 🌐 **Portfolio** | [Pritam Biswas](https://pritam-biswas-portfolio.netlify.app) |
+| 💻 **GitHub** | [@pbs002-s](https://github.com/pbs002-s) | [@mahabub-rahaman-001](https://github.com/mahabub-rahaman-001)
 
 </div>
 
