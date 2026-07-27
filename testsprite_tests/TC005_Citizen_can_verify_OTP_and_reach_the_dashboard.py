@@ -40,7 +40,6 @@ async def run_test():
         except Exception:
             pass
         
-        # -> Open the OTP verification page (OTP page) so the OTP input can be filled.
         await page.goto("http://localhost:8080/otp")
         try:
             await page.wait_for_load_state("domcontentloaded", timeout=5000)
