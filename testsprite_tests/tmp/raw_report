@@ -1,0 +1,149 @@
+
+# TestSprite AI Testing Report(MCP)
+
+---
+
+## 1️⃣ Document Metadata
+- **Project Name:** OpenGovtBD
+- **Date:** 2026-07-27
+- **Prepared by:** TestSprite AI Team
+
+---
+
+## 2️⃣ Requirement Validation Summary
+
+#### Test TC001 Citizen can log in and reach the dashboard
+- **Test Code:** [TC001_Citizen_can_log_in_and_reach_the_dashboard.py](./TC001_Citizen_can_log_in_and_reach_the_dashboard.py)
+- **Test Visualization and Result:** https://www.testsprite.com/dashboard/mcp/tests/1cdca0a8-0b1d-4893-b372-a30b11bc24dd/5459cd46-c035-456b-b7e9-dae474be4119
+- **Status:** ✅ Passed
+- **Analysis / Findings:** {{TODO:AI_ANALYSIS}}.
+---
+
+#### Test TC002 Officer can log in and reach the dashboard
+- **Test Code:** [TC002_Officer_can_log_in_and_reach_the_dashboard.py](./TC002_Officer_can_log_in_and_reach_the_dashboard.py)
+- **Test Visualization and Result:** https://www.testsprite.com/dashboard/mcp/tests/1cdca0a8-0b1d-4893-b372-a30b11bc24dd/c4d34354-aedd-4946-9629-4b645fbc6a49
+- **Status:** ✅ Passed
+- **Analysis / Findings:** {{TODO:AI_ANALYSIS}}.
+---
+
+#### Test TC003 Admin can log in and reach the dashboard
+- **Test Code:** [TC003_Admin_can_log_in_and_reach_the_dashboard.py](./TC003_Admin_can_log_in_and_reach_the_dashboard.py)
+- **Test Visualization and Result:** https://www.testsprite.com/dashboard/mcp/tests/1cdca0a8-0b1d-4893-b372-a30b11bc24dd/c573ac50-3821-40ca-abf4-62a1bff013e7
+- **Status:** ✅ Passed
+- **Analysis / Findings:** {{TODO:AI_ANALYSIS}}.
+---
+
+#### Test TC004 New citizen can register and see the OTP step
+- **Test Code:** [TC004_New_citizen_can_register_and_see_the_OTP_step.py](./TC004_New_citizen_can_register_and_see_the_OTP_step.py)
+- **Test Error:** TEST FAILURE
+
+The registration flow did not proceed to OTP verification because the provided mobile number is already registered.
+
+Observations:
+- The registration page displays the error message: 'This mobile number is already registered.'
+- The page remained on the registration form (/register) and did not navigate to an OTP verification screen.
+- The registration attempt used demo mobile 01700000000 which appears to already exist in the system.
+- **Test Visualization and Result:** https://www.testsprite.com/dashboard/mcp/tests/1cdca0a8-0b1d-4893-b372-a30b11bc24dd/f9301396-6867-42b2-9db0-1c8b35563c5a
+- **Status:** ❌ Failed
+- **Analysis / Findings:** {{TODO:AI_ANALYSIS}}.
+---
+
+#### Test TC005 Citizen can verify OTP and reach the dashboard
+- **Test Code:** [TC005_Citizen_can_verify_OTP_and_reach_the_dashboard.py](./TC005_Citizen_can_verify_OTP_and_reach_the_dashboard.py)
+- **Test Error:** TEST BLOCKED
+
+The OTP verification step for registering the seeded demo citizen could not be run because the registration flow is blocked by an existing account for the seeded phone number.
+
+Observations:
+- The registration page shows the error banner: 'This mobile number is already registered.'
+- The OTP entry UI was not reachable from the registration flow and navigating to /otp did not reveal an OTP input.
+- The seeded demo phone (01700000000) appears already registered, preventing the requested OTP-based registration verification from being executed via the UI.
+- **Test Visualization and Result:** https://www.testsprite.com/dashboard/mcp/tests/1cdca0a8-0b1d-4893-b372-a30b11bc24dd/bf870fac-bdfd-446a-9b4a-a3d2e0a8ab81
+- **Status:** BLOCKED
+- **Analysis / Findings:** {{TODO:AI_ANALYSIS}}.
+---
+
+#### Test TC006 Citizen votes in an active poll
+- **Test Code:** [TC006_Citizen_votes_in_an_active_poll.py](./TC006_Citizen_votes_in_an_active_poll.py)
+- **Test Visualization and Result:** https://www.testsprite.com/dashboard/mcp/tests/1cdca0a8-0b1d-4893-b372-a30b11bc24dd/dd954622-16d0-4292-8198-edb7ccae37ea
+- **Status:** ✅ Passed
+- **Analysis / Findings:** {{TODO:AI_ANALYSIS}}.
+---
+
+#### Test TC007 Citizen can submit a complaint and see it in the complaints list
+- **Test Code:** [TC007_Citizen_can_submit_a_complaint_and_see_it_in_the_complaints_list.py](./TC007_Citizen_can_submit_a_complaint_and_see_it_in_the_complaints_list.py)
+- **Test Visualization and Result:** https://www.testsprite.com/dashboard/mcp/tests/1cdca0a8-0b1d-4893-b372-a30b11bc24dd/dd168fc2-813f-477e-87aa-b7faafba5e20
+- **Status:** ✅ Passed
+- **Analysis / Findings:** {{TODO:AI_ANALYSIS}}.
+---
+
+#### Test TC008 Officer reviews and updates a complaint
+- **Test Code:** [TC008_Officer_reviews_and_updates_a_complaint.py](./TC008_Officer_reviews_and_updates_a_complaint.py)
+- **Test Visualization and Result:** https://www.testsprite.com/dashboard/mcp/tests/1cdca0a8-0b1d-4893-b372-a30b11bc24dd/1fc1d2a8-4947-43e4-950a-fd8c20d82f21
+- **Status:** ✅ Passed
+- **Analysis / Findings:** {{TODO:AI_ANALYSIS}}.
+---
+
+#### Test TC009 Citizen creates a discussion post
+- **Test Code:** [TC009_Citizen_creates_a_discussion_post.py](./TC009_Citizen_creates_a_discussion_post.py)
+- **Test Visualization and Result:** https://www.testsprite.com/dashboard/mcp/tests/1cdca0a8-0b1d-4893-b372-a30b11bc24dd/8008bce9-2124-4bb0-8734-35623b1ecd00
+- **Status:** ✅ Passed
+- **Analysis / Findings:** {{TODO:AI_ANALYSIS}}.
+---
+
+#### Test TC010 Officer updates complaint status
+- **Test Code:** [TC010_Officer_updates_complaint_status.py](./TC010_Officer_updates_complaint_status.py)
+- **Test Visualization and Result:** https://www.testsprite.com/dashboard/mcp/tests/1cdca0a8-0b1d-4893-b372-a30b11bc24dd/bb17c0c7-3545-4332-b66d-61f839c9a3d6
+- **Status:** ✅ Passed
+- **Analysis / Findings:** {{TODO:AI_ANALYSIS}}.
+---
+
+#### Test TC011 Toggle a user's active status
+- **Test Code:** [TC011_Toggle_a_users_active_status.py](./TC011_Toggle_a_users_active_status.py)
+- **Test Visualization and Result:** https://www.testsprite.com/dashboard/mcp/tests/1cdca0a8-0b1d-4893-b372-a30b11bc24dd/226172ab-c9ed-42a7-acee-fe57debe23d6
+- **Status:** ✅ Passed
+- **Analysis / Findings:** {{TODO:AI_ANALYSIS}}.
+---
+
+#### Test TC012 Citizen interacts with an existing discussion
+- **Test Code:** [TC012_Citizen_interacts_with_an_existing_discussion.py](./TC012_Citizen_interacts_with_an_existing_discussion.py)
+- **Test Visualization and Result:** https://www.testsprite.com/dashboard/mcp/tests/1cdca0a8-0b1d-4893-b372-a30b11bc24dd/89721a5f-5faf-4986-ae97-886eca7b1ff7
+- **Status:** ✅ Passed
+- **Analysis / Findings:** {{TODO:AI_ANALYSIS}}.
+---
+
+#### Test TC013 Officer opens a complaint from the queue
+- **Test Code:** [TC013_Officer_opens_a_complaint_from_the_queue.py](./TC013_Officer_opens_a_complaint_from_the_queue.py)
+- **Test Visualization and Result:** https://www.testsprite.com/dashboard/mcp/tests/1cdca0a8-0b1d-4893-b372-a30b11bc24dd/401576d4-d2e2-43c4-a49c-0c74b5938d32
+- **Status:** ✅ Passed
+- **Analysis / Findings:** {{TODO:AI_ANALYSIS}}.
+---
+
+#### Test TC014 Citizen sees updated poll results after voting
+- **Test Code:** [TC014_Citizen_sees_updated_poll_results_after_voting.py](./TC014_Citizen_sees_updated_poll_results_after_voting.py)
+- **Test Visualization and Result:** https://www.testsprite.com/dashboard/mcp/tests/1cdca0a8-0b1d-4893-b372-a30b11bc24dd/5e99745c-1085-4dc1-96c8-8db31e123b9e
+- **Status:** ✅ Passed
+- **Analysis / Findings:** {{TODO:AI_ANALYSIS}}.
+---
+
+#### Test TC015 Citizen views active polls
+- **Test Code:** [TC015_Citizen_views_active_polls.py](./TC015_Citizen_views_active_polls.py)
+- **Test Visualization and Result:** https://www.testsprite.com/dashboard/mcp/tests/1cdca0a8-0b1d-4893-b372-a30b11bc24dd/66cbd790-221d-4f07-af13-2524283e5d6b
+- **Status:** ✅ Passed
+- **Analysis / Findings:** {{TODO:AI_ANALYSIS}}.
+---
+
+
+## 3️⃣ Coverage & Matching Metrics
+
+- **86.67** of tests passed
+
+| Requirement        | Total Tests | ✅ Passed | ❌ Failed  |
+|--------------------|-------------|-----------|------------|
+| ...                | ...         | ...       | ...        |
+---
+
+
+## 4️⃣ Key Gaps / Risks
+{AI_GNERATED_KET_GAPS_AND_RISKS}
+---
