@@ -1,0 +1,245 @@
+package com.opengovtbd.model;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
+
+public class Citizen extends User {
+   private String phone;
+   private String secondaryPhone;
+   private String email;
+   private String nationalId;
+   private LocalDate dateOfBirth;
+   private String address;
+   private String division;
+   private boolean phoneVerified;
+   private boolean nidVerified;
+   private int points;
+   private String language = "en";
+   private boolean darkMode = false;
+   private final Set<Long> savedPosts = new HashSet();
+   private final Set<Long> favoriteServices = new HashSet();
+   private VerificationStatus verificationStatus;
+   private String nidImagePath;
+   private String selfieImagePath;
+   private LocalDateTime verificationSubmittedAt;
+   private LocalDateTime verifiedAt;
+
+   public Citizen(String fullName, String phone, String nationalId, LocalDate dob, String password) {
+      super(fullName, password);
+      this.verificationStatus = Citizen.VerificationStatus.NONE;
+      this.phone = phone;
+      this.nationalId = nationalId;
+      this.dateOfBirth = dob;
+   }
+
+   public String getDashboardUrl() {
+      return "/citizen/dashboard";
+   }
+
+   public String getDisplayRole() {
+      return "Citizen";
+   }
+
+   public Role getRole() {
+      return Role.CITIZEN;
+   }
+
+   public String getLoginIdentifier() {
+      return this.phone;
+   }
+
+   public Badge getBadge() {
+      return Badge.forPoints(this.points);
+   }
+
+   public void addPoints(int amount) {
+      this.points = Math.max(0, this.points + amount);
+   }
+
+   public String getPhone() {
+      return this.phone;
+   }
+
+   public void setPhone(String phone) {
+      this.phone = phone;
+   }
+
+   public String getSecondaryPhone() {
+      return this.secondaryPhone;
+   }
+
+   public void setSecondaryPhone(String secondaryPhone) {
+      this.secondaryPhone = secondaryPhone;
+   }
+
+   public String getEmail() {
+      return this.email;
+   }
+
+   public void setEmail(String email) {
+      this.email = email;
+   }
+
+   public String getNationalId() {
+      return this.nationalId;
+   }
+
+   public void setNationalId(String nationalId) {
+      this.nationalId = nationalId;
+   }
+
+   public LocalDate getDateOfBirth() {
+      return this.dateOfBirth;
+   }
+
+   public void setDateOfBirth(LocalDate dateOfBirth) {
+      this.dateOfBirth = dateOfBirth;
+   }
+
+   public String getAddress() {
+      return this.address;
+   }
+
+   public void setAddress(String address) {
+      this.address = address;
+   }
+
+   public String getDivision() {
+      return this.division;
+   }
+
+   public void setDivision(String division) {
+      this.division = division;
+   }
+
+   public boolean isPhoneVerified() {
+      return this.phoneVerified;
+   }
+
+   public void setPhoneVerified(boolean phoneVerified) {
+      this.phoneVerified = phoneVerified;
+   }
+
+   public boolean isNidVerified() {
+      return this.nidVerified;
+   }
+
+   public void setNidVerified(boolean nidVerified) {
+      this.nidVerified = nidVerified;
+   }
+
+   public boolean isVerified() {
+      return this.nidVerified && this.verificationStatus == Citizen.VerificationStatus.VERIFIED;
+   }
+
+   public int getPoints() {
+      return this.points;
+   }
+
+   public String getLanguage() {
+      return this.language;
+   }
+
+   public void setLanguage(String language) {
+      this.language = language;
+   }
+
+   public boolean isDarkMode() {
+      return this.darkMode;
+   }
+
+   public void setDarkMode(boolean darkMode) {
+      this.darkMode = darkMode;
+   }
+
+   public Set<Long> getSavedPosts() {
+      return this.savedPosts;
+   }
+
+   public Set<Long> getFavoriteServices() {
+      return this.favoriteServices;
+   }
+
+   public VerificationStatus getVerificationStatus() {
+      return this.verificationStatus;
+   }
+
+   public void setVerificationStatus(VerificationStatus verificationStatus) {
+      this.verificationStatus = verificationStatus;
+   }
+
+   public String getNidImagePath() {
+      return this.nidImagePath;
+   }
+
+   public void setNidImagePath(String nidImagePath) {
+      this.nidImagePath = nidImagePath;
+   }
+
+   public String getSelfieImagePath() {
+      return this.selfieImagePath;
+   }
+
+   public void setSelfieImagePath(String selfieImagePath) {
+      this.selfieImagePath = selfieImagePath;
+   }
+
+   public LocalDateTime getVerificationSubmittedAt() {
+      return this.verificationSubmittedAt;
+   }
+
+   public void setVerificationSubmittedAt(LocalDateTime verificationSubmittedAt) {
+      this.verificationSubmittedAt = verificationSubmittedAt;
+   }
+
+   public LocalDateTime getVerifiedAt() {
+      return this.verifiedAt;
+   }
+
+   public void setVerifiedAt(LocalDateTime verifiedAt) {
+      this.verifiedAt = verifiedAt;
+   }
+
+   public void markVerified() {
+      this.nidVerified = true;
+      this.verificationStatus = Citizen.VerificationStatus.VERIFIED;
+      this.verifiedAt = LocalDateTime.now();
+   }
+
+   public int getProfileCompletion() {
+      int total = 8;
+      int done = 1;
+      if (this.phoneVerified) {
+         ++done;
+      }
+
+      if (this.nidVerified) {
+         ++done;
+      }
+
+      if (this.address != null && !this.address.isBlank()) {
+         ++done;
+      }
+
+      if (this.division != null && !this.division.isBlank()) {
+         ++done;
+      }
+
+      if (this.dateOfBirth != null) {
+         ++done;
+      }
+
+      if (this.email != null && !this.email.isBlank()) {
+         ++done;
+      }
+
+      if (this.secondaryPhone != null && !this.secondaryPhone.isBlank()) {
+         ++done;
+      }
+
+      return (int)Math.round((double)done * (double)100.0F / (double)total);
+   }
+
+}
