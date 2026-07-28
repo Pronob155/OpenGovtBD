@@ -1,0 +1,50 @@
+package com.opengovtbd.model;
+
+import java.time.LocalDateTime;
+import java.util.concurrent.atomic.AtomicLong;
+
+public class Announcement {
+   private static final AtomicLong SEQUENCE = new AtomicLong(8000L);
+   private final Long id;
+   private String title;
+   private String content;
+   private Priority priority;
+   private final LocalDateTime createdAt;
+
+   public Announcement(String title, String content, Priority priority) {
+      this.id = SEQUENCE.incrementAndGet();
+      this.title = title;
+      this.content = content;
+      this.priority = priority;
+      this.createdAt = LocalDateTime.now();
+   }
+
+   public Long getId() {
+      return this.id;
+   }
+
+   public String getTitle() {
+      return this.title;
+   }
+
+   public String getContent() {
+      return this.content;
+   }
+
+   public Priority getPriority() {
+      return this.priority;
+   }
+
+   public LocalDateTime getCreatedAt() {
+      return this.createdAt;
+   }
+
+   public static enum Priority {
+      NORMAL,
+      IMPORTANT,
+      EMERGENCY;
+
+      private Priority() {
+      }
+   }
+}
