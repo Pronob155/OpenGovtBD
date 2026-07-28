@@ -251,6 +251,3 @@ public class Citizen extends User {
       }
    }
 }
-//asdf
-//asdfg
-//asdfgh
