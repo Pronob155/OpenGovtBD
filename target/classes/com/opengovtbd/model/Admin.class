@@ -1,0 +1,31 @@
+
+package com.opengovtbd.model;
+
+public class Admin extends User {
+   private String email;
+
+   public Admin(String fullName, String email, String password) {
+      super(fullName, password);
+      this.email = email;
+   }
+
+   public String getDashboardUrl() {
+      return "/admin/dashboard";
+   }
+
+   public String getDisplayRole() {
+      return "Super Admin";
+   }
+
+   public Role getRole() {
+      return Role.ADMIN;
+   }
+
+   public String getLoginIdentifier() {
+      return this.email;
+   }
+
+   public String getEmail() {
+      return this.email;
+   }
+}
