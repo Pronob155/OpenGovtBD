@@ -241,5 +241,13 @@ public class Citizen extends User {
 
       return (int)Math.round((double)done * (double)100.0F / (double)total);
    }
+ public static enum VerificationStatus {
+      NONE,
+      PENDING,
+      VERIFIED,
+      REJECTED;
 
+      private VerificationStatus() {
+      }
+   }
 }
