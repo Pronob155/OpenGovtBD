@@ -1,4 +1,3 @@
-
 package com.opengovtbd.model;
 
 public class Admin extends User {
