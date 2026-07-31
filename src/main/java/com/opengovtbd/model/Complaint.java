@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
-/** A complaint filed by a citizen against a public service issue. */
 public class Complaint {
 
     private static final AtomicLong SEQUENCE = new AtomicLong(2000);
