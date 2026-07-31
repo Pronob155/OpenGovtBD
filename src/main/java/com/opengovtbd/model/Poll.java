@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
-/** An official poll created by the government for citizen participation. */
 public class Poll {
     private static final AtomicLong SEQUENCE = new AtomicLong(4000);
 
@@ -55,7 +54,6 @@ public class Poll {
         if (!bookmarkedBy.remove(userId)) bookmarkedBy.add(userId);
     }
 
-    /** Human friendly relative timestamp, e.g. "5m ago", "3h ago". */
     public String getRelativeTime() {
         return TimeFormat.relative(createdAt);
     }
