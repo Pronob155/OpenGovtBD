@@ -112,6 +112,18 @@ This is an educational/portfolio demo of a government platform concept. Password
 
 ---
 
-## 📄 License
+## 📄 Usage & License Notice
 
-MIT — free to use for learning and portfolio purposes.
+© 2026 (OpenGovtBD). All rights reserved.
+
+This repository is provided for **viewing and demonstration purposes only**.  
+It is **not open source** and **not for public use**.
+
+Without prior written permission from the author, you may **not**:
+
+- copy or redistribute this project
+- modify or create derivative works
+- use any part of this code in personal, academic, or commercial projects
+- deploy this project in any environment
+
+For permission requests, contact the repository owner.
