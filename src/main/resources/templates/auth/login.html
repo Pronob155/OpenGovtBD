@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Log in')}"></head>
+<body>
+<div class="auth-shell">
+  <div class="auth-side">
+    <a href="/" class="brand" style="color:#fff;"><div class="brand-mark" style="background:rgba(255,255,255,0.15);"><span class="material-symbols-rounded">account_balance</span></div>OpenGovtBD</a>
+    <div>
+      <h1 style="font-size:34px;line-height:1.25;max-width:420px;">Secure access for every role in the digital government ecosystem.</h1>
+      <p style="opacity:.85;max-width:380px;">Citizens, government officers, and administrators each get a dedicated, permissioned workspace.</p>
+    </div>
+    <div style="opacity:.75;font-size:13px;">Role-based access · OTP &amp; 2FA verification · Encrypted sessions</div>
+  </div>
+  <div class="auth-form-side">
+    <div class="auth-card pop-in">
+      <h2 style="margin:0 0 6px;">Welcome back</h2>
+      <p class="text-muted" style="margin:0 0 24px;">Log in to continue to your dashboard.</p>
+
+      <div th:if="${error}" class="alert alert-error" style="margin-bottom:18px;"><span class="material-symbols-rounded">error</span><span th:text="${error}"></span></div>
+
+      <div class="role-tabs">
+        <a th:href="@{/login(tab='citizen')}" class="role-tab" th:classappend="${tab == 'citizen'} ? 'active'">Citizen</a>
+        <a th:href="@{/login(tab='officer')}" class="role-tab" th:classappend="${tab == 'officer'} ? 'active'">Officer</a>
+        <a th:href="@{/login(tab='admin')}" class="role-tab" th:classappend="${tab == 'admin'} ? 'active'">Super Admin</a>
+      </div>
+
+      <form th:if="${tab == 'citizen'}" method="post" th:action="@{/login/citizen}">
+        <input type="hidden" name="next" th:value="${next}"/>
+        <div class="field">
+          <label for="phone">Mobile Number</label>
+          <div class="input-group"><span class="prefix">+88</span><input class="input" id="phone" name="phone" placeholder="01XXXXXXXXX" value="01700000000" required/></div>
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input class="input" type="password" id="password" name="password" value="citizen123" required/>
+        </div>
+        <div class="field" style="display:flex;justify-content:space-between;align-items:center;">
+          <label class="checkbox-row"><input type="checkbox" checked/> Remember me</label>
+          <a href="#" class="text-muted" style="font-size:13px;">Forgot password?</a>
+        </div>
+        <button class="btn btn-primary btn-block" type="submit">Log in as Citizen</button>
+        <p class="hint" style="text-align:center;margin-top:14px;">Demo account pre-filled — just click log in.</p>
+        <p style="text-align:center;margin-top:10px;font-size:13.5px;">New here? <a href="/register" style="color:var(--setu-blue);font-weight:600;">Create a citizen account</a></p>
+      </form>
+
+      <form th:if="${tab == 'officer'}" method="post" th:action="@{/login/officer}">
+        <input type="hidden" name="next" th:value="${next}"/>
+        <div class="field"><label for="officerId">Officer ID</label><input class="input" id="officerId" name="officerId" value="OFC-1001" required/></div>
+        <div class="field"><label for="govEmail">Government Email</label><input class="input" type="email" id="govEmail" name="govEmail" value="kamrul.hasan@dhaka.gov.bd" required/></div>
+        <div class="field"><label for="opassword">Password</label><input class="input" type="password" id="opassword" name="password" value="officer123" required/></div>
+        <div class="field alert alert-info" style="font-size:12.5px;"><span class="material-symbols-rounded">shield</span>Two-factor authentication is simulated for this demo.</div>
+        <button class="btn btn-green btn-block" type="submit">Log in as Officer</button>
+      </form>
+
+      <form th:if="${tab == 'admin'}" method="post" th:action="@{/login/admin}">
+        <input type="hidden" name="next" th:value="${next}"/>
+        <div class="field"><label for="aemail">Admin Email</label><input class="input" type="email" id="aemail" name="email" value="admin@opengovtbd.gov.bd" required/></div>
+        <div class="field"><label for="apassword">Password</label><input class="input" type="password" id="apassword" name="password" value="admin123" required/></div>
+        <div class="field alert alert-warning" style="font-size:12.5px;"><span class="material-symbols-rounded">security</span>Multi-factor authentication and activity monitoring are simulated for this demo.</div>
+        <button class="btn btn-primary btn-block" type="submit">Log in as Super Admin</button>
+      </form>
+    </div>
+  </div>
+</div>
+</body>
+</html>
