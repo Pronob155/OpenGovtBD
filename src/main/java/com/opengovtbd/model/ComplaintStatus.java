@@ -1,6 +1,5 @@
 package com.opengovtbd.model;
 
-/** Lifecycle states of a citizen complaint. */
 public enum ComplaintStatus {
     SUBMITTED("Submitted", "info"),
     PENDING("Pending", "warning"),
@@ -23,7 +22,6 @@ public enum ComplaintStatus {
     public String getLabel() { return label; }
     public String getTone() { return tone; }
 
-    /** Simplified lifecycle bucket used for client-side sorting/filtering (e.g. dashboard activity widgets). */
     public String getBucket() {
         switch (this) {
             case RESOLVED:
