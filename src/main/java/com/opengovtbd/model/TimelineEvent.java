@@ -2,7 +2,6 @@ package com.opengovtbd.model;
 
 import java.time.LocalDateTime;
 
-/** A single step in a complaint's or suggestion's audit trail. */
 public class TimelineEvent {
     private final String title;
     private final String description;
