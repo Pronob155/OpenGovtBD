@@ -20,7 +20,7 @@ public class AnnouncementRepository {
 
     public List<Announcement> findAll() {
         return announcements.values().stream()
-                .sorted(Comparator.comparing(Announcement::getCreatedAt).reversed())
-                .collect(Collectors.toList());
+            .sorted(Comparator.comparing(Announcement::getCreatedAt).reversed())
+            .collect(Collectors.toList());
     }
 }
