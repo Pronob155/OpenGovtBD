@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Create Poll')}"></head>
+<body>
+<div class="app-shell">
+  <nav th:replace="~{fragments/layout :: sidebar-officer('polls')}"></nav>
+  <div class="sidebar-overlay"></div>
+  <div class="main">
+    <div th:replace="~{fragments/layout :: topbar('Create Official Poll', ${officer.fullName}, ${unreadCount}, '/officer/dashboard')}"></div>
+    <div class="content" style="max-width:640px;">
+      <div class="card card-pad">
+        <form th:action="@{/officer/polls/new}" method="post">
+          <div class="field"><label>Poll Question</label><input class="input" name="question" placeholder="e.g. Which service should we digitize next?" required/></div>
+          <div class="field">
+            <label>Category</label>
+            <select class="input" name="category" required>
+              <option>Digital Services</option><option>Governance</option><option>Infrastructure</option>
+              <option>Health</option><option>Education</option><option>Environment</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Options (one per line, at least 2)</label>
+            <textarea class="input" name="options" rows="5" placeholder="Option A&#10;Option B&#10;Option C" required></textarea>
+          </div>
+          <div class="field"><label>Open for how many days?</label><input class="input" type="number" name="daysOpen" value="7" min="1" max="60"/></div>
+          <button class="btn btn-primary btn-block" type="submit">Publish Poll</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>
