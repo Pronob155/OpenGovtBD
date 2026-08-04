@@ -4,7 +4,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-/** Small shared helper for human-friendly relative timestamps ("5m ago", "3h ago"...). */
 final class TimeFormat {
 
     private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("dd MMM yyyy");
