@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('File a Complaint')}"></head>
+<body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'">
+<div class="app-shell">
+  <nav th:replace="~{fragments/layout :: sidebar-citizen('complaints')}"></nav>
+  <div class="sidebar-overlay"></div>
+  <div class="main">
+    <div th:replace="~{fragments/layout :: topbar('File a Complaint', ${citizen.fullName}, ${unreadCount}, '/citizen/notifications')}"></div>
+    <div class="content" style="max-width:720px;">
+      <a href="/citizen/complaints" class="text-muted" style="font-size:13px;">&larr; Back to complaints</a>
+      <h2 style="margin:14px 0 4px;">File a New Complaint</h2>
+      <p class="text-muted" style="margin:0 0 24px;">Give us the details and we'll route it to the right department.</p>
+
+      <form method="post" th:action="@{/citizen/complaints/new}" class="card card-pad">
+        <div class="field">
+          <label for="title">Complaint Title</label>
+          <input class="input" id="title" name="title" placeholder="e.g. Streetlight not working" required/>
+        </div>
+        <div class="grid grid-2">
+          <div class="field">
+            <label for="category">Category</label>
+            <select class="input" id="category" name="category" required>
+              <option>Electricity</option><option>Water Supply</option><option>Waste Management</option>
+              <option>Road & Infrastructure</option><option>Health Services</option><option>Education</option>
+              <option>Law & Order</option><option>Corruption</option><option>Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="division">Division</label>
+            <select class="input" id="division" name="division" required>
+              <option>Dhaka</option><option>Chattogram</option><option>Rajshahi</option><option>Khulna</option>
+              <option>Barishal</option><option>Sylhet</option><option>Rangpur</option><option>Mymensingh</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-2">
+          <div class="field">
+            <label for="district">District</label>
+            <input class="input" id="district" name="district" placeholder="e.g. Dhaka" required/>
+          </div>
+          <div class="field">
+            <label for="upazila">Upazila / Thana</label>
+            <input class="input" id="upazila" name="upazila" placeholder="e.g. Savar" required/>
+          </div>
+        </div>
+        <div class="field">
+          <label for="description">Detailed Description</label>
+          <textarea class="input" id="description" name="description" rows="5" placeholder="Describe the issue in detail..." required></textarea>
+        </div>
+        <div class="field">
+          <label>Attach Photos / Documents</label>
+          <div class="card card-pad-sm" style="border-style:dashed;text-align:center;color:var(--muted);cursor:pointer;">
+            <span class="material-symbols-rounded" style="font-size:26px;">upload_file</span>
+            <div style="font-size:13px;margin-top:6px;">Drag files here or click to upload (demo — not stored)</div>
+            <input type="file" multiple style="display:none;"/>
+          </div>
+        </div>
+        <div class="field checkbox-row"><input type="checkbox" onclick="this.checked=true;"/> Use my current GPS location (optional)</div>
+        <button type="submit" class="btn btn-primary btn-block">Submit Complaint <span class="material-symbols-rounded">send</span></button>
+      </form>
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>
