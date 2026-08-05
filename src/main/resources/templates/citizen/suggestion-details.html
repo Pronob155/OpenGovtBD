@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Suggestion')}"></head>
+<body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'">
+<div class="app-shell">
+  <nav th:replace="~{fragments/layout :: sidebar-citizen('suggestions')}"></nav>
+  <div class="sidebar-overlay"></div>
+  <div class="main">
+    <div th:replace="~{fragments/layout :: topbar('Suggestion', ${citizen.fullName}, ${unreadCount}, '/citizen/notifications')}"></div>
+    <div class="content" style="max-width:760px;">
+      <a href="/citizen/suggestions" class="text-muted" style="font-size:13px;">&larr; Back to suggestion box</a>
+
+      <div class="card card-pad" style="margin:16px 0 20px;">
+        <span class="pill" th:classappend="'pill-' + ${suggestion.status.tone}" th:text="${suggestion.status.label}">Status</span>
+        <h2 style="margin:12px 0 6px;" th:text="${suggestion.title}">Title</h2>
+        <div class="text-muted" style="font-size:13px;margin-bottom:14px;" th:text="'by ' + ${userRepository.findFullName(suggestion.authorId)}">meta</div>
+        <p th:text="${suggestion.description}">description</p>
+        <div th:if="${suggestion.governmentFeedback}" class="alert alert-success" style="margin-top:16px;">
+          <span class="material-symbols-rounded">verified</span>
+          <div><strong>Government Feedback</strong><div th:text="${suggestion.governmentFeedback}"></div></div>
+        </div>
+      </div>
+
+      <div class="card card-pad" style="margin-bottom:20px;">
+        <h3 style="margin:0 0 16px;">Progress Timeline</h3>
+        <div class="timeline">
+          <div class="timeline-item done" th:each="t : ${suggestion.timeline}">
+            <div class="timeline-dot"></div>
+            <div class="fw-600" th:text="${t.title}">Event</div>
+            <div class="text-muted" style="font-size:13px;" th:text="${t.description}">desc</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card card-pad">
+        <h3 style="margin:0 0 14px;" th:text="${#lists.size(suggestion.comments)} + ' Comments'">Comments</h3>
+        <form th:action="@{'/citizen/suggestions/' + ${suggestion.id} + '/comment'}" method="post" style="display:flex;gap:10px;margin-bottom:18px;">
+          <input class="input" name="content" placeholder="Add your thoughts..." required/>
+          <button class="btn btn-primary" type="submit">Post</button>
+        </form>
+        <div class="comment-row" th:each="c : ${suggestion.comments}">
+          <div class="avatar" style="width:34px;height:34px;font-size:12px;" th:text="${#strings.substring(userRepository.findFullName(c.authorId),0,1)}">U</div>
+          <div>
+            <div class="fw-600" style="font-size:13.5px;" th:text="${userRepository.findFullName(c.authorId)}">Name</div>
+            <div style="font-size:14px;margin-top:2px;" th:text="${c.content}">Comment</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>
