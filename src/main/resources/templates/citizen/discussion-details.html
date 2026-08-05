@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Discussion')}"></head>
+<body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'">
+<div class="app-shell">
+  <nav th:replace="~{fragments/layout :: sidebar-citizen('discussions')}"></nav>
+  <div class="sidebar-overlay"></div>
+  <div class="main">
+    <div th:replace="~{fragments/layout :: topbar('Discussion', ${citizen.fullName}, ${unreadCount}, '/citizen/notifications')}"></div>
+    <div class="content" style="max-width:760px;">
+      <a href="/citizen/discussions" class="text-muted" style="font-size:13px;">&larr; Back to discussions</a>
+
+      <div class="card card-pad" style="margin:16px 0 20px;">
+        <div style="display:flex;justify-content:space-between;">
+          <span class="pill pill-muted" th:text="${discussion.category}">Category</span>
+          <span th:if="${discussion.locked}" class="pill pill-error"><span class="material-symbols-rounded" style="font-size:14px;">lock</span>Locked</span>
+        </div>
+        <h2 style="margin:12px 0 6px;" th:text="${discussion.title}">Title</h2>
+        <div class="name-with-badge text-muted" style="font-size:13px;margin-bottom:14px;">
+          <span th:text="'by ' + (${author != null ? author.fullName : 'Citizen'}) + ' · ' + ${#temporals.format(discussion.createdAt, 'dd MMM yyyy')}">meta</span>
+          <span th:if="${author != null and author.class.simpleName == 'Citizen' and author.verified}" th:replace="~{fragments/layout :: verified-badge}"></span>
+        </div>
+        <p th:utext="${textRenderer.render(discussion.content)}">content</p>
+
+        <div th:if="${discussion.officialResponse}" class="alert alert-success" style="margin-top:16px;">
+          <span class="material-symbols-rounded">verified</span>
+          <div><strong>Official Government Response</strong><div th:text="${discussion.officialResponse}"></div></div>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;">
+          <form th:action="@{'/citizen/discussions/' + ${discussion.id} + '/like'}" method="post">
+            <button class="reaction-btn" th:classappend="${discussion.likedBy.contains(citizen.id)} ? 'active'" type="submit">
+              <span class="material-symbols-rounded">thumb_up</span> <span th:text="${discussion.likeCount}">0</span>
+            </button>
+          </form>
+          <form th:action="@{'/citizen/discussions/' + ${discussion.id} + '/dislike'}" method="post">
+            <button class="reaction-btn" th:classappend="${discussion.dislikedBy.contains(citizen.id)} ? 'active'" type="submit">
+              <span class="material-symbols-rounded">thumb_down</span> <span th:text="${discussion.dislikeCount}">0</span>
+            </button>
+          </form>
+          <form th:action="@{'/citizen/discussions/' + ${discussion.id} + '/bookmark'}" method="post">
+            <button class="reaction-btn" th:classappend="${discussion.bookmarkedBy.contains(citizen.id)} ? 'active'" type="submit">
+              <span class="material-symbols-rounded">bookmark</span> <span th:text="${discussion.bookmarkedBy.contains(citizen.id)} ? 'Saved' : 'Save'">Save</span>
+            </button>
+          </form>
+          <button class="reaction-btn" type="button" onclick="navigator.clipboard.writeText(window.location.href); this.querySelector('span:last-child').textContent='Copied!';">
+            <span class="material-symbols-rounded">share</span> <span>Share</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="card card-pad" id="comments">
+        <h3 style="margin:0 0 14px;" th:text="${discussion.commentCount} + ' Comments'">Comments</h3>
+        <p class="text-muted" style="font-size:12.5px;margin:-8px 0 14px;">Tip: type @ to mention another citizen or officer.</p>
+
+        <form th:if="${!discussion.locked}" th:action="@{'/citizen/discussions/' + ${discussion.id} + '/comment'}" method="post" style="display:flex;gap:10px;margin-bottom:18px;">
+          <input class="input" name="content" data-mention-input placeholder="Add a constructive comment..." required/>
+          <button class="btn btn-primary" type="submit">Post</button>
+        </form>
+        <div th:if="${discussion.locked}" class="alert alert-warning" style="margin-bottom:18px;">
+          <span class="material-symbols-rounded">lock</span> Comments are locked on this discussion.
+        </div>
+
+        <div class="comment-thread">
+          <div th:each="c : ${discussion.comments}" th:if="${!c.reply}">
+            <div class="comment-row">
+              <div class="avatar" style="width:34px;height:34px;font-size:12px;" th:text="${#strings.substring(userRepository.findFullName(c.authorId),0,1)}">U</div>
+              <div style="flex:1;">
+                <div class="fw-600" style="font-size:13.5px;" th:text="${userRepository.findFullName(c.authorId)}">Name</div>
+                <div style="font-size:14px;margin-top:2px;" th:utext="${textRenderer.render(c.content)}">Comment</div>
+                <div class="text-muted" style="font-size:11.5px;margin-top:3px;" th:text="${c.relativeTime}">time</div>
+                <div class="comment-actions">
+                  <form th:action="@{'/citizen/discussions/' + ${discussion.id} + '/comment/' + ${c.id} + '/like'}" method="post" style="display:inline;">
+                    <button type="submit" class="comment-like-btn" th:classappend="${c.likedBy.contains(citizen.id)} ? 'active'">
+                      <span class="material-symbols-rounded" style="font-size:14px;">thumb_up</span> <span th:text="${c.likeCount}">0</span>
+                    </button>
+                  </form>
+                  <button th:if="${!discussion.locked}" type="button" th:attr="data-reply-toggle=${c.id}">Reply</button>
+                </div>
+                <form th:if="${!discussion.locked}" class="reply-form" th:attr="data-reply-form=${c.id}" th:action="@{'/citizen/discussions/' + ${discussion.id} + '/comment'}" method="post">
+                  <input type="hidden" name="parentId" th:value="${c.id}"/>
+                  <input class="input" name="content" data-mention-input placeholder="Write a reply..." required/>
+                  <button class="btn btn-primary btn-sm" type="submit">Reply</button>
+                </form>
+
+                <div class="comment-replies">
+                  <div th:each="r : ${discussion.comments}" th:if="${r.reply and r.parentId == c.id}" class="comment-row">
+                    <div class="avatar" style="width:28px;height:28px;font-size:11px;" th:text="${#strings.substring(userRepository.findFullName(r.authorId),0,1)}">U</div>
+                    <div style="flex:1;">
+                      <div class="fw-600" style="font-size:13px;" th:text="${userRepository.findFullName(r.authorId)}">Name</div>
+                      <div style="font-size:13.5px;margin-top:2px;" th:utext="${textRenderer.render(r.content)}">Reply</div>
+                      <div class="text-muted" style="font-size:11px;margin-top:3px;" th:text="${r.relativeTime}">time</div>
+                      <div class="comment-actions">
+                        <form th:action="@{'/citizen/discussions/' + ${discussion.id} + '/comment/' + ${r.id} + '/like'}" method="post" style="display:inline;">
+                          <button type="submit" class="comment-like-btn" th:classappend="${r.likedBy.contains(citizen.id)} ? 'active'">
+                            <span class="material-symbols-rounded" style="font-size:13px;">thumb_up</span> <span th:text="${r.likeCount}">0</span>
+                          </button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div th:if="${#lists.isEmpty(discussion.comments)}" class="text-muted" style="font-size:13.5px;">No comments yet — be the first to comment.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>
