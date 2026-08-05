@@ -1,1 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Digital Services')}"></head>
+<body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'">
+<div class="app-shell">
+  <nav th:replace="~{fragments/layout :: sidebar-citizen('services')}"></nav>
+  <div class="sidebar-overlay"></div>
+  <div class="main">
+    <div th:replace="~{fragments/layout :: topbar('Government Digital Services', ${citizen.fullName}, ${unreadCount}, '/citizen/notifications')}"></div>
+    <div class="content">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:20px;">
+        <p class="text-muted" style="margin:0;">Quick access to official Government of Bangladesh e-services.</p>
+        <a href="/citizen/services/catalog" class="btn btn-outline btn-sm"><span class="material-symbols-rounded">apps</span>Browse Officer-curated Services</a>
+      </div>
+      <div class="grid grid-4">
+        <a href="https://services.nidw.gov.bd" target="_blank" class="service-card card hoverable fade-up"><div class="ico"><span class="material-symbols-rounded">badge</span></div><div class="name">National ID</div><div class="desc">NID correction & download</div></a>
+        <a href="https://bdris.gov.bd" target="_blank" class="service-card card hoverable fade-up d1"><div class="ico"><span class="material-symbols-rounded">description</span></div><div class="name">Birth Certificate</div><div class="desc">Register & verify</div></a>
+        <a href="https://www.epassport.gov.bd" target="_blank" class="service-card card hoverable fade-up d2"><div class="ico"><span class="material-symbols-rounded">flight_takeoff</span></div><div class="name">E-Passport</div><div class="desc">Apply & track status</div></a>
+        <a href="https://bsp.brta.gov.bd" target="_blank" class="service-card card hoverable fade-up d3"><div class="ico"><span class="material-symbols-rounded">directions_car</span></div><div class="name">Driving License</div><div class="desc">BRTA services</div></a>
+        <a href="https://www.tradelicense.gov.bd" target="_blank" class="service-card card hoverable fade-up"><div class="ico"><span class="material-symbols-rounded">storefront</span></div><div class="name">Trade License</div><div class="desc">Business registration</div></a>
+        <a href="https://land.gov.bd" target="_blank" class="service-card card hoverable fade-up d1"><div class="ico"><span class="material-symbols-rounded">landscape</span></div><div class="name">Land Record</div><div class="desc">Khatian & mutation</div></a>
+        <a href="https://etaxnbr.gov.bd" target="_blank" class="service-card card hoverable fade-up d2"><div class="ico"><span class="material-symbols-rounded">payments</span></div><div class="name">Tax Services</div><div class="desc">e-TIN & e-Return</div></a>
+        <a href="#" class="service-card card hoverable fade-up d3"><div class="ico"><span class="material-symbols-rounded">bolt</span></div><div class="name">Utility Bill Payment</div><div class="desc">Electricity, gas, water</div></a>
+        <a href="https://dghs.gov.bd" target="_blank" class="service-card card hoverable fade-up"><div class="ico"><span class="material-symbols-rounded">local_hospital</span></div><div class="name">Health Services</div><div class="desc">Hospital & doctor directory</div></a>
+        <a href="https://www.moedu.gov.bd" target="_blank" class="service-card card hoverable fade-up d1"><div class="ico"><span class="material-symbols-rounded">school</span></div><div class="name">Education Services</div><div class="desc">Results & admissions</div></a>
+        <a href="https://pcc.police.gov.bd" target="_blank" class="service-card card hoverable fade-up d2"><div class="ico"><span class="material-symbols-rounded">verified_user</span></div><div class="name">Police Clearance</div><div class="desc">Certificate application</div></a>
+        <a href="https://forms.gov.bd" target="_blank" class="service-card card hoverable fade-up d3"><div class="ico"><span class="material-symbols-rounded">article</span></div><div class="name">Government Forms</div><div class="desc">All official forms</div></a>
+      </div>
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>
 
