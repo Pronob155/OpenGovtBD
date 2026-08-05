@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Suggestion Box')}"></head>
+<body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'">
+<div class="app-shell">
+  <nav th:replace="~{fragments/layout :: sidebar-citizen('suggestions')}"></nav>
+  <div class="sidebar-overlay"></div>
+  <div class="main">
+    <div th:replace="~{fragments/layout :: topbar('Suggestion Box', ${citizen.fullName}, ${unreadCount}, '/citizen/notifications')}"></div>
+    <div class="content">
+
+      <div th:if="${param.submitted}" class="alert alert-success" style="margin-bottom:18px;" data-flash>
+        <span class="material-symbols-rounded">check_circle</span> Your suggestion has been submitted for review. You earned 15 points!
+      </div>
+
+      <div class="grid" style="grid-template-columns: 2.2fr 1fr; align-items:start;gap:22px;">
+        <div>
+          <h2 style="margin:0 0 4px;">Suggestion Box</h2>
+          <p class="text-muted" style="margin:0 0 20px;">Help improve government services — every idea gets reviewed.</p>
+
+          <div th:if="${#lists.isEmpty(suggestions)}" class="card empty-state">
+            <div class="ico"><span class="material-symbols-rounded">lightbulb</span></div>
+            <h3>No suggestions yet</h3><p>Share the first idea to improve public services.</p>
+          </div>
+
+          <div class="card card-pad hoverable fade-up" style="margin-bottom:16px;" th:each="s : ${suggestions}">
+            <div style="display:flex;justify-content:space-between;">
+              <span class="pill" th:classappend="'pill-' + ${s.status.tone}" th:text="${s.status.label}">Status</span>
+              <span class="text-muted" style="font-size:12px;" th:text="${s.score} + ' net votes'">score</span>
+            </div>
+            <a th:href="@{'/citizen/suggestions/' + ${s.id}}"><h3 style="margin:10px 0 6px;" th:text="${s.title}">Title</h3></a>
+            <p class="text-muted" style="font-size:13.5px;margin:0 0 12px;" th:text="${#strings.abbreviate(s.description, 150)}">desc</p>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span class="text-muted" style="font-size:12.5px;" th:text="'by ' + ${userRepository.findFullName(s.authorId)}">author</span>
+              <div style="display:flex;gap:8px;">
+                <form th:action="@{'/citizen/suggestions/' + ${s.id} + '/upvote'}" method="post">
+                  <button class="reaction-btn" th:classappend="${s.upvotedBy.contains(citizen.id)} ? 'active'" type="submit"><span class="material-symbols-rounded">arrow_upward</span> <span th:text="${#sets.size(s.upvotedBy)}">0</span></button>
+                </form>
+                <form th:action="@{'/citizen/suggestions/' + ${s.id} + '/downvote'}" method="post">
+                  <button class="reaction-btn" th:classappend="${s.downvotedBy.contains(citizen.id)} ? 'active'" type="submit"><span class="material-symbols-rounded">arrow_downward</span></button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-pad" style="position:sticky;top:88px;">
+          <h3 style="margin:0 0 14px;">Submit a Suggestion</h3>
+          <form th:action="@{/citizen/suggestions/new}" method="post">
+            <div class="field"><label>Title</label><input class="input" name="title" required/></div>
+            <div class="field"><label>Describe your idea</label><textarea class="input" name="description" rows="5" required></textarea></div>
+            <button class="btn btn-primary btn-block" type="submit">Submit Suggestion</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>
