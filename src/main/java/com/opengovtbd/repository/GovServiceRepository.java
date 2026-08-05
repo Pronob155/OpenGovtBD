@@ -9,7 +9,6 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-
 @Repository
 public class GovServiceRepository {
 
@@ -35,7 +34,8 @@ public class GovServiceRepository {
     }
 
     public List<GovService> findByCategory(String category) {
-        if (category == null || category.isBlank() || category.equalsIgnoreCase("all")) return findAll();
+        if (category == null || category.isBlank() || category.equalsIgnoreCase("all"))
+            return findAll();
         return findAll().stream().filter(s -> s.getCategory().equalsIgnoreCase(category)).collect(Collectors.toList());
     }
 
@@ -47,6 +47,7 @@ public class GovServiceRepository {
                 .collect(Collectors.toList());
     }
 
-    public long count() { return services.size(); }
+    public long count() {
+        return services.size();
+    }
 }
-
