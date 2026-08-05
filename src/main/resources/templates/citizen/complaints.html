@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('My Complaints')}"></head>
+<body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'">
+<div class="app-shell">
+  <nav th:replace="~{fragments/layout :: sidebar-citizen('complaints')}"></nav>
+  <div class="sidebar-overlay"></div>
+  <div class="main">
+    <div th:replace="~{fragments/layout :: topbar('My Complaints', ${citizen.fullName}, ${unreadCount}, '/citizen/notifications')}"></div>
+    <div class="content">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <div>
+          <h2 style="margin:0;">My Complaints</h2>
+          <p class="text-muted" style="margin:4px 0 0;">Track every complaint you've filed, from submission to resolution.</p>
+        </div>
+        <a href="/citizen/complaints/new" class="btn btn-primary"><span class="material-symbols-rounded">add</span>File New Complaint</a>
+      </div>
+
+      <div th:if="${#lists.isEmpty(complaints)}" class="card empty-state">
+        <div class="ico"><span class="material-symbols-rounded">inbox</span></div>
+        <h3>No complaints filed yet</h3>
+        <p>When you report an issue, it will show up here with full status tracking.</p>
+        <a href="/citizen/complaints/new" class="btn btn-primary">File Your First Complaint</a>
+      </div>
+
+      <div class="grid grid-2" th:if="${not #lists.isEmpty(complaints)}">
+        <a th:each="c : ${complaints}" th:href="@{'/citizen/complaints/' + ${c.id}}" class="card card-pad hoverable fade-up">
+          <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:10px;">
+            <span class="pill" th:classappend="'pill-' + ${c.status.tone}" th:text="${c.status.label}">Status</span>
+            <span class="text-muted" style="font-size:12px;" th:text="${c.trackingId}">ID</span>
+          </div>
+          <h4 style="margin:0 0 6px;" th:text="${c.title}">Title</h4>
+          <p class="text-muted" style="font-size:13px;margin:0 0 10px;" th:text="${#strings.abbreviate(c.description, 110)}">Description</p>
+          <div style="display:flex;gap:8px;font-size:12px;color:var(--muted);">
+            <span th:text="${c.category}">Category</span> · <span th:text="${c.division} + ', ' + ${c.district}">Location</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>
