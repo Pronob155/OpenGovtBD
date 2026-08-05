@@ -1,0 +1,347 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+  <head th:replace="~{fragments/layout :: head('Leaderboard')}"></head>
+  <body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'">
+    <div class="app-shell">
+      <nav
+        th:replace="~{fragments/layout :: sidebar-citizen('leaderboard')}"
+      ></nav>
+      <div class="sidebar-overlay"></div>
+      <div class="main">
+        <div
+          th:replace="~{fragments/layout :: topbar('Civic Leaderboard', ${citizen.fullName}, ${unreadCount}, '/citizen/notifications')}"
+        ></div>
+        <div class="content" style="max-width: 960px">
+          <p class="text-muted" style="margin: 0 0 20px">
+            Earn points by voting, filing complaints, discussing issues, and
+            getting complaints resolved.
+          </p>
+
+          <!-- Your standing at a glance -->
+          <div class="grid grid-4 fade-up" style="margin-bottom: 14px">
+            <div class="card stat-card">
+              <div
+                class="stat-icon"
+                style="
+                  background: var(--setu-blue-light);
+                  color: var(--setu-blue);
+                "
+              >
+                <span class="material-symbols-rounded">military_tech</span>
+              </div>
+              <div>
+                <div
+                  class="stat-value"
+                  th:text="${myRank > 0} ? '#' + ${myRank} : '—'"
+                >
+                  #1
+                </div>
+                <div class="stat-label">Your Rank</div>
+              </div>
+            </div>
+            <div class="card stat-card">
+              <div
+                class="stat-icon"
+                style="background: var(--warning-bg); color: #92600b"
+              >
+                <span class="material-symbols-rounded">stars</span>
+              </div>
+              <div>
+                <div class="stat-value" th:text="${citizen.points}">0</div>
+                <div class="stat-label">Your Points</div>
+              </div>
+            </div>
+            <div class="card stat-card">
+              <div
+                class="stat-icon"
+                style="
+                  background: var(--bd-green-light);
+                  color: var(--bd-green);
+                "
+              >
+                <span class="material-symbols-rounded">workspace_premium</span>
+              </div>
+              <div>
+                <span
+                  class="badge-tier"
+                  th:classappend="'badge-tier-' + ${#strings.toLowerCase(citizen.badge.name())}"
+                  style="font-size: 13px"
+                  th:text="${citizen.badge.label}"
+                  >Badge</span
+                >
+                <div class="stat-label" style="margin-top: 6px">Your Tier</div>
+              </div>
+            </div>
+            <div class="card stat-card">
+              <div
+                class="stat-icon"
+                style="background: var(--info-bg); color: var(--setu-blue)"
+              >
+                <span class="material-symbols-rounded">groups</span>
+              </div>
+              <div>
+                <div class="stat-value" th:text="${#lists.size(ranked)}">0</div>
+                <div class="stat-label">Citizens Ranked</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Progress toward next tier -->
+          <div
+            class="card card-pad fade-up"
+            style="margin-bottom: 24px"
+            th:if="${citizen.badge.next != null}"
+          >
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 8px;
+                font-size: 12.5px;
+              "
+            >
+              <span class="text-muted"
+                >Progress to
+                <strong th:text="${citizen.badge.next.label}"
+                  >Next Tier</strong
+                ></span
+              >
+              <span
+                class="fw-700"
+                th:text="${citizen.points} + ' / ' + ${citizen.badge.next.minPoints} + ' pts'"
+                >0 / 0 pts</span
+              >
+            </div>
+            <div class="tier-progress-track">
+              <div
+                style="width: 0%"
+                th:attr="data-bar-pct=${#numbers.formatDecimal(citizen.points * 100.0 / citizen.badge.next.minPoints, 1, 1)}"
+              ></div>
+            </div>
+          </div>
+          <div
+            class="card card-pad fade-up"
+            style="margin-bottom: 24px; text-align: center"
+            th:if="${citizen.badge.next == null}"
+          >
+            <span class="badge-tier badge-tier-platinum"
+              >🏅 Highest tier reached — Platinum Citizen!</span
+            >
+          </div>
+
+          <!-- Top 3 podium -->
+          <div
+            class="podium-grid fade-up d1"
+            th:if="${#lists.size(ranked) >= 3}"
+          >
+            <div class="card card-pad podium-card rank-2">
+              <div class="podium-ring">
+                <div class="avatar" th:text="${ranked[1].initials}">U</div>
+              </div>
+              <div class="leaderboard-rank medal" style="width: auto">🥈</div>
+              <div class="fw-700" th:text="${ranked[1].fullName}">Name</div>
+              <span
+                class="badge-tier"
+                th:classappend="'badge-tier-' + ${#strings.toLowerCase(ranked[1].badge.name())}"
+                style="font-size: 11px; margin-top: 4px"
+                th:text="${ranked[1].badge.label}"
+                >Badge</span
+              >
+              <div
+                class="text-muted"
+                style="font-size: 13px; margin-top: 6px"
+                th:text="${ranked[1].points} + ' pts'"
+              >
+                0 pts
+              </div>
+            </div>
+            <div class="card card-pad podium-card rank-1">
+              <div class="podium-crown">👑</div>
+              <div class="podium-ring">
+                <div class="avatar" th:text="${ranked[0].initials}">U</div>
+              </div>
+              <div class="leaderboard-rank medal" style="width: auto">🥇</div>
+              <div class="fw-700" th:text="${ranked[0].fullName}">Name</div>
+              <span
+                class="badge-tier"
+                th:classappend="'badge-tier-' + ${#strings.toLowerCase(ranked[0].badge.name())}"
+                style="font-size: 11px; margin-top: 4px"
+                th:text="${ranked[0].badge.label}"
+                >Badge</span
+              >
+              <div
+                class="text-muted"
+                style="font-size: 13px; margin-top: 6px"
+                th:text="${ranked[0].points} + ' pts'"
+              >
+                0 pts
+              </div>
+            </div>
+            <div class="card card-pad podium-card rank-3">
+              <div class="podium-ring">
+                <div class="avatar" th:text="${ranked[2].initials}">U</div>
+              </div>
+              <div class="leaderboard-rank medal" style="width: auto">🥉</div>
+              <div class="fw-700" th:text="${ranked[2].fullName}">Name</div>
+              <span
+                class="badge-tier"
+                th:classappend="'badge-tier-' + ${#strings.toLowerCase(ranked[2].badge.name())}"
+                style="font-size: 11px; margin-top: 4px"
+                th:text="${ranked[2].badge.label}"
+                >Badge</span
+              >
+              <div
+                class="text-muted"
+                style="font-size: 13px; margin-top: 6px"
+                th:text="${ranked[2].points} + ' pts'"
+              >
+                0 pts
+              </div>
+            </div>
+          </div>
+
+          <div class="leaderboard-layout">
+            <div class="card card-pad fade-up d2">
+              <div
+                th:each="c, iter : ${ranked}"
+                class="leaderboard-row"
+                th:classappend="${(iter.index lt 3 ? ' leaderboard-row-top3' : '') + (c.id == citizen.id ? ' leaderboard-row-me' : '')}"
+              >
+                <div
+                  class="leaderboard-rank"
+                  th:classappend="${iter.index lt 3} ? ' medal'"
+                  th:text="${iter.index == 0} ? '🥇' : (${iter.index == 1} ? '🥈' : (${iter.index == 2} ? '🥉' : '#' + (iter.index + 1)))"
+                >
+                  #1
+                </div>
+                <div class="avatar leaderboard-avatar" th:text="${c.initials}">
+                  TA
+                </div>
+                <div style="flex: 1; min-width: 0">
+                  <div class="name-with-badge">
+                    <span
+                      class="fw-600"
+                      th:text="${c.fullName} + (${c.id == citizen.id} ? ' (You)' : '')"
+                      >Name</span
+                    >
+                    <span
+                      th:if="${c.verified}"
+                      th:replace="~{fragments/layout :: verified-badge}"
+                    ></span>
+                  </div>
+                  <span
+                    class="badge-tier"
+                    style="padding: 3px 10px; font-size: 11.5px"
+                    th:classappend="'badge-tier-' + ${#strings.toLowerCase(c.badge.name())}"
+                    th:text="${c.badge.label}"
+                    >Badge</span
+                  >
+                </div>
+                <div class="leaderboard-points" th:text="${c.points} + ' pts'">
+                  0 pts
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 20px">
+              <div class="card card-pad fade-up d3">
+                <h3 style="margin: 0 0 12px">How to earn points</h3>
+                <div class="reward-grid">
+                  <div class="reward-chip">
+                    ✅ Filing a verified complaint<span class="reward-points"
+                      >+8</span
+                    >
+                  </div>
+                  <div class="reward-chip">
+                    🎯 Complaint resolved bonus<span class="reward-points"
+                      >+12</span
+                    >
+                  </div>
+                  <div class="reward-chip">
+                    🗳️ Voting in a poll<span class="reward-points">+5</span>
+                  </div>
+                  <div class="reward-chip">
+                    💬 Starting a discussion<span class="reward-points"
+                      >+10</span
+                    >
+                  </div>
+                  <div class="reward-chip">
+                    💡 Submitting a suggestion<span class="reward-points"
+                      >+15</span
+                    >
+                  </div>
+                  <div class="reward-chip">
+                    🚀 Contribution implemented<span class="reward-points"
+                      >+20</span
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <div class="card card-pad fade-up d3">
+                <h3 style="margin: 0 0 12px">Your Recent Activity</h3>
+                <div
+                  th:if="${#lists.isEmpty(recentActivity)}"
+                  class="text-muted"
+                  style="font-size: 13px"
+                >
+                  No activity yet — get involved to start earning points!
+                </div>
+                <div th:each="a : ${recentActivity}" class="activity-row">
+                  <span class="activity-dot"></span>
+                  <span
+                    style="font-size: 12.5px; flex: 1"
+                    th:text="${a.description()}"
+                    >Activity</span
+                  >
+                  <span
+                    class="fw-700 text-success"
+                    style="font-size: 12.5px; white-space: nowrap"
+                    th:text="'+' + ${a.points()}"
+                    >+0</span
+                  >
+                </div>
+              </div>
+
+              <div
+                class="card card-pad fade-up d4"
+                th:if="${not #lists.isEmpty(officerRanked)}"
+              >
+                <h3 style="margin: 0 0 12px">Top Performing Officers</h3>
+                <div
+                  th:each="o, iter : ${officerRanked}"
+                  th:if="${iter.index < 5}"
+                  class="officer-rank-row"
+                >
+                  <span
+                    class="officer-rank-num"
+                    th:text="'#' + (${iter.index} + 1)"
+                    >#1</span
+                  >
+                  <div
+                    class="avatar"
+                    style="width: 28px; height: 28px; font-size: 11px"
+                    th:text="${o.initials}"
+                  >
+                    O
+                  </div>
+                  <span style="font-size: 13px; flex: 1" th:text="${o.fullName}"
+                    >Officer</span
+                  >
+                  <span
+                    class="fw-700"
+                    style="font-size: 12.5px; white-space: nowrap"
+                    th:text="${rewardService.pointsForOfficer(o.id)} + ' pts'"
+                    >0 pts</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script th:src="@{/js/main.js}"></script>
+  </body>
+</html>
