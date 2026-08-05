@@ -26,12 +26,21 @@ public class PollService {
         return pollRepository.save(poll);
     }
 
-    public List<Poll> active() { return pollRepository.findActive(); }
-    public List<Poll> archived() { return pollRepository.findArchived(); }
-    public Optional<Poll> find(Long id) { return pollRepository.findById(id); }
+    public List<Poll> active() {
+        return pollRepository.findActive();
+    }
+
+    public List<Poll> archived() {
+        return pollRepository.findArchived();
+    }
+
+    public Optional<Poll> find(Long id) {
+        return pollRepository.findById(id);
+    }
 
     public void vote(Poll poll, PollOption option, Citizen citizen) {
-        if (!poll.isActive()) throw new IllegalStateException("This poll has closed.");
+        if (!poll.isActive())
+            throw new IllegalStateException("This poll has closed.");
         if (poll.getVotedCitizens().contains(citizen.getId())) {
             throw new IllegalStateException("You have already voted in this poll.");
         }
@@ -48,4 +57,3 @@ public class PollService {
         return pollRepository.findAll().stream().filter(p -> p.getBookmarkedBy().contains(citizenId)).toList();
     }
 }
-
