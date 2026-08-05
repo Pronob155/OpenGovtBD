@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Complaint Details')}"></head>
+<body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'">
+<div class="app-shell">
+  <nav th:replace="~{fragments/layout :: sidebar-citizen('complaints')}"></nav>
+  <div class="sidebar-overlay"></div>
+  <div class="main">
+    <div th:replace="~{fragments/layout :: topbar('Complaint Details', ${citizen.fullName}, ${unreadCount}, '/citizen/notifications')}"></div>
+    <div class="content" style="max-width:900px;">
+      <a href="/citizen/complaints" class="text-muted" style="font-size:13px;">&larr; Back to complaints</a>
+
+      <div th:if="${submitted}" class="alert alert-success" style="margin:16px 0;" data-flash>
+        <span class="material-symbols-rounded">check_circle</span>
+        <span>Complaint submitted! Your tracking ID is <strong th:text="${complaint.trackingId}"></strong>.</span>
+      </div>
+
+      <div class="card card-pad" style="margin:16px 0 22px;">
+        <div style="display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:12px;">
+          <div>
+            <span class="pill" th:classappend="'pill-' + ${complaint.status.tone}" th:text="${complaint.status.label}">Status</span>
+            <h2 style="margin:12px 0 4px;" th:text="${complaint.title}">Title</h2>
+            <div class="text-muted" style="font-size:13px;" th:text="'Tracking ID: ' + ${complaint.trackingId}">ID</div>
+          </div>
+          <div style="text-align:right;font-size:13px;" class="text-muted">
+            <div th:text="${complaint.category}">Category</div>
+            <div th:text="${complaint.division} + ', ' + ${complaint.district} + ', ' + ${complaint.upazila}">Location</div>
+          </div>
+        </div>
+        <p style="margin:16px 0 0;" th:text="${complaint.description}">Description</p>
+        <div th:if="${officer}" class="alert alert-info" style="margin-top:16px;">
+          <span class="material-symbols-rounded">badge</span>
+          <span>Handled by <strong th:text="${officer.fullName}"></strong> — <span th:text="${officer.department}"></span></span>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:18px;">
+          <form th:action="@{'/citizen/complaints/' + ${complaint.id} + '/bookmark'}" method="post">
+            <button class="reaction-btn" th:classappend="${complaint.bookmarkedBy.contains(citizen.id)} ? 'active'" type="submit">
+              <span class="material-symbols-rounded">bookmark</span> <span th:text="${complaint.bookmarkedBy.contains(citizen.id)} ? 'Saved' : 'Save'">Save</span>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div class="card card-pad" style="margin-bottom:22px;">
+        <h3 style="margin:0 0 18px;">Timeline</h3>
+        <div class="timeline">
+          <div class="timeline-item done" th:each="t : ${complaint.timeline}">
+            <div class="timeline-dot"></div>
+            <div class="fw-600" th:text="${t.title}">Event</div>
+            <div class="text-muted" style="font-size:13px;margin:2px 0 4px;" th:text="${t.description}">Description</div>
+            <div class="text-muted" style="font-size:11.5px;" th:text="${t.actor} + ' · ' + ${#temporals.format(t.timestamp, 'dd MMM yyyy, hh:mm a')}">meta</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card card-pad" style="margin-bottom:22px;" th:if="${complaint.status.name() == 'RESOLVED' and complaint.rating == null}">
+        <h3 style="margin:0 0 12px;">Rate this resolution</h3>
+        <form method="post" th:action="@{'/citizen/complaints/' + ${complaint.id} + '/rate'}">
+          <div class="star-rating" style="margin-bottom:14px;">
+            <input type="radio" name="rating" value="5" id="r5"/><label for="r5">★</label>
+            <input type="radio" name="rating" value="4" id="r4"/><label for="r4">★</label>
+            <input type="radio" name="rating" value="3" id="r3" checked/><label for="r3">★</label>
+            <input type="radio" name="rating" value="2" id="r2"/><label for="r2">★</label>
+            <input type="radio" name="rating" value="1" id="r1"/><label for="r1">★</label>
+          </div>
+          <textarea class="input" name="feedback" rows="3" placeholder="Tell us about your experience..." style="margin-bottom:14px;"></textarea>
+          <button class="btn btn-primary" type="submit">Submit Feedback</button>
+        </form>
+      </div>
+
+      <div class="card card-pad" style="margin-bottom:22px;" th:if="${complaint.rating != null}">
+        <h3 style="margin:0 0 8px;">Your Feedback</h3>
+        <div style="color:#F5A623;font-size:20px;margin-bottom:6px;" th:text="${'★'.repeat(complaint.rating)} + ${'☆'.repeat(5 - complaint.rating)}">★★★★★</div>
+        <p class="text-muted" th:text="${complaint.feedback}">feedback</p>
+      </div>
+
+      <div class="card card-pad" style="margin-bottom:22px;" th:if="${complaint.status.name() == 'RESOLVED' or complaint.status.name() == 'CLOSED'}">
+        <h3 style="margin:0 0 12px;">Not satisfied?</h3>
+        <form method="post" th:action="@{'/citizen/complaints/' + ${complaint.id} + '/reopen'}" style="display:flex;gap:10px;">
+          <input class="input" name="reason" placeholder="Explain why you'd like to reopen this complaint" required/>
+          <button class="btn btn-outline" type="submit" style="white-space:nowrap;">Reopen Complaint</button>
+        </form>
+      </div>
+
+      <div class="card card-pad" id="comments">
+        <h3 style="margin:0 0 14px;" th:text="${complaint.commentCount} + ' Comments'">Comments</h3>
+        <p class="text-muted" style="font-size:12.5px;margin:-8px 0 14px;">Tip: type @ to mention another citizen or officer.</p>
+
+        <form th:action="@{'/citizen/complaints/' + ${complaint.id} + '/comment'}" method="post" style="display:flex;gap:10px;margin-bottom:18px;">
+          <input class="input" name="content" data-mention-input placeholder="Add a comment... use @name to mention someone" required/>
+          <button class="btn btn-primary" type="submit">Post</button>
+        </form>
+
+        <div class="comment-thread">
+          <div th:each="c : ${complaint.comments}" th:if="${!c.reply}">
+            <div class="comment-row">
+              <div class="avatar" style="width:34px;height:34px;font-size:12px;" th:text="${#strings.substring(userRepository.findFullName(c.authorId),0,1)}">U</div>
+              <div style="flex:1;">
+                <div class="fw-600" style="font-size:13.5px;" th:text="${userRepository.findFullName(c.authorId)}">Name</div>
+                <div style="font-size:14px;margin-top:2px;" th:utext="${textRenderer.render(c.content)}">Comment</div>
+                <div class="text-muted" style="font-size:11.5px;margin-top:3px;" th:text="${c.relativeTime}">time</div>
+                <div class="comment-actions">
+                  <form th:action="@{'/citizen/complaints/' + ${complaint.id} + '/comment/' + ${c.id} + '/like'}" method="post" style="display:inline;">
+                    <button type="submit" class="comment-like-btn" th:classappend="${c.likedBy.contains(citizen.id)} ? 'active'">
+                      <span class="material-symbols-rounded" style="font-size:14px;">thumb_up</span> <span th:text="${c.likeCount}">0</span>
+                    </button>
+                  </form>
+                  <button type="button" th:attr="data-reply-toggle=${c.id}">Reply</button>
+                </div>
+                <form class="reply-form" th:attr="data-reply-form=${c.id}" th:action="@{'/citizen/complaints/' + ${complaint.id} + '/comment'}" method="post">
+                  <input type="hidden" name="parentId" th:value="${c.id}"/>
+                  <input class="input" name="content" data-mention-input placeholder="Write a reply..." required/>
+                  <button class="btn btn-primary btn-sm" type="submit">Reply</button>
+                </form>
+
+                <div class="comment-replies" th:if="${!#lists.isEmpty(complaint.comments)}">
+                  <div th:each="r : ${complaint.comments}" th:if="${r.reply and r.parentId == c.id}" class="comment-row">
+                    <div class="avatar" style="width:28px;height:28px;font-size:11px;" th:text="${#strings.substring(userRepository.findFullName(r.authorId),0,1)}">U</div>
+                    <div style="flex:1;">
+                      <div class="fw-600" style="font-size:13px;" th:text="${userRepository.findFullName(r.authorId)}">Name</div>
+                      <div style="font-size:13.5px;margin-top:2px;" th:utext="${textRenderer.render(r.content)}">Reply</div>
+                      <div class="text-muted" style="font-size:11px;margin-top:3px;" th:text="${r.relativeTime}">time</div>
+                      <div class="comment-actions">
+                        <form th:action="@{'/citizen/complaints/' + ${complaint.id} + '/comment/' + ${r.id} + '/like'}" method="post" style="display:inline;">
+                          <button type="submit" class="comment-like-btn" th:classappend="${r.likedBy.contains(citizen.id)} ? 'active'">
+                            <span class="material-symbols-rounded" style="font-size:13px;">thumb_up</span> <span th:text="${r.likeCount}">0</span>
+                          </button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div th:if="${#lists.isEmpty(complaint.comments)}" class="text-muted" style="font-size:13.5px;">No comments yet — be the first to comment.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>
