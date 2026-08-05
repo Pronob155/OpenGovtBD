@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Discussions')}"></head>
+<body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'">
+<div class="app-shell">
+  <nav th:replace="~{fragments/layout :: sidebar-citizen('discussions')}"></nav>
+  <div class="sidebar-overlay"></div>
+  <div class="main">
+    <div th:replace="~{fragments/layout :: topbar('Public Discussions', ${citizen.fullName}, ${unreadCount}, '/citizen/notifications')}"></div>
+    <div class="content">
+
+      <div th:if="${param.created}" class="alert alert-info" style="margin-bottom:18px;" data-flash>
+        <span class="material-symbols-rounded">hourglass_top</span>
+        <span>Your discussion has been submitted and is awaiting officer approval before it goes public.</span>
+      </div>
+
+      <div class="grid" style="grid-template-columns: 2.2fr 1fr; align-items:start;gap:22px;">
+        <div>
+          <div class="card card-pad" style="margin-bottom:18px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+            <form th:action="@{/citizen/discussions}" method="get" style="display:flex;gap:10px;flex:1;min-width:220px;">
+              <input class="input" type="text" name="q" th:value="${q}" placeholder="Search discussions..."/>
+              <input type="hidden" name="sort" th:value="${sort}"/>
+              <input type="hidden" name="category" th:value="${category}"/>
+              <button class="btn btn-ghost" type="submit"><span class="material-symbols-rounded">search</span></button>
+            </form>
+            <select class="input" style="width:auto;" th:attr="onchange=|window.location='/citizen/discussions?sort='+this.value+'&category=${category}&q=${q}'|">
+              <option value="latest" th:selected="${sort == 'latest'}">Latest</option>
+              <option value="trending" th:selected="${sort == 'trending'}">Trending</option>
+              <option value="liked" th:selected="${sort == 'liked'}">Most Liked</option>
+            </select>
+          </div>
+
+          <div th:if="${#lists.isEmpty(discussions)}" class="card empty-state">
+            <div class="ico"><span class="material-symbols-rounded">forum</span></div>
+            <h3>No discussions found</h3>
+            <p>Be the first to start a conversation on this topic.</p>
+          </div>
+
+          <div class="card card-pad hoverable fade-up" style="margin-bottom:16px;" th:each="d : ${discussions}">
+            <div style="display:flex;justify-content:space-between;">
+              <span class="pill pill-muted" th:text="${d.category}">Category</span>
+              <span th:if="${d.pinned}" class="pill pill-warning"><span class="material-symbols-rounded" style="font-size:14px;">push_pin</span>Pinned</span>
+            </div>
+            <a th:href="@{'/citizen/discussions/' + ${d.id}}">
+              <h3 style="margin:10px 0 6px;" th:text="${d.title}">Title</h3>
+            </a>
+            <p class="text-muted" style="font-size:13.5px;margin:0 0 12px;" th:text="${#strings.abbreviate(d.content, 160)}">content</p>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span class="text-muted" style="font-size:12.5px;" th:text="'by ' + ${userRepository.findFullName(d.authorId)}">author</span>
+              <div style="display:flex;gap:14px;font-size:13px;color:var(--muted);">
+                <span><span class="material-symbols-rounded" style="font-size:16px;">thumb_up</span> <span th:text="${d.likeCount}">0</span></span>
+                <span><span class="material-symbols-rounded" style="font-size:16px;">chat_bubble</span> <span th:text="${d.commentCount}">0</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-pad" style="position:sticky;top:88px;">
+          <h3 style="margin:0 0 14px;">Start a Discussion</h3>
+          <form th:action="@{/citizen/discussions/new}" method="post">
+            <div class="field"><label>Title</label><input class="input" name="title" required/></div>
+            <div class="field">
+              <label>Category</label>
+              <select class="input" name="category" required>
+                <option>Infrastructure</option><option>Transportation</option><option>Governance</option>
+                <option>Health</option><option>Education</option><option>Environment</option><option>Other</option>
+              </select>
+            </div>
+            <div class="field"><label>What's on your mind?</label><textarea class="input" name="content" rows="4" required></textarea></div>
+            <button class="btn btn-primary btn-block" type="submit">Submit for Approval</button>
+            <p class="hint" style="text-align:center;">All discussions are reviewed by officers before going public.</p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>
