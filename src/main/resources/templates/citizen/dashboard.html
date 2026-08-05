@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Dashboard')}"></head>
+<body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'">
+<div class="app-shell">
+  <nav th:replace="~{fragments/layout :: sidebar-citizen('dashboard')}"></nav>
+  <div class="sidebar-overlay"></div>
+  <div class="main">
+    <div th:replace="~{fragments/layout :: topbar('Dashboard', ${citizen.fullName}, ${unreadCount}, '/citizen/notifications')}"></div>
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <div class="content">
+
+      <!-- Welcome banner (Component 1): inline card, no backdrop, no overlay — never blocks the page -->
+      <div class="card card-pad fade-up fade-out-dismiss" id="welcomeBanner" style="position:relative;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;margin-bottom:22px;">
+        <button type="button" class="card-dismiss-btn" id="welcomeBannerClose" aria-label="Dismiss welcome banner">
+          <span class="material-symbols-rounded">close</span>
+        </button>
+        <div>
+          <div class="name-with-badge">
+            <h2 style="margin:0 0 6px;" th:text="${citizen.fullName}">Citizen Name</h2>
+            <span th:if="${citizen.verified}" th:replace="~{fragments/layout :: verified-badge}"></span>
+          </div>
+          <p class="text-muted" style="margin:0;">Here's what's happening with your civic activity today.</p>
+        </div>
+        <div style="display:flex;align-items:center;gap:20px;" th:attr="data-celebrate-completion=${citizen.profileCompletion},data-user-id=${citizen.id}">
+          <div class="progress-ring-wrap" style="width:56px;height:56px;">
+            <svg width="56" height="56">
+              <circle class="progress-ring-bg" cx="28" cy="28" r="23" stroke-width="5" fill="none"/>
+              <circle class="progress-ring-fg" cx="28" cy="28" r="23" stroke-width="5" fill="none" style="stroke:var(--success);" th:attr="data-pct=${citizen.profileCompletion}"/>
+            </svg>
+            <div class="progress-ring-label" style="font-size:12px;" th:text="${citizen.profileCompletion} + '%'">0%</div>
+          </div>
+          <div>
+            <div class="fw-700" style="font-size:13.5px;">Profile completion</div>
+            <a href="/citizen/profile" class="text-muted" style="font-size:12.5px;color:var(--setu-blue);">Complete your profile →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Emergency alert (if any) -->
+      <div class="emergency-banner fade-up" style="margin-bottom:22px;"
+           th:each="a : ${announcements}" th:if="${a.priority.name() == 'EMERGENCY'}">
+        <span class="material-symbols-rounded">emergency</span>
+        <div><strong th:text="${a.title}">Alert</strong><div class="text-muted" style="font-size:13px;" th:text="${a.content}">Details</div></div>
+        <a href="/citizen/emergency" class="btn btn-danger btn-sm" style="margin-left:auto;">Emergency Help</a>
+      </div>
+
+      <!-- Stat cards: at-a-glance summary -->
+      <div class="grid grid-4 fade-up d1" style="margin-bottom:22px;">
+        <div class="card stat-card">
+          <div class="stat-icon" style="background:var(--setu-blue-light);color:var(--setu-blue);"><span class="material-symbols-rounded">report</span></div>
+          <div><div class="stat-value" th:text="${#lists.size(complaints)}">0</div><div class="stat-label">My Complaints</div></div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-icon" style="background:var(--success-bg);color:var(--success);"><span class="material-symbols-rounded">task_alt</span></div>
+          <div><div class="stat-value" th:text="${resolvedCount}">0</div><div class="stat-label">Resolved</div></div>
+        </div>
+        <button type="button" class="card stat-card" data-action="scroll-leaderboard" title="Jump to your Leaderboard rank">
+          <div class="stat-icon" style="background:var(--warning-bg);color:#92600B;"><span class="material-symbols-rounded">stars</span></div>
+          <div><div class="stat-value" th:text="${citizen.points}">0</div><div class="stat-label" th:text="${citizen.badge.label}">Badge</div></div>
+        </button>
+        <div class="card stat-card">
+          <div class="stat-icon" style="background:var(--bd-green-light);color:var(--bd-green);"><span class="material-symbols-rounded">how_to_vote</span></div>
+          <div><div class="stat-value" th:text="${#lists.size(activePolls)}">0</div><div class="stat-label">Active Polls</div></div>
+        </div>
+      </div>
+
+      <!-- Leaderboard (Component 3b): real ranked-citizen data, shared with /citizen/leaderboard -->
+      <div class="card card-pad fade-up d1" id="leaderboardSection" style="margin-bottom:22px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+          <div>
+            <h3 style="margin:0 0 2px;">Leaderboard</h3>
+            <p class="text-muted" style="margin:0;font-size:12.5px;">Top civic contributors this month</p>
+          </div>
+          <a href="/citizen/leaderboard" class="text-muted" style="font-size:13px;">View full leaderboard →</a>
+        </div>
+
+        <div th:each="c, iter : ${leaderboardTop}" class="leaderboard-row"
+             th:id="${c.id == citizen.id} ? 'leaderboardCurrentUserRow' : null"
+             th:classappend="${(iter.index lt 3 ? ' leaderboard-row-top3' : '') + (c.id == citizen.id ? ' leaderboard-row-me' : '')}">
+          <div class="leaderboard-rank" th:classappend="${iter.index lt 3} ? ' medal'"
+               th:text="'#' + (${iter.index} + 1)">#1</div>
+          <div class="avatar leaderboard-avatar" th:text="${c.initials}">TA</div>
+          <div style="flex:1;min-width:0;">
+            <div class="name-with-badge">
+              <span class="fw-600" style="font-size:13.5px;" th:text="${c.fullName} + (${c.id == citizen.id} ? ' (You)' : '')">Name</span>
+              <span th:if="${c.verified}" th:replace="~{fragments/layout :: verified-badge}"></span>
+            </div>
+            <span class="badge-tier" style="padding:3px 10px;font-size:11px;" th:classappend="'badge-tier-' + ${#strings.toLowerCase(c.badge.name())}" th:text="${c.badge.label}">Badge</span>
+          </div>
+          <div class="leaderboard-points" th:text="${c.points} + ' pts'">0 pts</div>
+        </div>
+
+        <div th:unless="${leaderboardMeInTop}" class="leaderboard-divider">Your rank</div>
+        <div th:unless="${leaderboardMeInTop}" id="leaderboardCurrentUserRow" class="leaderboard-row leaderboard-row-me">
+          <div class="leaderboard-rank" th:text="'#' + ${leaderboardMyRank}">#N</div>
+          <div class="avatar leaderboard-avatar" th:text="${citizen.initials}">TA</div>
+          <div style="flex:1;min-width:0;">
+            <div class="name-with-badge">
+              <span class="fw-600" style="font-size:13.5px;" th:text="${citizen.fullName} + ' (You)'">Name</span>
+              <span th:if="${citizen.verified}" th:replace="~{fragments/layout :: verified-badge}"></span>
+            </div>
+            <span class="badge-tier" style="padding:3px 10px;font-size:11px;" th:classappend="'badge-tier-' + ${#strings.toLowerCase(citizen.badge.name())}" th:text="${citizen.badge.label}">Badge</span>
+          </div>
+          <div class="leaderboard-points" th:text="${citizen.points} + ' pts'">0 pts</div>
+        </div>
+      </div>
+
+      <div class="grid grid-2" style="align-items:start;">
+        <!-- Left column -->
+        <div style="display:flex;flex-direction:column;gap:22px;">
+
+          <div class="card card-pad fade-up d2">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+              <h3 style="margin:0;">Active Complaints</h3>
+              <a href="/citizen/complaints" class="text-muted" style="font-size:13px;">View all →</a>
+            </div>
+            <div th:if="${#lists.isEmpty(complaints)}" class="empty-state" style="padding:32px 12px;">
+              <div class="ico"><span class="material-symbols-rounded">inbox</span></div>
+              <h3 style="font-size:15px;">No complaints yet</h3>
+              <p style="font-size:13px;">Report an issue and we'll route it to the right department.</p>
+              <a href="/citizen/complaints/new" class="btn btn-primary btn-sm">File a Complaint</a>
+            </div>
+            <div th:each="c : ${complaints}" th:if="${!c.isResolved()}" style="padding:12px 0;border-bottom:1px solid var(--border);">
+              <a th:href="@{'/citizen/complaints/' + ${c.id}}" style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+                <div>
+                  <div class="fw-600" th:text="${c.title}">Title</div>
+                  <div class="text-muted" style="font-size:12.5px;" th:text="${c.trackingId} + ' · ' + ${c.category}">ID</div>
+                </div>
+                <span class="pill" th:classappend="'pill-' + ${c.status.tone}" th:text="${c.status.label}">Status</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="card card-pad fade-up d3">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+              <h3 style="margin:0;">Active Polls</h3>
+              <a href="/citizen/polls" class="text-muted" style="font-size:13px;">View all →</a>
+            </div>
+            <div th:if="${#lists.isEmpty(activePolls)}" class="text-muted" style="font-size:13.5px;">No active polls right now.</div>
+            <div th:each="p : ${activePolls}" style="padding:10px 0;border-bottom:1px solid var(--border);">
+              <div class="fw-600" style="font-size:14px;margin-bottom:6px;" th:text="${p.question}">Question</div>
+              <div class="text-muted" style="font-size:12px;" th:text="${p.totalVotes} + ' votes · ' + ${p.category}">meta</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right column -->
+        <div style="display:flex;flex-direction:column;gap:22px;">
+
+          <div class="card card-pad fade-up d2">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+              <h3 style="margin:0;">Public Discussions</h3>
+              <a href="/citizen/discussions" class="text-muted" style="font-size:13px;">View all →</a>
+            </div>
+            <div th:each="d : ${discussions}" style="padding:10px 0;border-bottom:1px solid var(--border);">
+              <a th:href="@{'/citizen/discussions/' + ${d.id}}">
+                <div class="fw-600" style="font-size:14px;" th:text="${d.title}">Title</div>
+                <div class="text-muted" style="font-size:12px;margin-top:3px;" th:text="${d.likeCount} + ' likes · ' + ${d.commentCount} + ' comments'">meta</div>
+              </a>
+            </div>
+          </div>
+
+          <div class="card card-pad fade-up d3">
+            <h3 style="margin:0 0 14px;">Government Announcements</h3>
+            <div th:each="a : ${announcements}" style="padding:10px 0;border-bottom:1px solid var(--border);">
+              <div class="fw-600" style="font-size:14px;" th:text="${a.title}">Title</div>
+              <div class="text-muted" style="font-size:12.5px;margin-top:3px;" th:text="${a.content}">content</div>
+            </div>
+          </div>
+
+          <div class="card card-pad fade-up d4">
+            <h3 style="margin:0 0 14px;">Quick Services</h3>
+            <div class="grid grid-3">
+              <a href="/citizen/services" class="service-card card hoverable">
+                <div class="ico"><span class="material-symbols-rounded">badge</span></div>
+                <div class="name">National ID</div>
+              </a>
+              <a href="/citizen/services" class="service-card card hoverable">
+                <div class="ico"><span class="material-symbols-rounded">flight_takeoff</span></div>
+                <div class="name">E-Passport</div>
+              </a>
+              <a href="/citizen/services" class="service-card card hoverable">
+                <div class="ico"><span class="material-symbols-rounded">payments</span></div>
+                <div class="name">Tax Services</div>
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/main.js}"></script>
+<script th:inline="javascript">
+(function () {
+  // ---- Component 1: Welcome banner (inline, dismissible for the session — not a modal) ----
+  var banner = document.getElementById('welcomeBanner');
+  var bannerCloseBtn = document.getElementById('welcomeBannerClose');
+  var userId = /*[[${citizen.id}]]*/ 0;
+  var bannerDismissKey = 'ogbd-welcome-dismissed-' + userId;
+  if (banner) {
+    if (sessionStorage.getItem(bannerDismissKey) === '1') {
+      banner.style.display = 'none';
+    } else if (bannerCloseBtn) {
+      bannerCloseBtn.addEventListener('click', function () {
+        banner.classList.add('dismissed');
+        sessionStorage.setItem(bannerDismissKey, '1');
+        setTimeout(function () { banner.style.display = 'none'; }, 300);
+      });
+    }
+  }
+
+  // ---- Component 3: "Bronze Citizen" card scrolls to the Leaderboard and highlights the user's row ----
+  var bronzeBtn = document.querySelector('[data-action="scroll-leaderboard"]');
+  if (bronzeBtn) {
+    bronzeBtn.addEventListener('click', function () {
+      var row = document.getElementById('leaderboardCurrentUserRow');
+      var target = row || document.getElementById('leaderboardSection');
+      if (!target) return;
+      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (row) {
+        row.classList.add('leaderboard-highlight');
+        setTimeout(function () { row.classList.remove('leaderboard-highlight'); }, 2800);
+      }
+    });
+  }
+})();
+</script>
+</body>
+</html>
