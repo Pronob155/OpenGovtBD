@@ -1,0 +1,287 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+  <head th:replace="~{fragments/layout :: head('Admin Overview')}"></head>
+  <body>
+    <div class="app-shell">
+      <nav th:replace="~{fragments/layout :: sidebar-admin('dashboard')}"></nav>
+      <div class="sidebar-overlay"></div>
+      <div class="main">
+        <div
+          th:replace="~{fragments/layout :: topbar('System Overview', ${admin.fullName}, ${unreadCount}, '/admin/dashboard')}"
+        ></div>
+        <div class="content">
+          <div class="grid grid-4 fade-up" style="margin-bottom: 22px">
+            <a href="/admin/users" class="card stat-card"
+              ><div
+                class="stat-icon"
+                style="
+                  background: var(--setu-blue-light);
+                  color: var(--setu-blue);
+                "
+              >
+                <span class="material-symbols-rounded">groups</span>
+              </div>
+              <div>
+                <div class="stat-value" th:text="${analytics.totalCitizens()}">
+                  0
+                </div>
+                <div class="stat-label">Total Citizens</div>
+              </div></a
+            >
+            <a href="/admin/users" class="card stat-card"
+              ><div
+                class="stat-icon"
+                style="background: var(--success-bg); color: var(--success)"
+              >
+                <span class="material-symbols-rounded">verified</span>
+              </div>
+              <div>
+                <div
+                  class="stat-value"
+                  th:text="${analytics.verifiedCitizens()}"
+                >
+                  0
+                </div>
+                <div class="stat-label">Verified Citizens</div>
+              </div></a
+            >
+            <a href="/admin/reports" class="card stat-card"
+              ><div
+                class="stat-icon"
+                style="background: var(--warning-bg); color: #92600b"
+              >
+                <span class="material-symbols-rounded">report</span>
+              </div>
+              <div>
+                <div
+                  class="stat-value"
+                  th:text="${analytics.totalComplaints()}"
+                >
+                  0
+                </div>
+                <div class="stat-label">Complaints</div>
+              </div></a
+            >
+            <a href="/admin/reports" class="card stat-card"
+              ><div
+                class="stat-icon"
+                style="
+                  background: var(--bd-green-light);
+                  color: var(--bd-green);
+                "
+              >
+                <span class="material-symbols-rounded">task_alt</span>
+              </div>
+              <div>
+                <div
+                  class="stat-value"
+                  th:text="${#numbers.formatDecimal(analytics.resolutionRate(),1,1)} + '%'"
+                >
+                  0%
+                </div>
+                <div class="stat-label">Resolution Rate</div>
+              </div></a
+            >
+          </div>
+
+          <div class="grid grid-4 fade-up d1" style="margin-bottom: 22px">
+            <a href="/admin/users" class="card stat-card"
+              ><div
+                class="stat-icon"
+                style="background: var(--info-bg); color: var(--setu-blue)"
+              >
+                <span class="material-symbols-rounded">badge</span>
+              </div>
+              <div>
+                <div class="stat-value" th:text="${#lists.size(officers)}">
+                  0
+                </div>
+                <div class="stat-label">Government Officers</div>
+              </div></a
+            >
+            <a href="/admin/services" class="card stat-card"
+              ><div
+                class="stat-icon"
+                style="background: #ede9fe; color: #6d28d9"
+              >
+                <span class="material-symbols-rounded">apps</span>
+              </div>
+              <div>
+                <div class="stat-value" th:text="${servicesCount}">0</div>
+                <div class="stat-label">Services Catalog</div>
+              </div></a
+            >
+            <a href="/admin/discussions" class="card stat-card"
+              ><div
+                class="stat-icon"
+                style="background: #fce7f3; color: #be185d"
+              >
+                <span class="material-symbols-rounded">forum</span>
+              </div>
+              <div>
+                <div
+                  class="stat-value"
+                  th:text="${analytics.totalDiscussions()}"
+                >
+                  0
+                </div>
+                <div class="stat-label">Discussions</div>
+              </div></a
+            >
+            <a href="/admin/users" class="card stat-card"
+              ><div
+                class="stat-icon"
+                style="background: var(--error-bg); color: var(--error)"
+              >
+                <span class="material-symbols-rounded">gavel</span>
+              </div>
+              <div>
+                <div
+                  class="stat-value"
+                  th:text="${#lists.size(citizens) + #lists.size(officers)}"
+                >
+                  0
+                </div>
+                <div class="stat-label">Moderation Queue</div>
+              </div></a
+            >
+          </div>
+
+          <div class="grid grid-2" style="align-items: start">
+            <div class="card card-pad fade-up d1">
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  margin-bottom: 14px;
+                "
+              >
+                <h3 style="margin: 0">Recent Citizens</h3>
+                <a
+                  href="/admin/users"
+                  class="text-muted"
+                  style="font-size: 13px"
+                  >Manage all →</a
+                >
+              </div>
+              <div
+                th:each="c, iter : ${citizens}"
+                th:if="${iter.index < 5}"
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  padding: 10px 0;
+                  border-bottom: 1px solid var(--border);
+                "
+              >
+                <div style="display: flex; align-items: center; gap: 10px">
+                  <div
+                    class="avatar"
+                    style="width: 32px; height: 32px; font-size: 12px"
+                    th:text="${c.initials}"
+                  >
+                    U
+                  </div>
+                  <span th:text="${c.fullName}">Name</span>
+                </div>
+                <span
+                  class="pill"
+                  th:classappend="${c.banned} ? 'pill-banned' : (${c.isCurrentlySuspended()} ? 'pill-suspended' : (${c.verified} ? 'pill-success' : 'pill-warning'))"
+                  th:text="${c.banned} ? 'Banned' : (${c.isCurrentlySuspended()} ? 'Suspended' : (${c.verified} ? 'Verified' : 'Pending'))"
+                  >Status</span
+                >
+              </div>
+            </div>
+
+            <div class="card card-pad fade-up d2">
+              <h3 style="margin: 0 0 14px">Government Officers</h3>
+              <div
+                th:each="o : ${officers}"
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  padding: 10px 0;
+                  border-bottom: 1px solid var(--border);
+                "
+              >
+                <div>
+                  <div
+                    class="fw-600"
+                    style="font-size: 14px"
+                    th:text="${o.fullName}"
+                  >
+                    Name
+                  </div>
+                  <div
+                    class="text-muted"
+                    style="font-size: 12px"
+                    th:text="${o.department}"
+                  >
+                    Dept
+                  </div>
+                </div>
+                <span class="pill pill-info" th:text="${o.officerId}">ID</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-2" style="margin-top: 22px; align-items: start">
+            <a
+              href="/admin/analytics"
+              class="card card-pad fade-up d3"
+              style="display: block"
+            >
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  margin-bottom: 6px;
+                "
+              >
+                <h3 style="margin: 0">Full Analytics</h3>
+                <span class="btn btn-outline btn-sm"
+                  >Open
+                  <span class="material-symbols-rounded"
+                    >arrow_forward</span
+                  ></span
+                >
+              </div>
+              <p class="text-muted" style="margin: 0">
+                Charts for complaint volume, department performance, and citizen
+                satisfaction.
+              </p>
+            </a>
+            <a
+              href="/admin/reports"
+              class="card card-pad fade-up d3"
+              style="display: block"
+            >
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  margin-bottom: 6px;
+                "
+              >
+                <h3 style="margin: 0">System Reports</h3>
+                <span class="btn btn-outline btn-sm"
+                  >Open
+                  <span class="material-symbols-rounded"
+                    >arrow_forward</span
+                  ></span
+                >
+              </div>
+              <p class="text-muted" style="margin: 0">
+                Category/division breakdowns and suggestion outcome tracking.
+              </p>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script th:src="@{/js/main.js}"></script>
+  </body>
+</html>
