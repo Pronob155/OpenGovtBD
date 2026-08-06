@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="~{fragments/layout :: head('Services')}"></head>
+
+<body>
+  <div class="app-shell">
+    <nav th:replace="~{fragments/layout :: sidebar-admin('services')}"></nav>
+    <div class="sidebar-overlay"></div>
+    <div class="main">
+      <div
+        th:replace="~{fragments/layout :: topbar('Digital Services Oversight', ${admin.fullName}, ${unreadCount}, '/admin/dashboard')}">
+      </div>
+      <div class="content">
+        <p class="text-muted" style="margin:0 0 20px;">Read-only view of every service officers have published across
+          <span th:text="${#lists.size(categories)}">0</span> categories.</p>
+        <div class="card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Service</th>
+                <th>Category</th>
+                <th>External URL</th>
+                <th>Created</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="s : ${services}">
+                <td style="display:flex;align-items:center;gap:10px;">
+                  <span class="material-symbols-rounded" style="color:var(--setu-blue);"
+                    th:text="${s.logoIcon}">apps</span>
+                  <span th:text="${s.name}">Name</span>
+                </td>
+                <td><span class="pill pill-muted" th:text="${s.category}">Category</span></td>
+                <td><a th:href="${s.externalUrl}" target="_blank" rel="noopener" class="text-muted"
+                    style="font-size:12.5px;" th:text="${s.externalUrl}">url</a></td>
+                <td class="text-muted" th:text="${#temporals.format(s.createdAt, 'dd MMM yyyy')}">date</td>
+              </tr>
+              <tr th:if="${#lists.isEmpty(services)}">
+                <td colspan="4" class="text-muted" style="text-align:center;padding:24px;">No services published yet.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script th:src="@{/js/main.js}"></script>
+</body>
+
+</html>
