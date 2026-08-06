@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="card">
+  <div class="cover"></div>
+  <div class="avatar pp-avatar" th:text="${profileUser.initials}">U</div>
+  <div class="pp-name">
+    <span th:text="${profileUser.fullName}">Name</span>
+    <span th:if="${profileUser.class.simpleName == 'Citizen' and profileUser.verified}" class="verified-badge">
+      <span class="material-symbols-rounded">check</span>
+    </span>
+  </div>
+  <div class="pp-role" th:text="${profileUser.displayRole} + ' · @' + ${profileUser.username}">Role</div>
+  <div class="pp-stats" th:if="${profileUser.class.simpleName == 'Citizen'}">
+    <div class="pp-stat"><b th:text="${profileUser.points}">0</b><span>Points</span></div>
+    <div class="pp-stat"><b th:text="${profileUser.badge.label}">Badge</b><span>Tier</span></div>
+  </div>
+  <a th:href="@{'/users/' + ${profileUser.id}}" class="btn btn-outline btn-sm btn-block" style="margin-top:14px;">View full profile</a>
+</div>
+<div th:fragment="notfound" class="text-muted" style="padding:16px;font-size:13px;">Profile unavailable.</div>
+</body>
+</html>
