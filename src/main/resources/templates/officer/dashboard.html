@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Officer Dashboard')}"></head>
+<body>
+<div class="app-shell">
+  <nav th:replace="~{fragments/layout :: sidebar-officer('dashboard')}"></nav>
+  <div class="sidebar-overlay"></div>
+  <div class="main">
+    <div th:replace="~{fragments/layout :: topbar('Officer Dashboard', ${officer.fullName}, ${unreadCount}, '/officer/dashboard')}"></div>
+    <div class="content">
+
+      <div class="card card-pad fade-up" style="margin-bottom:22px;background:linear-gradient(120deg, var(--bd-green-light), var(--surface));display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
+        <div>
+          <div class="pill pill-success" style="margin-bottom:10px;"><span class="material-symbols-rounded">badge</span><span th:text="${officer.designation}">Designation</span></div>
+          <h2 style="margin:0 0 4px;" th:text="${officer.fullName}">Officer</h2>
+          <p class="text-muted" style="margin:0;" th:text="${officer.department} + ' · ID ' + ${officer.officerId}">Department</p>
+        </div>
+        <div style="text-align:center;">
+          <div class="stat-value" th:text="${officerPoints}">0</div>
+          <div class="stat-label">Performance Points</div>
+        </div>
+      </div>
+
+      <p class="text-muted" style="margin:0 0 10px;font-size:13px;">Click any card below to filter the complaint queue.</p>
+      <div class="grid grid-4 fade-up d1" style="margin-bottom:22px;">
+        <a th:href="@{/officer/complaints(filter='total')}" class="card stat-card"><div class="stat-icon" style="background:var(--setu-blue-light);color:var(--setu-blue);"><span class="material-symbols-rounded">assignment</span></div><div><div class="stat-value" th:text="${totalComplaints}">0</div><div class="stat-label">Total</div></div></a>
+        <a th:href="@{/officer/complaints(filter='pending')}" class="card stat-card"><div class="stat-icon" style="background:var(--warning-bg);color:#92600B;"><span class="material-symbols-rounded">hourglass_top</span></div><div><div class="stat-value" th:text="${pendingComplaints}">0</div><div class="stat-label">Pending</div></div></a>
+        <a th:href="@{/officer/complaints(filter='awaiting')}" class="card stat-card"><div class="stat-icon" style="background:var(--info-bg);color:var(--setu-blue);"><span class="material-symbols-rounded">pending_actions</span></div><div><div class="stat-value" th:text="${awaitingComplaints}">0</div><div class="stat-label">Awaiting</div></div></a>
+        <a th:href="@{/officer/complaints(filter='resolved')}" class="card stat-card"><div class="stat-icon" style="background:var(--success-bg);color:var(--success);"><span class="material-symbols-rounded">task_alt</span></div><div><div class="stat-value" th:text="${resolvedComplaints}">0</div><div class="stat-label">Resolved</div></div></a>
+      </div>
+
+      <div class="grid grid-2" style="align-items:start;">
+        <div class="card card-pad fade-up d2">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+            <h3 style="margin:0;">Complaint Queue</h3><a href="/officer/complaints" class="text-muted" style="font-size:13px;">View all →</a>
+          </div>
+          <div th:each="c : ${complaints}" th:if="${!c.isResolved()}" style="padding:10px 0;border-bottom:1px solid var(--border);">
+            <a th:href="@{'/officer/complaints/' + ${c.id}}" style="display:flex;justify-content:space-between;">
+              <div><div class="fw-600" style="font-size:14px;" th:text="${c.title}">Title</div><div class="text-muted" style="font-size:12px;" th:text="${c.trackingId}">ID</div></div>
+              <span class="pill" th:classappend="'pill-' + ${c.status.tone}" th:text="${c.status.label}">Status</span>
+            </a>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:22px;">
+          <div class="card card-pad fade-up d3">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+              <h3 style="margin:0;">Discussions Awaiting Approval</h3><a href="/officer/discussions" class="text-muted" style="font-size:13px;">Review →</a>
+            </div>
+            <div th:if="${#lists.isEmpty(pendingDiscussions)}" class="text-muted" style="font-size:13.5px;">All caught up — no pending discussions.</div>
+            <div th:each="d : ${pendingDiscussions}" style="padding:10px 0;border-bottom:1px solid var(--border);">
+              <div class="fw-600" style="font-size:14px;" th:text="${d.title}">Title</div>
+              <div class="text-muted" style="font-size:12px;" th:text="${d.category}">cat</div>
+            </div>
+          </div>
+
+          <div class="card card-pad fade-up d4">
+            <h3 style="margin:0 0 14px;">Active Polls</h3>
+            <div th:each="p : ${activePolls}" style="padding:8px 0;border-bottom:1px solid var(--border);">
+              <div class="fw-600" style="font-size:13.5px;" th:text="${p.question}">Q</div>
+              <div class="text-muted" style="font-size:12px;" th:text="${p.totalVotes} + ' votes'">v</div>
+            </div>
+            <a href="/officer/polls/new" class="btn btn-outline btn-sm btn-block" style="margin-top:10px;">Create New Poll</a>
+          </div>
+
+          <div class="card card-pad fade-up d4" th:if="${not #lists.isEmpty(recentActivity)}">
+            <h3 style="margin:0 0 14px;">Your Recent Activity</h3>
+            <div th:each="a : ${recentActivity}" style="display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);">
+              <span style="font-size:12.5px;" th:text="${a.description()}">Activity</span>
+              <span class="fw-700 text-success" style="font-size:12.5px;white-space:nowrap;" th:text="'+' + ${a.points()}">+0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>
