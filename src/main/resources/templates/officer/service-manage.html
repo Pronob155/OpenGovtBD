@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="~{fragments/layout :: head('Manage Services')}"></head>
+
+<body>
+  <div class="app-shell">
+    <nav th:replace="~{fragments/layout :: sidebar-officer('services')}"></nav>
+    <div class="sidebar-overlay"></div>
+    <div class="main">
+      <div
+        th:replace="~{fragments/layout :: topbar('Manage Digital Services', ${officer.fullName}, ${unreadCount}, '/officer/dashboard')}">
+      </div>
+      <div class="content">
+
+        <div th:if="${param.created}" class="alert alert-success" style="margin-bottom:18px;" data-flash><span
+            class="material-symbols-rounded">check_circle</span><span>Service created.</span></div>
+        <div th:if="${param.updated}" class="alert alert-success" style="margin-bottom:18px;" data-flash><span
+            class="material-symbols-rounded">check_circle</span><span>Service updated.</span></div>
+        <div th:if="${param.deleted}" class="alert alert-info" style="margin-bottom:18px;" data-flash><span
+            class="material-symbols-rounded">delete</span><span>Service removed.</span></div>
+
+        <div class="grid" style="grid-template-columns: 1fr 1.6fr; align-items:start;">
+          <div class="card card-pad" style="position:sticky;top:88px;">
+            <h3 style="margin:0 0 16px;">Add a New Service</h3>
+            <form th:action="@{/officer/services}" method="post">
+              <div class="field"><label>Service Name</label><input class="input" name="name" required /></div>
+              <div class="field"><label>Description</label><textarea class="input" name="description" rows="3"
+                  required></textarea></div>
+              <div class="field"><label>Category</label><input class="input" name="category"
+                  placeholder="e.g. Identity, Health, Tax" required /></div>
+              <div class="field"><label>Logo (Material icon name)</label><input class="input" name="logoIcon"
+                  placeholder="e.g. badge, flight_takeoff, payments" />
+                <div class="hint">Uses <a href="https://fonts.google.com/icons" target="_blank" rel="noopener">Google
+                    Material Symbols</a> names as a stylized logo.</div>
+              </div>
+              <div class="field"><label>External URL</label><input class="input" name="externalUrl" type="url"
+                  placeholder="https://..." required /></div>
+              <button class="btn btn-primary btn-block" type="submit"><span
+                  class="material-symbols-rounded">add</span>Create Service</button>
+            </form>
+          </div>
+
+          <div>
+            <h3 style="margin:0 0 14px;">Existing Services (<span th:text="${#lists.size(services)}">0</span>)</h3>
+            <div th:if="${#lists.isEmpty(services)}" class="card empty-state">
+              <div class="ico"><span class="material-symbols-rounded">apps</span></div>
+              <h3>No services yet</h3>
+              <p>Create your first service using the form.</p>
+            </div>
+            <div class="card card-pad fade-up" style="margin-bottom:14px;" th:each="s : ${services}">
+              <details>
+                <summary style="display:flex;align-items:center;gap:14px;cursor:pointer;list-style:none;">
+                  <div class="service-card" style="padding:0;flex-direction:row;align-items:center;gap:12px;flex:1;">
+                    <div class="ico"><span class="material-symbols-rounded" th:text="${s.logoIcon}">apps</span></div>
+                    <div>
+                      <div class="name" th:text="${s.name}">Name</div>
+                      <div class="desc" th:text="${s.category}">Category</div>
+                    </div>
+                  </div>
+                  <span class="material-symbols-rounded text-muted">expand_more</span>
+                </summary>
+                <form th:action="@{'/officer/services/' + ${s.id}}" method="post"
+                  style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
+                  <div class="field"><label>Service Name</label><input class="input" name="name" th:value="${s.name}"
+                      required /></div>
+                  <div class="field"><label>Description</label><textarea class="input" name="description" rows="3"
+                      required th:text="${s.description}"></textarea></div>
+                  <div class="field"><label>Category</label><input class="input" name="category"
+                      th:value="${s.category}" required /></div>
+                  <div class="field"><label>Logo (Material icon name)</label><input class="input" name="logoIcon"
+                      th:value="${s.logoIcon}" /></div>
+                  <div class="field"><label>External URL</label><input class="input" name="externalUrl" type="url"
+                      th:value="${s.externalUrl}" required /></div>
+                  <div style="display:flex;gap:10px;">
+                    <button class="btn btn-primary" type="submit" style="flex:1;">Save Changes</button>
+                  </div>
+                </form>
+                <form th:action="@{'/officer/services/' + ${s.id} + '/delete'}" method="post" style="margin-top:10px;"
+                  onsubmit="return confirm('Delete this service?');">
+                  <button class="btn btn-danger btn-block btn-sm" type="submit"><span
+                      class="material-symbols-rounded">delete</span>Delete Service</button>
+                </form>
+              </details>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script th:src="@{/js/main.js}"></script>
+</body>
+
+</html>
