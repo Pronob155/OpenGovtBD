@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Discussion Approval')}"></head>
+<body>
+<div class="app-shell">
+  <nav th:replace="~{fragments/layout :: sidebar-officer('discussions')}"></nav>
+  <div class="sidebar-overlay"></div>
+  <div class="main">
+    <div th:replace="~{fragments/layout :: topbar('Discussion Moderation', ${officer.fullName}, ${unreadCount}, '/officer/dashboard')}"></div>
+    <div class="content">
+
+      <h3 style="margin:0 0 14px;">Pending Approval</h3>
+      <div th:if="${#lists.isEmpty(pending)}" class="card empty-state" style="margin-bottom:32px;">
+        <div class="ico"><span class="material-symbols-rounded">task_alt</span></div><h3>Nothing to review</h3><p>All discussions have been moderated.</p>
+      </div>
+      <div class="grid grid-2" style="margin-bottom:32px;" th:if="${not #lists.isEmpty(pending)}">
+        <div class="card card-pad fade-up" th:each="d : ${pending}">
+          <span class="pill pill-muted" th:text="${d.category}">Category</span>
+          <h4 style="margin:10px 0 6px;" th:text="${d.title}">Title</h4>
+          <p class="text-muted" style="font-size:13.5px;" th:text="${#strings.abbreviate(d.content, 150)}">content</p>
+          <div class="text-muted" style="font-size:12px;margin-bottom:14px;" th:text="'by ' + ${userRepository.findFullName(d.authorId)}">author</div>
+          <div style="display:flex;gap:10px;">
+            <form th:action="@{'/officer/discussions/' + ${d.id} + '/approve'}" method="post" style="flex:1;">
+              <button class="btn btn-green btn-block btn-sm" type="submit"><span class="material-symbols-rounded">check</span>Approve</button>
+            </form>
+            <form th:action="@{'/officer/discussions/' + ${d.id} + '/reject'}" method="post" style="flex:1;">
+              <button class="btn btn-danger btn-block btn-sm" type="submit"><span class="material-symbols-rounded">close</span>Reject</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="margin:0 0 14px;">Published Discussions</h3>
+      <div class="card">
+        <table class="data-table">
+          <thead><tr><th>Title</th><th>Category</th><th>Likes</th><th>Comments</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+          <tr th:each="d : ${approved}">
+            <td th:text="${d.title}">Title</td>
+            <td th:text="${d.category}">Cat</td>
+            <td th:text="${d.likeCount}">0</td>
+            <td th:text="${d.commentCount}">0</td>
+            <td>
+              <span th:if="${d.pinned}" class="pill pill-warning" style="margin-right:4px;">Pinned</span>
+              <span th:if="${d.locked}" class="pill pill-error">Locked</span>
+            </td>
+            <td style="display:flex;gap:6px;">
+              <form th:action="@{'/officer/discussions/' + ${d.id} + '/pin'}" method="post">
+                <button class="btn btn-ghost btn-sm" type="submit" th:text="${d.pinned} ? 'Unpin' : 'Pin'">Pin</button>
+              </form>
+              <form th:action="@{'/officer/discussions/' + ${d.id} + '/lock'}" method="post">
+                <button class="btn btn-ghost btn-sm" type="submit" th:text="${d.locked} ? 'Unlock' : 'Lock'">Lock</button>
+              </form>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 style="margin:24px 0 14px;">Add an Official Response</h3>
+      <div class="grid grid-2">
+        <div class="card card-pad" th:each="d : ${approved}">
+          <div class="fw-600" style="margin-bottom:10px;" th:text="${d.title}">Title</div>
+          <form th:action="@{'/officer/discussions/' + ${d.id} + '/respond'}" method="post" style="display:flex;gap:8px;">
+            <input class="input" name="response" th:value="${d.officialResponse}" placeholder="Write an official response..."/>
+            <button class="btn btn-primary btn-sm" type="submit">Post</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>
