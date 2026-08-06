@@ -14,38 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 
-@Controller
-public class AuthController {
-
-    private final AuthService authService;
-
-    public AuthController(AuthService authService) {
-        this.authService = authService;
-    }
-
-    @GetMapping("/login")
-    public String loginPage(@RequestParam(required = false) String tab,
-                             @RequestParam(required = false) String next,
-                             Model model) {
-        model.addAttribute("tab", tab == null ? "citizen" : tab);
-        model.addAttribute("next", next);
-        return "auth/login";
-    }
-
-    @PostMapping("/login/citizen")
-    public String loginCitizen(@RequestParam String phone, @RequestParam String password,
-                                @RequestParam(required = false) String next,
-                                HttpSession session, Model model) {
-        try {
-            Citizen citizen = authService.loginCitizen(phone, password);
-            putSession(session, citizen.getId(), Role.CITIZEN, citizen.getFullName());
-            return "redirect:" + (next != null && !next.isBlank() ? next : "/citizen/dashboard");
-        } catch (AuthException e) {
-            model.addAttribute("tab", "citizen");
-            model.addAttribute("error", e.getMessage());
-            return "auth/login";
-        }
-    }
 
     @PostMapping("/login/officer")
     public String loginOfficer(@RequestParam String officerId, @RequestParam String govEmail,
@@ -102,5 +70,36 @@ public class AuthController {
         model.addAttribute("demoOtp", AuthService.DEMO_OTP);
         return "auth/otp";
     }
+
+    @PostMapping("/otp/verify")
+    public String verifyOtp(@RequestParam String otp, HttpSession session, Model model) {
+        String phone = (String) session.getAttribute("pendingPhone");
+        if (phone == null) return "redirect:/register";
+        try {
+            Citizen citizen = authService.confirmOtp(phone, otp);
+            session.removeAttribute("pendingPhone");
+            putSession(session, citizen.getId(), Role.CITIZEN, citizen.getFullName());
+            return "redirect:/citizen/dashboard";
+        } catch (AuthException e) {
+            model.addAttribute("phone", phone);
+            model.addAttribute("demoOtp", AuthService.DEMO_OTP);
+            model.addAttribute("error", e.getMessage());
+            return "auth/otp";
+        }
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) session.invalidate();
+        return "redirect:/";
+    }
+
+    private void putSession(HttpSession session, Long userId, Role role, String fullName) {
+        session.setAttribute("userId", userId);
+        session.setAttribute("role", role);
+        session.setAttribute("fullName", fullName);
+    }
+}
 
    
