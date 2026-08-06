@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-/** Business logic for the officer-managed digital services catalog. */
 @Service
 public class GovServiceService {
 
