@@ -14,6 +14,38 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 
+@Controller
+public class AuthController {
+
+    private final AuthService authService;
+
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
+
+    @GetMapping("/login")
+    public String loginPage(@RequestParam(required = false) String tab,
+                             @RequestParam(required = false) String next,
+                             Model model) {
+        model.addAttribute("tab", tab == null ? "citizen" : tab);
+        model.addAttribute("next", next);
+        return "auth/login";
+    }
+
+    @PostMapping("/login/citizen")
+    public String loginCitizen(@RequestParam String phone, @RequestParam String password,
+                                @RequestParam(required = false) String next,
+                                HttpSession session, Model model) {
+        try {
+            Citizen citizen = authService.loginCitizen(phone, password);
+            putSession(session, citizen.getId(), Role.CITIZEN, citizen.getFullName());
+            return "redirect:" + (next != null && !next.isBlank() ? next : "/citizen/dashboard");
+        } catch (AuthException e) {
+            model.addAttribute("tab", "citizen");
+            model.addAttribute("error", e.getMessage());
+            return "auth/login";
+        }
+    }
 
     @PostMapping("/login/officer")
     public String loginOfficer(@RequestParam String officerId, @RequestParam String govEmail,
