@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Reports')}"></head>
+<body>
+<div class="app-shell">
+  <nav th:replace="~{fragments/layout :: sidebar-admin('reports')}"></nav>
+  <div class="sidebar-overlay"></div>
+  <div class="main">
+    <div th:replace="~{fragments/layout :: topbar('System Reports', ${admin.fullName}, ${unreadCount}, '/admin/dashboard')}"></div>
+    <div class="content">
+
+      <div class="grid grid-2" style="align-items:start;margin-bottom:22px;">
+        <div class="card card-pad">
+          <h3 style="margin:0 0 16px;">Complaints by Category</h3>
+          <div th:each="entry : ${analytics.complaintsByCategory()}" style="margin-bottom:12px;">
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;">
+              <span th:text="${entry.key}">Category</span><span class="fw-700" th:text="${entry.value}">0</span>
+            </div>
+            <div class="progress-bar"><div th:attr="data-bar-pct=${entry.value * 100.0 / analytics.totalComplaints()}" style="width:0;"></div></div>
+          </div>
+          <div th:if="${analytics.totalComplaints() == 0}" class="text-muted" style="font-size:13px;">No complaints filed yet.</div>
+        </div>
+
+        <div class="card card-pad">
+          <h3 style="margin:0 0 16px;">Complaints by Division</h3>
+          <div th:each="entry : ${analytics.complaintsByDivision()}" style="margin-bottom:12px;">
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;">
+              <span th:text="${entry.key}">Division</span><span class="fw-700" th:text="${entry.value}">0</span>
+            </div>
+            <div class="progress-bar"><div th:attr="data-bar-pct=${entry.value * 100.0 / analytics.totalComplaints()}" style="width:0;"></div></div>
+          </div>
+          <div th:if="${analytics.totalComplaints() == 0}" class="text-muted" style="font-size:13px;">No complaints filed yet.</div>
+        </div>
+      </div>
+
+      <div class="grid grid-4" style="margin-bottom:22px;">
+        <div class="card stat-card"><div class="stat-icon" style="background:var(--success-bg);color:var(--success);"><span class="material-symbols-rounded">task_alt</span></div><div><div class="stat-value" th:text="${#numbers.formatDecimal(analytics.resolutionRate(),1,1)} + '%'">0%</div><div class="stat-label">Resolution Rate</div></div></div>
+        <div class="card stat-card"><div class="stat-icon" style="background:var(--setu-blue-light);color:var(--setu-blue);"><span class="material-symbols-rounded">forum</span></div><div><div class="stat-value" th:text="${analytics.totalDiscussions()}">0</div><div class="stat-label">Discussions</div></div></div>
+        <div class="card stat-card"><div class="stat-icon" style="background:var(--bd-green-light);color:var(--bd-green);"><span class="material-symbols-rounded">how_to_vote</span></div><div><div class="stat-value" th:text="${analytics.totalPolls()}">0</div><div class="stat-label">Polls</div></div></div>
+        <div class="card stat-card"><div class="stat-icon" style="background:var(--warning-bg);color:#92600B;"><span class="material-symbols-rounded">lightbulb</span></div><div><div class="stat-value" th:text="${analytics.totalSuggestions()}">0</div><div class="stat-label">Suggestions</div></div></div>
+      </div>
+
+      <div class="card card-pad">
+        <h3 style="margin:0 0 16px;">Suggestion Outcomes</h3>
+        <table class="data-table">
+          <thead><tr><th>Title</th><th>Status</th><th>Score</th></tr></thead>
+          <tbody>
+          <tr th:each="s : ${suggestions}">
+            <td th:text="${s.title}">Title</td>
+            <td><span class="pill" th:classappend="'pill-' + ${s.status.tone}" th:text="${s.status.label}">Status</span></td>
+            <td th:text="${s.score}">0</td>
+          </tr>
+          <tr th:if="${#lists.isEmpty(suggestions)}"><td colspan="3" class="text-muted" style="text-align:center;padding:24px;">No suggestions submitted yet.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>
