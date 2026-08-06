@@ -1,0 +1,367 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+  <head th:replace="~{fragments/layout :: head('Profile & Settings')}"></head>
+  <body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'">
+    <div class="app-shell">
+      <nav th:replace="~{fragments/layout :: sidebar-citizen('profile')}"></nav>
+      <div class="sidebar-overlay"></div>
+      <div class="main">
+        <div
+          th:replace="~{fragments/layout :: topbar('Profile & Settings', ${citizen.fullName}, ${unreadCount}, '/citizen/notifications')}"
+        ></div>
+        <div class="content">
+          <div
+            th:if="${param.updated}"
+            class="alert alert-success"
+            style="margin-bottom: 18px"
+            data-flash
+          >
+            <span class="material-symbols-rounded">check_circle</span
+            ><span>Your profile has been updated.</span>
+          </div>
+
+          <div
+            class="card card-pad fade-up"
+            style="
+              display: flex;
+              gap: 20px;
+              align-items: center;
+              margin-bottom: 22px;
+              flex-wrap: wrap;
+            "
+          >
+            <div
+              class="avatar"
+              style="
+                width: 76px;
+                height: 76px;
+                font-size: 26px;
+                border-radius: 20px;
+              "
+              th:text="${citizen.initials}"
+            >
+              TA
+            </div>
+            <div style="flex: 1">
+              <div class="name-with-badge">
+                <h2 style="margin: 0" th:text="${citizen.fullName}">Name</h2>
+                <span
+                  th:if="${citizen.verified}"
+                  th:replace="~{fragments/layout :: verified-badge}"
+                ></span>
+              </div>
+              <div
+                class="text-muted"
+                style="font-size: 13px; margin: 2px 0 8px"
+                th:text="'@' + ${citizen.username}"
+              >
+                @username
+              </div>
+              <div
+                style="
+                  display: flex;
+                  gap: 10px;
+                  flex-wrap: wrap;
+                  align-items: center;
+                "
+              >
+                <span class="badge-tier"
+                  ><span
+                    class="material-symbols-rounded"
+                    style="font-size: 16px"
+                    >military_tech</span
+                  ><span th:text="${citizen.badge.label}">Badge</span></span
+                >
+                <span
+                  class="pill"
+                  th:classappend="${citizen.phoneVerified} ? 'pill-success' : 'pill-warning'"
+                >
+                  <span class="material-symbols-rounded" style="font-size: 14px"
+                    >phone</span
+                  >
+                  <span
+                    th:text="${citizen.phoneVerified} ? 'Phone Verified' : 'Phone Unverified'"
+                    >Phone</span
+                  >
+                </span>
+                <span
+                  class="pill"
+                  th:classappend="${citizen.verified} ? 'pill-success' : 'pill-warning'"
+                >
+                  <span class="material-symbols-rounded" style="font-size: 14px"
+                    >badge</span
+                  >
+                  <span
+                    th:text="${citizen.verified} ? 'Identity Verified' : 'Not Verified'"
+                    >NID</span
+                  >
+                </span>
+                <span
+                  th:if="${citizen.isCurrentlySuspended()}"
+                  class="pill pill-suspended"
+                >
+                  <span class="material-symbols-rounded" style="font-size: 14px"
+                    >block</span
+                  >
+                  <span
+                    th:text="'Suspended until ' + ${#temporals.format(citizen.suspendedUntil, 'dd MMM yyyy')}"
+                    >Suspended</span
+                  >
+                </span>
+                <span th:if="${citizen.banned}" class="pill pill-banned">
+                  <span class="material-symbols-rounded" style="font-size: 14px"
+                    >gavel</span
+                  >
+                  Banned
+                </span>
+              </div>
+              <a
+                th:unless="${citizen.verified}"
+                href="/citizen/verification"
+                class="btn btn-outline btn-sm"
+                style="margin-top: 12px"
+              >
+                <span class="material-symbols-rounded">verified_user</span>Get
+                your Verified badge
+              </a>
+            </div>
+            <div style="text-align: center">
+              <div class="stat-value" th:text="${citizen.points}">0</div>
+              <div class="stat-label">Reward Points</div>
+            </div>
+          </div>
+
+          <div class="grid grid-2" style="align-items: start">
+            <div class="card card-pad fade-up d1">
+              <h3 style="margin: 0 0 16px">Personal Information</h3>
+              <form method="post" th:action="@{/citizen/profile}">
+                <div class="field">
+                  <label>Full Name</label
+                  ><input
+                    class="input"
+                    name="fullName"
+                    th:value="${citizen.fullName}"
+                    required
+                  />
+                </div>
+                <div class="field">
+                  <label>Mobile Number</label
+                  ><input class="input" th:value="${citizen.phone}" disabled />
+                </div>
+                <div class="field">
+                  <label>Secondary Phone Number</label
+                  ><input
+                    class="input"
+                    name="secondaryPhone"
+                    type="tel"
+                    th:value="${citizen.secondaryPhone}"
+                    placeholder="e.g. 018XXXXXXXX"
+                  />
+                </div>
+                <div class="field">
+                  <label>Email Address</label
+                  ><input
+                    class="input"
+                    name="email"
+                    type="email"
+                    th:value="${citizen.email}"
+                    placeholder="you@example.com"
+                  />
+                </div>
+                <div class="field">
+                  <label>National ID</label
+                  ><input
+                    class="input"
+                    th:value="${citizen.nationalId}"
+                    disabled
+                  />
+                </div>
+                <div class="field">
+                  <label>Address</label
+                  ><input
+                    class="input"
+                    name="address"
+                    th:value="${citizen.address}"
+                  />
+                </div>
+                <div class="field">
+                  <label>Division</label>
+                  <select class="input" name="division">
+                    <option
+                      value="Dhaka"
+                      th:selected="${citizen.division == 'Dhaka'}"
+                    >
+                      Dhaka
+                    </option>
+                    <option
+                      value="Chattogram"
+                      th:selected="${citizen.division == 'Chattogram'}"
+                    >
+                      Chattogram
+                    </option>
+                    <option
+                      value="Rajshahi"
+                      th:selected="${citizen.division == 'Rajshahi'}"
+                    >
+                      Rajshahi
+                    </option>
+                    <option
+                      value="Khulna"
+                      th:selected="${citizen.division == 'Khulna'}"
+                    >
+                      Khulna
+                    </option>
+                    <option
+                      value="Barishal"
+                      th:selected="${citizen.division == 'Barishal'}"
+                    >
+                      Barishal
+                    </option>
+                    <option
+                      value="Sylhet"
+                      th:selected="${citizen.division == 'Sylhet'}"
+                    >
+                      Sylhet
+                    </option>
+                    <option
+                      value="Rangpur"
+                      th:selected="${citizen.division == 'Rangpur'}"
+                    >
+                      Rangpur
+                    </option>
+                    <option
+                      value="Mymensingh"
+                      th:selected="${citizen.division == 'Mymensingh'}"
+                    >
+                      Mymensingh
+                    </option>
+                  </select>
+                </div>
+                <button class="btn btn-primary" type="submit">
+                  Save Changes
+                </button>
+              </form>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 22px">
+              <div class="card card-pad fade-up d2">
+                <h3 style="margin: 0 0 16px">Preferences</h3>
+                <form method="post" th:action="@{/citizen/profile/preferences}">
+                  <div class="field">
+                    <label>Language</label>
+                    <select class="input" name="language">
+                      <option
+                        value="en"
+                        th:selected="${citizen.language == 'en'}"
+                      >
+                        English
+                      </option>
+                      <option
+                        value="bn"
+                        th:selected="${citizen.language == 'bn'}"
+                      >
+                        বাংলা (Bangla)
+                      </option>
+                    </select>
+                    <div class="hint">
+                      Or use the EN / বাং switch in the top bar to change
+                      instantly.
+                    </div>
+                  </div>
+                  <div
+                    class="field checkbox-row"
+                    style="justify-content: space-between"
+                  >
+                    <label for="darkModeCheck" style="cursor: pointer"
+                      >Enable dark mode</label
+                    >
+                    <label class="switch-checkbox">
+                      <input
+                        type="checkbox"
+                        id="darkModeCheck"
+                        name="darkMode"
+                        th:checked="${citizen.darkMode}"
+                      />
+                      <span class="switch-track"
+                        ><span class="switch-knob"></span
+                      ></span>
+                    </label>
+                  </div>
+                  <button class="btn btn-outline" type="submit">
+                    Save Preferences
+                  </button>
+                </form>
+              </div>
+
+              <div class="card card-pad fade-up d3">
+                <h3 style="margin: 0 0 14px">Activity Summary</h3>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    padding: 8px 0;
+                    border-bottom: 1px solid var(--border);
+                  "
+                >
+                  <span class="text-muted">Complaints Filed</span
+                  ><span class="fw-700" th:text="${#lists.size(complaints)}"
+                    >0</span
+                  >
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    padding: 8px 0;
+                    border-bottom: 1px solid var(--border);
+                  "
+                >
+                  <span class="text-muted">Suggestions Submitted</span
+                  ><span class="fw-700" th:text="${#lists.size(suggestions)}"
+                    >0</span
+                  >
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    padding: 8px 0;
+                    border-bottom: 1px solid var(--border);
+                  "
+                >
+                  <span class="text-muted">Saved Items</span>
+                  <span
+                    class="fw-700"
+                    th:text="${#lists.size(savedDiscussions) + #lists.size(savedPolls) + #lists.size(savedComplaints)}"
+                    >0</span
+                  >
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    padding: 8px 0;
+                  "
+                >
+                  <span class="text-muted">Profile Completion</span
+                  ><span
+                    class="fw-700"
+                    th:text="${citizen.profileCompletion} + '%'"
+                    >0%</span
+                  >
+                </div>
+                <a
+                  href="/citizen/saved"
+                  class="btn btn-ghost btn-block btn-sm"
+                  style="margin-top: 12px"
+                  >View Saved Items</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script th:src="@{/js/main.js}"></script>
+  </body>
+</html>
