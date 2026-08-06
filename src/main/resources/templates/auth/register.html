@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Register')}"></head>
+<body>
+<div class="auth-shell">
+  <div class="auth-side">
+    <a href="/" class="brand" style="color:#fff;"><div class="brand-mark" style="background:rgba(255,255,255,0.15);"><span class="material-symbols-rounded">account_balance</span></div>OpenGovtBD</a>
+    <div>
+      <h1 style="font-size:34px;line-height:1.25;max-width:420px;">Join millions of citizens shaping public services.</h1>
+      <p style="opacity:.85;max-width:380px;">Registration takes less than two minutes and unlocks complaints, discussions, polls, and digital services.</p>
+    </div>
+    <div style="opacity:.75;font-size:13px;">OTP-verified mobile number · NID-linked profile · Bank-grade encryption</div>
+  </div>
+  <div class="auth-form-side">
+    <div class="auth-card pop-in">
+      <h2 style="margin:0 0 6px;">Create your citizen account</h2>
+      <p class="text-muted" style="margin:0 0 24px;">Step 1 of 2 — basic details</p>
+
+      <div th:if="${error}" class="alert alert-error" style="margin-bottom:18px;"><span class="material-symbols-rounded">error</span><span th:text="${error}"></span></div>
+
+      <form method="post" th:action="@{/register}">
+        <div class="field"><label for="fullName">Full Name</label><input class="input" id="fullName" name="fullName" placeholder="As per NID" required/></div>
+        <div class="field">
+          <label for="phone">Mobile Number</label>
+          <div class="input-group"><span class="prefix">+88</span><input class="input" id="phone" name="phone" placeholder="01XXXXXXXXX" pattern="01[0-9]{9}" required/></div>
+        </div>
+        <div class="field"><label for="nid">National ID Number</label><input class="input" id="nid" name="nid" placeholder="10 or 17 digit NID" required/></div>
+        <div class="field"><label for="dob">Date of Birth</label><input class="input" type="date" id="dob" name="dob" required/></div>
+        <div class="field"><label for="password">Create Password</label><input class="input" type="password" id="password" name="password" minlength="6" required/></div>
+        <div class="field checkbox-row"><input type="checkbox" required/> I agree to the Terms of Service and Privacy Policy</div>
+        <button class="btn btn-primary btn-block" type="submit">Continue to OTP Verification <span class="material-symbols-rounded">arrow_forward</span></button>
+        <p style="text-align:center;margin-top:14px;font-size:13.5px;">Already have an account? <a href="/login" style="color:var(--setu-blue);font-weight:600;">Log in</a></p>
+      </form>
+    </div>
+  </div>
+</div>
+</body>
+</html>
