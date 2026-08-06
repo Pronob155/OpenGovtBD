@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Complaint Queue')}"></head>
+<body>
+<div class="app-shell">
+  <nav th:replace="~{fragments/layout :: sidebar-officer('complaints')}"></nav>
+  <div class="sidebar-overlay"></div>
+  <div class="main">
+    <div th:replace="~{fragments/layout :: topbar('Complaint Queue', ${officer.fullName}, ${unreadCount}, '/officer/dashboard')}"></div>
+    <div class="content">
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+        <a th:href="@{/officer/complaints(filter='total')}" class="filter-chip" th:classappend="${selectedFilter == 'total'} ? 'active'">Total</a>
+        <a th:href="@{/officer/complaints(filter='pending')}" class="filter-chip" th:classappend="${selectedFilter == 'pending'} ? 'active'">Pending</a>
+        <a th:href="@{/officer/complaints(filter='awaiting')}" class="filter-chip" th:classappend="${selectedFilter == 'awaiting'} ? 'active'">Awaiting</a>
+        <a th:href="@{/officer/complaints(filter='resolved')}" class="filter-chip" th:classappend="${selectedFilter == 'resolved'} ? 'active'">Resolved</a>
+      </div>
+
+      <form th:action="@{/officer/complaints}" method="get" style="margin-bottom:18px;">
+        <select class="input" name="status" style="width:auto;" data-autosubmit>
+          <option value="all" th:selected="${selectedStatus == 'all'}">All Statuses</option>
+          <option th:each="s : ${statuses}" th:value="${s}" th:text="${s.label}" th:selected="${selectedStatus == s.name()}"></option>
+        </select>
+      </form>
+
+      <div th:if="${#lists.isEmpty(complaints)}" class="card empty-state">
+        <div class="ico"><span class="material-symbols-rounded">inbox</span></div><h3>No complaints found</h3>
+      </div>
+
+      <div class="card" th:if="${not #lists.isEmpty(complaints)}">
+        <table class="data-table">
+          <thead><tr><th>Tracking ID</th><th>Title</th><th>Category</th><th>Location</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+          <tr th:each="c : ${complaints}">
+            <td th:text="${c.trackingId}">ID</td>
+            <td th:text="${c.title}">Title</td>
+            <td th:text="${c.category}">Category</td>
+            <td th:text="${c.district} + ', ' + ${c.upazila}">Loc</td>
+            <td><span class="pill" th:classappend="'pill-' + ${c.status.tone}" th:text="${c.status.label}">Status</span></td>
+            <td><a th:href="@{'/officer/complaints/' + ${c.id}}" class="btn btn-ghost btn-sm">Open</a></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>
