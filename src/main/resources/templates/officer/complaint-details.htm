@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Complaint Details')}"></head>
+<body>
+<div class="app-shell">
+  <nav th:replace="~{fragments/layout :: sidebar-officer('complaints')}"></nav>
+  <div class="sidebar-overlay"></div>
+  <div class="main">
+    <div th:replace="~{fragments/layout :: topbar('Complaint Details', ${officer.fullName}, ${unreadCount}, '/officer/dashboard')}"></div>
+    <div class="content" style="max-width:920px;">
+      <a href="/officer/complaints" class="text-muted" style="font-size:13px;">&larr; Back to queue</a>
+
+      <div class="grid" style="grid-template-columns: 1.6fr 1fr;align-items:start;gap:22px;margin-top:16px;">
+        <div>
+          <div class="card card-pad" style="margin-bottom:20px;">
+            <span class="pill" th:classappend="'pill-' + ${complaint.status.tone}" th:text="${complaint.status.label}">Status</span>
+            <h2 style="margin:12px 0 4px;" th:text="${complaint.title}">Title</h2>
+            <div class="text-muted" style="font-size:13px;" th:text="${complaint.trackingId} + ' · Filed by ' + (${citizen != null ? citizen.fullName : 'Citizen'})">meta</div>
+            <p style="margin:16px 0 0;" th:text="${complaint.description}">Description</p>
+            <div class="text-muted" style="font-size:13px;margin-top:14px;" th:text="${complaint.category} + ' · ' + ${complaint.division} + ', ' + ${complaint.district} + ', ' + ${complaint.upazila}">meta</div>
+          </div>
+
+          <div class="card card-pad">
+            <h3 style="margin:0 0 16px;">Timeline</h3>
+            <div class="timeline">
+              <div class="timeline-item done" th:each="t : ${complaint.timeline}">
+                <div class="timeline-dot"></div>
+                <div class="fw-600" th:text="${t.title}">Event</div>
+                <div class="text-muted" style="font-size:13px;" th:text="${t.description}">desc</div>
+                <div class="text-muted" style="font-size:11.5px;" th:text="${t.actor} + ' · ' + ${#temporals.format(t.timestamp, 'dd MMM, hh:mm a')}">meta</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:20px;">
+          <div class="card card-pad" th:if="${complaint.assignedOfficerId == null}">
+            <h3 style="margin:0 0 12px;">Assign to Me</h3>
+            <form th:action="@{'/officer/complaints/' + ${complaint.id} + '/assign'}" method="post">
+              <button class="btn btn-primary btn-block" type="submit">Take Ownership</button>
+            </form>
+          </div>
+
+          <div class="card card-pad">
+            <h3 style="margin:0 0 12px;">Update Status</h3>
+            <form th:action="@{'/officer/complaints/' + ${complaint.id} + '/status'}" method="post">
+              <div class="field">
+                <select class="input" name="status" required>
+                  <option th:each="s : ${statuses}" th:value="${s}" th:text="${s.label}" th:selected="${s == complaint.status}"></option>
+                </select>
+              </div>
+              <div class="field"><textarea class="input" name="note" rows="3" placeholder="Add a note (optional)"></textarea></div>
+              <button class="btn btn-green btn-block" type="submit">Update Status</button>
+            </form>
+          </div>
+
+          <div class="card card-pad">
+            <h3 style="margin:0 0 12px;">Reply to Citizen</h3>
+            <form th:action="@{'/officer/complaints/' + ${complaint.id} + '/reply'}" method="post">
+              <div class="field"><textarea class="input" name="message" rows="3" placeholder="Write a reply or request more information..." required></textarea></div>
+              <button class="btn btn-outline btn-block" type="submit">Send Reply</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>
