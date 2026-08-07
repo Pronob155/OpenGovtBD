@@ -93,64 +93,76 @@ OpenGovtBD uses a **government-grade, minimalist, and trustworthy** visual langu
 
 ### 2.3 Spacing & Radius
 
-| Token | Value |
-|-------|-------|
-| `--radius` | 16px (cards) |
-| `--radius-sm` | 10px (buttons, inputs) |
-| `--sidebar-w` | 264px |
-| `--topbar-h` | 72px |
-| Content padding | 28px (desktop), 18px (mobile) |
-| Container max-width | 1240px |
+| Token | Value | Notes |
+| :--- | :--- | :--- |
+| `--radius` | `16px` | Cards, modals |
+| `--radius-sm` | `10px` | Buttons, inputs, pills |
+| `--sidebar-w` | `264px` | Fixed sidebar width |
+| `--topbar-h` | `72px` | Fixed top navigation bar |
+| Content padding | `28px` desktop · `18px` mobile | Inner section padding |
+| Container max-width | `1240px` | Main content column |
+
+---
 
 ### 2.4 Shadows
 
 ```css
---shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05);
---shadow-md: 0 4px 16px rgba(11, 79, 138, 0.08);
---shadow-lg: 0 12px 40px rgba(11, 79, 138, 0.14);
+--shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05);    /* Subtle depth for inputs */
+--shadow-md: 0 4px 16px rgba(11, 79, 138, 0.08);   /* Cards, dropdowns          */
+--shadow-lg: 0 12px 40px rgba(11, 79, 138, 0.14);  /* Modals, floating panels   */
 ```
 
 ---
 
 ## 3. Layout Systems
 
-### 3.1 Public Layout (Landing, Register, OTP, Errors)
+### 3.1 Public Layout
+
+*Used on: Landing (`/`), Registration, OTP, Error pages*
 
 ```
-┌─────────────────────────────────────────────┐
-│  Public Nav (sticky, glass blur)            │
-│  Brand · Log in · Get Started               │
-├─────────────────────────────────────────────┤
-│                                             │
-│  Hero / Form Content / Error Illustration   │
-│                                             │
-├─────────────────────────────────────────────┤
-│  Site Footer                                │
-└─────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│  Public Nav  (sticky, backdrop-filter: blur 10px) │
+│  Brand mark · Log in · Get Started               │
+├──────────────────────────────────────────────────┤
+│                                                  │
+│  Hero / Form / Error Illustration                │
+│                                                  │
+├──────────────────────────────────────────────────┤
+│  Site Footer                                     │
+└──────────────────────────────────────────────────┘
 ```
 
-- **Nav height:** 76px, sticky top, `backdrop-filter: blur(10px)`
-- **Brand mark:** 42×42px gradient square (blue → green), `account_balance` icon
-- **Bengali subtitle:** `উন্মুক্ত সরকার` in muted weight
+| Detail | Specification |
+| :--- | :--- |
+| Nav height | 76px, sticky top, glass blur |
+| Brand mark | 42×42px gradient tile (blue→green), `account_balance` icon |
+| Bengali subtitle | `উন্মুক্ত সরকার` in muted weight beneath the brand name |
 
-### 3.2 App Shell (Citizen / Officer / Admin dashboards)
+---
+
+### 3.2 App Shell
+
+*Used on: All authenticated Citizen, Officer, and Admin dashboards*
 
 ```
-┌──────────┬──────────────────────────────────┐
-│          │  Topbar (sticky)                 │
-│ Sidebar  │  Title · 🔔 · Avatar             │
-│ 264px    ├──────────────────────────────────┤
-│          │  Flash alerts (success/error)    │
-│ Nav      │                                  │
-│ sections │  Content area (max 1240px)       │
-│          │                                  │
-│ Logout   │                                  │
-└──────────┴──────────────────────────────────┘
+┌───────────┬──────────────────────────────────────┐
+│           │  Topbar (sticky, 72px)               │
+│  Sidebar  │  Page title · 🔔 Bell · Avatar       │
+│  264px    ├──────────────────────────────────────┤
+│           │  Flash alerts (success / error)      │
+│  Nav      │                                      │
+│  sections │  Content area (max-width: 1240px)    │
+│           │                                      │
+│  Logout   │                                      │
+└───────────┴──────────────────────────────────────┘
 ```
 
-- **Sidebar:** Sticky, full viewport height, section labels (Overview, Participate, Account)
-- **Topbar:** Frosted glass background, notification bell with red dot for unread
-- **Mobile (<960px):** Sidebar slides in from left; hamburger menu + overlay
+| Detail | Specification |
+| :--- | :--- |
+| Sidebar | Sticky, full viewport height, grouped nav sections (Overview / Participate / Account) |
+| Topbar | Frosted glass background, notification bell with red unread dot |
+| Mobile (<960px) | Sidebar collapses to a slide-in drawer; hamburger icon + full-screen overlay |
 
 ---
 
