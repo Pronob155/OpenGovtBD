@@ -14,27 +14,31 @@ public class DiscussionRepository {
 
     private final ConcurrentHashMap<Long, Discussion> discussions = new ConcurrentHashMap<>();
 
-        public Discussion save(Discussion discussion) {
-            discussions.put(discussion.getId(), discussion);
-            return discussion;
+    public Discussion save(Discussion discussion) {
+        discussions.put(discussion.getId(), discussion);
+        return discussion;
     }
 
-        public Optional<Discussion> findById(Long id) {
-            return Optional.ofNullable(discussions.get(id));
+    public Optional<Discussion> findById(Long id) {
+        return Optional.ofNullable(discussions.get(id));
     }
 
-        public List<Discussion> findAll() {
-            return discussions.values().stream()
+    public List<Discussion> findAll() {
+        return discussions.values().stream()
                 .sorted(Comparator.comparing(Discussion::isPinned).reversed()
                         .thenComparing(Discussion::getCreatedAt, Comparator.reverseOrder()))
                 .collect(Collectors.toList());
     }
 
-        public List<Discussion> findApproved() {
-            return findAll().stream().filter(Discussion::isApproved).collect(Collectors.toList());
+    public List<Discussion> findApproved() {
+        return findAll().stream().filter(Discussion::isApproved).collect(Collectors.toList());
     }
 
-        public List<Discussion> findPendingApproval() {
-            return findAll().stream().filter(d -> !d.isApproved()).collect(Collectors.toList());
+    public List<Discussion> findPendingApproval() {
+        return findAll().stream().filter(d -> !d.isApproved()).collect(Collectors.toList());
+    }
+
+    public List<Discussion> findByAuthorId(Long authorId) {
+        return findAll().stream().filter(d -> d.getAuthorId().equals(authorId)).collect(Collectors.toList());
     }
 }
