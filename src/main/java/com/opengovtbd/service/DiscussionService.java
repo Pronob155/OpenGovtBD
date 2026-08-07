@@ -37,10 +37,6 @@ public class DiscussionService {
                 .collect(Collectors.toList());
     }
 
-    public List<Discussion> forCitizen(Long citizenId) {
-        return discussionRepository.findByAuthorId(citizenId);
-    }
-
     public List<Discussion> approvedFeed(String sort, String category, String query) {
         List<Discussion> list = discussionRepository.findApproved();
         if (category != null && !category.isBlank() && !category.equalsIgnoreCase("all")) {
