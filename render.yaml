@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: opengovtbd
+    runtime: docker
+    dockerfilePath: ./dockerfile
+    plan: free
+    envVars:
+      - key: PORT
+        value: 8080
