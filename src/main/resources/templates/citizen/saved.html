@@ -1,0 +1,135 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+  <head th:replace="~{fragments/layout :: head('Saved Items')}"></head>
+  <body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'">
+    <div class="app-shell">
+      <nav th:replace="~{fragments/layout :: sidebar-citizen('saved')}"></nav>
+      <div class="sidebar-overlay"></div>
+      <div class="main">
+        <div
+          th:replace="~{fragments/layout :: topbar('Saved Items', ${citizen.fullName}, ${unreadCount}, '/citizen/notifications')}"
+        ></div>
+        <div class="content" style="max-width: 820px">
+          <h2 style="margin: 0 0 4px">Saved Items</h2>
+          <p class="text-muted" style="margin: 0 0 20px">
+            Discussions, polls and complaints you've bookmarked for later.
+          </p>
+
+          <div data-tabs>
+            <div class="tab-strip">
+              <button type="button" class="active" data-tab="discussions">
+                Discussions (<span th:text="${#lists.size(savedDiscussions)}"
+                  >0</span
+                >)
+              </button>
+              <button type="button" data-tab="polls">
+                Polls (<span th:text="${#lists.size(savedPolls)}">0</span>)
+              </button>
+              <button type="button" data-tab="complaints">
+                Complaints (<span th:text="${#lists.size(savedComplaints)}"
+                  >0</span
+                >)
+              </button>
+            </div>
+
+            <div class="tab-panel active" data-tab-panel="discussions">
+              <div
+                th:if="${#lists.isEmpty(savedDiscussions)}"
+                class="card empty-state"
+              >
+                <div class="ico">
+                  <span class="material-symbols-rounded">bookmark</span>
+                </div>
+                <h3>No saved discussions</h3>
+                <p>
+                  Tap the Save button on any discussion to bookmark it here.
+                </p>
+              </div>
+              <a
+                th:each="d : ${savedDiscussions}"
+                th:href="@{'/citizen/discussions/' + ${d.id}}"
+                class="card card-pad hoverable"
+                style="display: block; margin-bottom: 12px"
+              >
+                <div style="display: flex; justify-content: space-between">
+                  <span class="pill pill-muted" th:text="${d.category}"
+                    >Category</span
+                  >
+                  <span
+                    class="text-muted"
+                    style="font-size: 12px"
+                    th:text="'by ' + ${userRepository.findFullName(d.authorId)}"
+                    >author</span
+                  >
+                </div>
+                <h4 style="margin: 10px 0 0" th:text="${d.title}">Title</h4>
+              </a>
+            </div>
+
+            <div class="tab-panel" data-tab-panel="polls">
+              <div
+                th:if="${#lists.isEmpty(savedPolls)}"
+                class="card empty-state"
+              >
+                <div class="ico">
+                  <span class="material-symbols-rounded">how_to_vote</span>
+                </div>
+                <h3>No saved polls</h3>
+                <p>Bookmark polls from the Polls page to find them here.</p>
+              </div>
+              <a
+                th:each="p : ${savedPolls}"
+                href="/citizen/polls"
+                class="card card-pad hoverable"
+                style="display: block; margin-bottom: 12px"
+              >
+                <span class="pill pill-info" th:text="${p.category}"
+                  >Category</span
+                >
+                <h4 style="margin: 10px 0 0" th:text="${p.question}">
+                  Question
+                </h4>
+              </a>
+            </div>
+
+            <div class="tab-panel" data-tab-panel="complaints">
+              <div
+                th:if="${#lists.isEmpty(savedComplaints)}"
+                class="card empty-state"
+              >
+                <div class="ico">
+                  <span class="material-symbols-rounded">report</span>
+                </div>
+                <h3>No saved complaints</h3>
+                <p>Bookmark complaints to follow their progress here.</p>
+              </div>
+              <a
+                th:each="c : ${savedComplaints}"
+                th:href="@{'/citizen/complaints/' + ${c.id}}"
+                class="card card-pad hoverable"
+                style="display: block; margin-bottom: 12px"
+              >
+                <div style="display: flex; justify-content: space-between">
+                  <span
+                    class="pill"
+                    th:classappend="'pill-' + ${c.status.tone}"
+                    th:text="${c.status.label}"
+                    >Status</span
+                  >
+                  <span
+                    class="text-muted"
+                    style="font-size: 12px"
+                    th:text="${c.trackingId}"
+                    >ID</span
+                  >
+                </div>
+                <h4 style="margin: 10px 0 0" th:text="${c.title}">Title</h4>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script th:src="@{/js/main.js}"></script>
+  </body>
+</html>
