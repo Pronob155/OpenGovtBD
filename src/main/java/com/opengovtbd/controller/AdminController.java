@@ -28,8 +28,8 @@ public class AdminController {
     private final GovServiceService govServiceService;
 
     public AdminController(AuthService authService, AnalyticsService analyticsService, UserRepository userRepository,
-            DiscussionService discussionService, SuggestionService suggestionService,
-            GovServiceService govServiceService) {
+                            DiscussionService discussionService, SuggestionService suggestionService,
+                            GovServiceService govServiceService) {
         this.authService = authService;
         this.analyticsService = analyticsService;
         this.userRepository = userRepository;
@@ -53,8 +53,7 @@ public class AdminController {
     public String users(HttpSession session, Model model, @RequestParam(required = false) String phone) {
         model.addAttribute("admin", SessionUser.requireAdmin(session, authService));
         model.addAttribute("citizens", phone == null || phone.isBlank()
-                ? userRepository.findAllCitizens()
-                : userRepository.searchCitizensByPhone(phone));
+                ? userRepository.findAllCitizens() : userRepository.searchCitizensByPhone(phone));
         model.addAttribute("officers", userRepository.findAllOfficers());
         model.addAttribute("phoneQuery", phone == null ? "" : phone);
         return "admin/users";
@@ -78,12 +77,11 @@ public class AdminController {
 
     @PostMapping("/users/{id}/suspend")
     public String suspend(@PathVariable Long id, @RequestParam String endDate,
-            @RequestParam(required = false) String reason,
-            HttpSession session, RedirectAttributes redirectAttributes) {
+                           @RequestParam(required = false) String reason,
+                           HttpSession session, RedirectAttributes redirectAttributes) {
         Admin admin = SessionUser.requireAdmin(session, authService);
         User user = userRepository.findById(id).orElseThrow();
-        user.suspend(LocalDate.parse(endDate), reason == null || reason.isBlank() ? "Policy violation" : reason,
-                admin.getFullName());
+        user.suspend(LocalDate.parse(endDate), reason == null || reason.isBlank() ? "Policy violation" : reason, admin.getFullName());
         redirectAttributes.addFlashAttribute("success", user.isBanned()
                 ? user.getFullName() + " has been permanently banned after repeated suspensions."
                 : user.getFullName() + " has been suspended until " + endDate + ".");
@@ -92,7 +90,7 @@ public class AdminController {
 
     @PostMapping("/users/{id}/ban")
     public String ban(@PathVariable Long id, @RequestParam(required = false) String reason,
-            HttpSession session, RedirectAttributes redirectAttributes) {
+                       HttpSession session, RedirectAttributes redirectAttributes) {
         Admin admin = SessionUser.requireAdmin(session, authService);
         User user = userRepository.findById(id).orElseThrow();
         user.ban(reason == null || reason.isBlank() ? "Permanently banned by admin" : reason, admin.getFullName());
