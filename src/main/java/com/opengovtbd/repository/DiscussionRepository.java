@@ -37,8 +37,4 @@ public class DiscussionRepository {
     public List<Discussion> findPendingApproval() {
         return findAll().stream().filter(d -> !d.isApproved()).collect(Collectors.toList());
     }
-
-    public List<Discussion> findByAuthorId(Long authorId) {
-        return findAll().stream().filter(d -> d.getAuthorId().equals(authorId)).collect(Collectors.toList());
-    }
 }
