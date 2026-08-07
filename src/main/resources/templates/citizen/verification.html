@@ -1,0 +1,255 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+  <head th:replace="~{fragments/layout :: head('Get Verified')}"></head>
+  <body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'">
+    <div class="app-shell">
+      <nav
+        th:replace="~{fragments/layout :: sidebar-citizen('verification')}"
+      ></nav>
+      <div class="sidebar-overlay"></div>
+      <div class="main">
+        <div
+          th:replace="~{fragments/layout :: topbar('Identity Verification', ${citizen.fullName}, ${unreadCount}, '/citizen/notifications')}"
+        ></div>
+        <div class="content" style="max-width: 680px">
+          <div
+            th:if="${citizen.verified}"
+            class="card card-pad fade-up"
+            style="text-align: center"
+          >
+            <div
+              class="verified-badge"
+              style="width: 64px; height: 64px; margin: 0 auto 18px"
+            >
+              <span class="material-symbols-rounded" style="font-size: 34px"
+                >check</span
+              >
+            </div>
+            <h2 style="margin: 0 0 8px">You're a Verified Citizen</h2>
+            <p class="text-muted" style="margin: 0">
+              Your identity was verified on
+              <strong
+                th:text="${#temporals.format(citizen.verifiedAt, 'dd MMM yyyy')}"
+                >date</strong
+              >. The blue badge now appears next to your name across the
+              platform.
+            </p>
+          </div>
+
+          <div th:unless="${citizen.verified}">
+            <div
+              th:if="${param.submitted}"
+              class="alert alert-error"
+              style="margin-bottom: 18px"
+              data-flash
+            >
+              <span class="material-symbols-rounded">error</span>
+              <span
+                >We couldn't verify your documents automatically. Please retake
+                clear photos and try again.</span
+              >
+            </div>
+
+            <div class="card card-pad fade-up">
+              <h2 style="margin: 0 0 6px">Verify your identity</h2>
+              <p class="text-muted" style="margin: 0 0 22px">
+                Upload a photo of your National ID card and a live selfie. Our
+                (simulated) AI system cross-checks the two instantly.
+              </p>
+
+              <form
+                method="post"
+                th:action="@{/citizen/verification/submit}"
+                enctype="multipart/form-data"
+                id="verifyForm"
+              >
+                <div class="grid grid-2" style="margin-bottom: 20px">
+                  <div>
+                    <label
+                      class="fw-600"
+                      style="
+                        display: block;
+                        margin-bottom: 8px;
+                        font-size: 13.5px;
+                      "
+                      >NID Card Photo</label
+                    >
+                    <label class="upload-box" id="nidUploadBox">
+                      <span class="success-badge"
+                        ><span
+                          class="material-symbols-rounded"
+                          style="font-size: 12px"
+                          >check</span
+                        >Verified</span
+                      >
+                      <span
+                        class="material-symbols-rounded"
+                        style="font-size: 32px; color: var(--setu-blue)"
+                        >badge</span
+                      >
+                      <div
+                        class="upload-label"
+                        style="
+                          margin-top: 8px;
+                          font-size: 13px;
+                          font-weight: 600;
+                        "
+                      >
+                        Click to upload NID photo
+                      </div>
+                      <div
+                        class="text-muted"
+                        style="font-size: 11.5px; margin-top: 4px"
+                      >
+                        JPG, PNG, or PDF
+                      </div>
+                      <input
+                        type="file"
+                        name="nidImage"
+                        accept="image/*,.pdf"
+                        required
+                        id="nidFileInput"
+                      />
+                    </label>
+                  </div>
+                  <div>
+                    <label
+                      class="fw-600"
+                      style="
+                        display: block;
+                        margin-bottom: 8px;
+                        font-size: 13.5px;
+                      "
+                      >Selfie</label
+                    >
+                    <label class="upload-box" id="selfieUploadBox">
+                      <span class="success-badge"
+                        ><span
+                          class="material-symbols-rounded"
+                          style="font-size: 12px"
+                          >check</span
+                        >Verified</span
+                      >
+                      <span
+                        class="material-symbols-rounded"
+                        style="font-size: 32px; color: var(--setu-blue)"
+                        >face</span
+                      >
+                      <div
+                        class="upload-label"
+                        style="
+                          margin-top: 8px;
+                          font-size: 13px;
+                          font-weight: 600;
+                        "
+                      >
+                        Click to take/upload a selfie
+                      </div>
+                      <div
+                        class="text-muted"
+                        style="font-size: 11.5px; margin-top: 4px"
+                      >
+                        JPG or PNG
+                      </div>
+                      <input
+                        type="file"
+                        name="selfie"
+                        accept="image/*"
+                        capture="user"
+                        required
+                        id="selfieFileInput"
+                      />
+                    </label>
+                  </div>
+                </div>
+                <button
+                  class="btn btn-primary btn-block"
+                  type="submit"
+                  id="verifySubmitBtn"
+                  disabled
+                >
+                  <span class="material-symbols-rounded">verified_user</span
+                  >Submit for Verification
+                </button>
+                <p
+                  class="hint"
+                  id="verifyHint"
+                  style="text-align: center; margin-top: 10px"
+                >
+                  Upload both documents to continue. Verification is simulated
+                  for this demo.
+                </p>
+              </form>
+
+              <div
+                id="verifyingLoader"
+                class="verifying-loader"
+                style="display: none"
+              >
+                <div class="spinner-ring"></div>
+                <div class="fw-700">Running AI verification…</div>
+                <p class="text-muted" style="font-size: 13px; margin: 0">
+                  Matching your selfie against your NID photo.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script th:src="@{/js/main.js}"></script>
+    <script th:inline="javascript">
+      (function () {
+        var form = document.getElementById("verifyForm");
+        var loader = document.getElementById("verifyingLoader");
+        var submitBtn = document.getElementById("verifySubmitBtn");
+        var hint = document.getElementById("verifyHint");
+        var nidInput = document.getElementById("nidFileInput");
+        var selfieInput = document.getElementById("selfieFileInput");
+        if (!form || !submitBtn || !nidInput || !selfieInput) return;
+
+        // ---- Smart submit button: stays disabled until both files are chosen ----
+        function updateSubmitState() {
+          var ready = nidInput.files.length > 0 && selfieInput.files.length > 0;
+          submitBtn.disabled = !ready;
+          if (hint) {
+            hint.textContent = ready
+              ? "Ready to verify. Click submit below."
+              : "Upload both documents to continue. Verification is simulated for this demo.";
+          }
+        }
+        nidInput.addEventListener("change", updateSubmitState);
+        selfieInput.addEventListener("change", updateSubmitState);
+        updateSubmitState();
+
+        // ---- Simulated AI verification: ⏳ Verifying... → ✅ Verified Successfully! → real (instant) server check ----
+        var nidBox = document.getElementById("nidUploadBox");
+        var selfieBox = document.getElementById("selfieUploadBox");
+
+        form.addEventListener("submit", function (e) {
+          e.preventDefault();
+          submitBtn.disabled = true;
+          submitBtn.innerHTML =
+            '<span class="material-symbols-rounded">hourglass_top</span>Verifying...';
+          form.style.display = "none";
+          if (loader) loader.style.display = "flex";
+
+          setTimeout(function () {
+            // Show the success state (green badges + confirmation) before handing off to the server.
+            if (loader) {
+              loader.innerHTML =
+                '<div class="verified-badge" style="width:52px;height:52px;"><span class="material-symbols-rounded" style="font-size:28px;">check</span></div>' +
+                '<div class="fw-700 text-success">✅ Verified Successfully!</div>' +
+                '<p class="text-muted" style="font-size:13px;margin:0;">Your NID and selfie matched. Redirecting…</p>';
+            }
+            if (nidBox) nidBox.classList.add("verified-success");
+            if (selfieBox) selfieBox.classList.add("verified-success");
+            setTimeout(function () {
+              form.submit();
+            }, 1000);
+          }, 1500);
+        });
+      })();
+    </script>
+  </body>
+</html>
