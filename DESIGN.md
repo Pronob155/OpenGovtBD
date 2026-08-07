@@ -170,72 +170,98 @@ OpenGovtBD uses a **government-grade, minimalist, and trustworthy** visual langu
 
 ### 4.1 Buttons
 
-| Variant | Style | Use case |
-|---------|-------|----------|
-| `btn-primary` | Blue fill | Primary CTA |
-| `btn-green` | Green fill | Officer actions |
-| `btn-outline` | Blue border | Secondary CTA |
-| `btn-ghost` | Border only | Tertiary / nav |
-| `btn-danger` | Red fill | Emergency, suspend |
-| `btn-sm` | Compact | Inline actions |
-| `btn-block` | Full width | Form submit |
+| Variant | Style | Intended Use |
+| :--- | :--- | :--- |
+| `btn-primary` | Blue fill, white text | Primary call-to-action |
+| `btn-green` | Green fill, white text | Officer affirmative actions |
+| `btn-outline` | Blue border, blue text | Secondary CTA |
+| `btn-ghost` | Border only, muted text | Tertiary / navigational |
+| `btn-danger` | Red fill, white text | Emergency actions, account suspension |
+| `btn-sm` | Compact padding | Inline row-level actions |
+| `btn-block` | Full-width | Form submit buttons |
 
-**Interaction:** `:active` scale 0.97, hover shadow lift.
+**Interaction:** `:active` scale `0.97` (0.15s ease), hover shadow lift (`--shadow-md`).
+
+---
 
 ### 4.2 Cards
 
-- `.card` — white surface, 1px border, 16px radius, soft shadow
-- `.card.hoverable` — lift on hover (-2px translateY)
-- `.card-pad` — 24px padding
-- `.stat-card` — icon + value + label row
+| Class | Description |
+| :--- | :--- |
+| `.card` | White surface, 1px `--border`, `--radius`, `--shadow-sm` |
+| `.card.hoverable` | Adds `-2px` Y-axis lift on `:hover` |
+| `.card-pad` | Standard `24px` inner padding |
+| `.stat-card` | Icon + large metric value + descriptive label row |
+
+---
 
 ### 4.3 Status Pills
 
-| Class | Color | Example statuses |
-|-------|-------|------------------|
+| Class | Color | Example Statuses |
+| :--- | :--- | :--- |
 | `pill-info` | Blue | Submitted, Notice |
-| `pill-success` | Green | Resolved, Accepted |
-| `pill-warning` | Amber | Pending, Under Review |
+| `pill-success` | Green | Resolved, Accepted, Implemented |
+| `pill-warning` | Amber | Pending, Under Review, In Progress |
 | `pill-error` | Red | Rejected, Emergency |
-| `pill-muted` | Gray | Draft, Inactive |
+| `pill-muted` | Gray | Draft, Inactive, Archived |
+
+---
 
 ### 4.4 Forms
 
-- **Field:** Label (13.5px, 600 weight) + input + optional hint
-- **Input:** 11px radius, 1.5px border, blue focus ring (4px glow)
-- **Input group:** Prefix badge (e.g. `+88` for phone)
-- **OTP input:** 6 boxes, 48×56px, centered digits
-- **Checkbox row:** Terms acceptance on register
+| Element | Specification |
+| :--- | :--- |
+| **Label** | 13.5px, weight 600, `--ink` |
+| **Input / Select / Textarea** | 11px radius, 1.5px border, blue focus ring (4px glow) |
+| **Input Group** | Prefix badge for context (e.g., `+88` for phone fields) |
+| **OTP Input** | 6 individual boxes, 48×56px each, centered digit typography |
+| **Checkbox Row** | Terms acceptance on registration form |
 
-### 4.5 Alerts
+---
+
+### 4.5 Alerts (Flash Messages)
 
 | Type | Icon | Background |
-|------|------|------------|
-| `alert-success` | check_circle | Green tint |
-| `alert-error` | error | Red tint |
-| `alert-warning` | security | Amber tint |
-| `alert-info` | shield | Blue tint |
+| :--- | :--- | :--- |
+| `alert-success` | `check_circle` | Green tint (`--bd-green-light`) |
+| `alert-error` | `error` | Red tint |
+| `alert-warning` | `security` | Amber tint |
+| `alert-info` | `shield` | Blue tint (`--setu-blue-light`) |
 
-Flash messages use `.pop-in` animation on page load.
+Flash messages use the `.pop-in` animation on page load for a non-jarring entrance.
+
+---
 
 ### 4.6 Data Display
 
-- **Tables:** `.data-table` — uppercase headers, hover row highlight
-- **Timeline:** Vertical line + colored dots (blue = active, green = done)
-- **Progress ring:** SVG circle, green stroke, percentage label centered
-- **Progress bar:** 8px height, blue fill, animated width
-- **Empty state:** Large icon box + heading + CTA button
+| Component | Specification |
+| :--- | :--- |
+| **Data Table** (`.data-table`) | Uppercase 11px column headers, hover row highlight |
+| **Timeline** | Vertical line + colored dot markers (blue = active, green = completed) |
+| **Progress Ring** | SVG `<circle>`, green stroke, percentage label centered in the ring |
+| **Progress Bar** | 8px height, blue fill, animated width transition (1s ease) |
+| **Empty State** | Large centered icon block + heading + CTA button |
 
-### 4.7 Social / Engagement
+---
 
-- **Reaction buttons:** Like, dislike, bookmark — border pill, blue when active
-- **Star rating:** 5-star hover/select for complaint feedback
-- **Comment row:** Avatar gap + text + timestamp
+### 4.7 Social & Engagement
+
+| Component | Specification |
+| :--- | :--- |
+| **Reaction Buttons** | Like, Dislike, Bookmark — border-pill style, fills blue when active |
+| **Star Rating** | 5-star hover/select for complaint satisfaction feedback |
+| **Comment Row** | Avatar + text + relative timestamp |
+
+---
 
 ### 4.8 Toggle Switch
 
-- Sidebar dark-mode toggle + profile preferences
-- 40×24px track, 18px knob, blue when `on`
+| Property | Value |
+| :--- | :--- |
+| Track size | 40×24px |
+| Knob size | 18px diameter |
+| Active color | `--setu-blue` |
+| Locations | Citizen sidebar (instant toggle) · Profile preferences (persistent save) |
 
 ---
 
