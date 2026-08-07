@@ -1,3 +1,5 @@
+
+
 <div align="center">
 
 # 🎨 OpenGovtBD — UI/UX Design Specification
@@ -13,13 +15,34 @@
 
 ---
 
-## Table of Contents
+## 📑 Table of Contents
 
 1. [Design Philosophy](#1-design-philosophy)
 2. [Design Tokens](#2-design-tokens)
+   - [2.1 Color Palette](#21-color-palette)
+   - [2.2 Typography](#22-typography)
+   - [2.3 Spacing & Radius](#23-spacing--radius)
+   - [2.4 Shadows](#24-shadows)
 3. [Layout Systems](#3-layout-systems)
+   - [3.1 Public Layout](#31-public-layout)
+   - [3.2 App Shell](#32-app-shell)
 4. [Component Library](#4-component-library)
+   - [4.1 Buttons](#41-buttons)
+   - [4.2 Cards](#42-cards)
+   - [4.3 Status Pills](#43-status-pills)
+   - [4.4 Forms](#44-forms)
+   - [4.5 Alerts](#45-alerts-flash-messages)
+   - [4.6 Data Display](#46-data-display)
+   - [4.7 Social & Engagement](#47-social--engagement)
+   - [4.8 Toggle Switch](#48-toggle-switch)
 5. [Page Specifications](#5-page-specifications)
+   - [5.1 Landing Page](#51-landing-page---)
+   - [5.2 Registration](#52-registration----register)
+   - [5.3 OTP Verification](#53-otp-verification----otp)
+   - [5.4 Citizen Workspace](#54-citizen-workspace)
+   - [5.5 Government Officer Workspace](#55-government-officer-workspace)
+   - [5.6 Super Admin Workspace](#56-super-admin-workspace)
+   - [5.7 Error Pages](#57-error-pages)
 6. [Navigation Maps](#6-navigation-maps)
 7. [Responsive Breakpoints](#7-responsive-breakpoints)
 8. [Dark Mode](#8-dark-mode)
@@ -34,12 +57,12 @@
 
 OpenGovtBD uses a **government-grade, minimalist, and trustworthy** visual language. The core metaphor is **Setu (Bridge)** — a living, animated connection between citizens and their government.
 
-| Principle | Description |
-| :--- | :--- |
-| **Trust** | Clean layouts, an official blue/green palette, and a clear visual hierarchy convey institutional authority |
-| **Accessibility** | Focus rings, skip links, reduced-motion support, and WCAG-compliant contrast ratios ensure inclusivity |
-| **Participation** | Cards, polls, and discussions make civic engagement feel approachable and rewarding |
-| **Transparency** | Status pills, timelines, live metrics, and open data visualizations reinforce accountability |
+| Principle | Icon | Description |
+| :--- | :---: | :--- |
+| **Trust** | 🏛️ | Clean layouts, an official blue/green palette, and a clear visual hierarchy convey institutional authority |
+| **Accessibility** | ♿ | Focus rings, skip links, reduced-motion support, and WCAG-compliant contrast ratios ensure inclusivity |
+| **Participation** | 🤝 | Cards, polls, and discussions make civic engagement feel approachable and rewarding |
+| **Transparency** | 🔍 | Status pills, timelines, live metrics, and open data visualizations reinforce accountability |
 
 **Signature Motif:** The **bridge arc SVG** on the landing page — two animated nodes (Citizen ↔ Government) joined by pulsing dots travelling along a gradient arc, symbolizing the platform's core mission.
 
@@ -49,7 +72,7 @@ OpenGovtBD uses a **government-grade, minimalist, and trustworthy** visual langu
 
 ### 2.1 Color Palette
 
-#### Brand & Primary
+#### 🎨 Brand & Primary
 
 | Token | Hex | Usage |
 | :--- | :---: | :--- |
@@ -59,7 +82,7 @@ OpenGovtBD uses a **government-grade, minimalist, and trustworthy** visual langu
 | `--bd-green` | `#046A38` | Secondary actions, success accents, government node |
 | `--bd-green-light` | `#E7F5EC` | Green icon backgrounds, hero eyebrow pill |
 
-#### Neutral
+#### ⚪ Neutral
 
 | Token | Hex | Usage |
 | :--- | :---: | :--- |
@@ -69,7 +92,7 @@ OpenGovtBD uses a **government-grade, minimalist, and trustworthy** visual langu
 | `--muted` | `#667085` | Secondary text, labels, placeholders |
 | `--border` | `#E4E9F0` | Dividers, card and input borders |
 
-#### Semantic
+#### 🔴 Semantic
 
 | Token | Hex | Usage |
 | :--- | :---: | :--- |
@@ -89,7 +112,9 @@ OpenGovtBD uses a **government-grade, minimalist, and trustworthy** visual langu
 | Section labels | Inter | 700 | 11px (uppercase + letter-spacing) |
 | Stat / metric values | Inter | 800 | 24–26px |
 
-**Loaded fonts:** Inter (400–800), Noto Sans Bengali (400, 600, 700), Material Symbols Rounded.
+> **Loaded fonts:** Inter (400–800), Noto Sans Bengali (400, 600, 700), Material Symbols Rounded.
+
+---
 
 ### 2.3 Spacing & Radius
 
@@ -106,7 +131,7 @@ OpenGovtBD uses a **government-grade, minimalist, and trustworthy** visual langu
 
 ### 2.4 Shadows
 
-```css
+```
 --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05);    /* Subtle depth for inputs */
 --shadow-md: 0 4px 16px rgba(11, 79, 138, 0.08);   /* Cards, dropdowns          */
 --shadow-lg: 0 12px 40px rgba(11, 79, 138, 0.14);  /* Modals, floating panels   */
@@ -121,16 +146,16 @@ OpenGovtBD uses a **government-grade, minimalist, and trustworthy** visual langu
 *Used on: Landing (`/`), Registration, OTP, Error pages*
 
 ```
-┌──────────────────────────────────────────────────┐
-│  Public Nav  (sticky, backdrop-filter: blur 10px) │
-│  Brand mark · Log in · Get Started               │
-├──────────────────────────────────────────────────┤
-│                                                  │
-│  Hero / Form / Error Illustration                │
-│                                                  │
-├──────────────────────────────────────────────────┤
-│  Site Footer                                     │
-└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────┐
+│  🌐 Public Nav  (sticky, backdrop-filter: blur 10px) │
+│  Brand mark · Log in · Get Started                   │
+├──────────────────────────────────────────────────────┤
+│                                                      │
+│  🏠 Hero / Form / Error Illustration                 │
+│                                                      │
+├──────────────────────────────────────────────────────┤
+│  📄 Site Footer                                      │
+└──────────────────────────────────────────────────────┘
 ```
 
 | Detail | Specification |
@@ -147,12 +172,13 @@ OpenGovtBD uses a **government-grade, minimalist, and trustworthy** visual langu
 
 ```
 ┌───────────┬──────────────────────────────────────┐
-│           │  Topbar (sticky, 72px)               │
-│  Sidebar  │  Page title · 🔔 Bell · Avatar       │
-│  264px    ├──────────────────────────────────────┤
-│           │  Flash alerts (success / error)      │
-│  Nav      │                                      │
-│  sections │  Content area (max-width: 1240px)    │
+│           │  📌 Topbar (sticky, 72px)            │
+│  📂       │  Page title · 🔔 Bell · 👤 Avatar    │
+│  Sidebar  ├──────────────────────────────────────┤
+│  264px    │  ⚡ Flash alerts (success / error)   │
+│           │                                      │
+│  Nav      │  📊 Content area (max-width: 1240px) │
+│  sections │                                      │
 │           │                                      │
 │  Logout   │                                      │
 └───────────┴──────────────────────────────────────┘
@@ -170,17 +196,17 @@ OpenGovtBD uses a **government-grade, minimalist, and trustworthy** visual langu
 
 ### 4.1 Buttons
 
-| Variant | Style | Intended Use |
-| :--- | :--- | :--- |
-| `btn-primary` | Blue fill, white text | Primary call-to-action |
-| `btn-green` | Green fill, white text | Officer affirmative actions |
-| `btn-outline` | Blue border, blue text | Secondary CTA |
-| `btn-ghost` | Border only, muted text | Tertiary / navigational |
-| `btn-danger` | Red fill, white text | Emergency actions, account suspension |
-| `btn-sm` | Compact padding | Inline row-level actions |
-| `btn-block` | Full-width | Form submit buttons |
+| Variant | Style | Preview | Intended Use |
+| :--- | :--- | :---: | :--- |
+| `btn-primary` | Blue fill, white text | <kbd>🔵 Primary</kbd> | Primary call-to-action |
+| `btn-green` | Green fill, white text | <kbd>🟢 Green</kbd> | Officer affirmative actions |
+| `btn-outline` | Blue border, blue text | <kbd>🔷 Outline</kbd> | Secondary CTA |
+| `btn-ghost` | Border only, muted text | <kbd>⬜ Ghost</kbd> | Tertiary / navigational |
+| `btn-danger` | Red fill, white text | <kbd>🔴 Danger</kbd> | Emergency actions, account suspension |
+| `btn-sm` | Compact padding | — | Inline row-level actions |
+| `btn-block` | Full-width | — | Form submit buttons |
 
-**Interaction:** `:active` scale `0.97` (0.15s ease), hover shadow lift (`--shadow-md`).
+> **Interaction:** `:active` scale `0.97` (0.15s ease), hover shadow lift (`--shadow-md`).
 
 ---
 
@@ -197,13 +223,13 @@ OpenGovtBD uses a **government-grade, minimalist, and trustworthy** visual langu
 
 ### 4.3 Status Pills
 
-| Class | Color | Example Statuses |
-| :--- | :--- | :--- |
-| `pill-info` | Blue | Submitted, Notice |
-| `pill-success` | Green | Resolved, Accepted, Implemented |
-| `pill-warning` | Amber | Pending, Under Review, In Progress |
-| `pill-error` | Red | Rejected, Emergency |
-| `pill-muted` | Gray | Draft, Inactive, Archived |
+| Class | Color | Preview | Example Statuses |
+| :--- | :--- | :---: | :--- |
+| `pill-info` | Blue | <kbd>🔵 Submitted</kbd> | Submitted, Notice |
+| `pill-success` | Green | <kbd>🟢 Resolved</kbd> | Resolved, Accepted, Implemented |
+| `pill-warning` | Amber | <kbd>🟠 Pending</kbd> | Pending, Under Review, In Progress |
+| `pill-error` | Red | <kbd>🔴 Rejected</kbd> | Rejected, Emergency |
+| `pill-muted` | Gray | <kbd>⚫ Draft</kbd> | Draft, Inactive, Archived |
 
 ---
 
@@ -221,14 +247,14 @@ OpenGovtBD uses a **government-grade, minimalist, and trustworthy** visual langu
 
 ### 4.5 Alerts (Flash Messages)
 
-| Type | Icon | Background |
-| :--- | :--- | :--- |
-| `alert-success` | `check_circle` | Green tint (`--bd-green-light`) |
-| `alert-error` | `error` | Red tint |
-| `alert-warning` | `security` | Amber tint |
-| `alert-info` | `shield` | Blue tint (`--setu-blue-light`) |
+| Type | Icon | Background | Preview |
+| :--- | :---: | :--- | :--- |
+| `alert-success` | `check_circle` | Green tint (`--bd-green-light`) | 🟢 Operation successful |
+| `alert-error` | `error` | Red tint | 🔴 Something went wrong |
+| `alert-warning` | `security` | Amber tint | 🟠 Important notice |
+| `alert-info` | `shield` | Blue tint (`--setu-blue-light`) | 🔵 Information update |
 
-Flash messages use the `.pop-in` animation on page load for a non-jarring entrance.
+> Flash messages use the `.pop-in` animation on page load for a non-jarring entrance.
 
 ---
 
@@ -286,7 +312,7 @@ Flash messages use the `.pop-in` animation on page load for a non-jarring entran
 | Feature cards (×3) | Report Issue · Join Conversation · Digital Services |
 | Announcements section | Government notices with priority pills (NORMAL / IMPORTANT / EMERGENCY) |
 
-**Animations:** `fade-up` stagger on hero elements and feature cards; bridge dot `flow` looping animation.
+> **Animations:** `fade-up` stagger on hero elements and feature cards; bridge dot `flow` looping animation.
 
 ---
 
@@ -323,7 +349,7 @@ Flash messages use the `.pop-in` animation on page load for a non-jarring entran
 
 ### 5.4 Citizen Workspace
 
-#### Dashboard — `/citizen/dashboard`
+#### 📊 Dashboard — `/citizen/dashboard`
 
 | Widget | Description |
 | :--- | :--- |
@@ -340,15 +366,17 @@ Flash messages use the `.pop-in` animation on page load for a non-jarring entran
 
 ---
 
-#### Digital Services — `/citizen/services`
+#### 🌐 Digital Services — `/citizen/services`
+
 Grid of service cards: icon, service name, description, external link indicator.
 
-#### Emergency Hub — `/citizen/emergency`
+#### 🚨 Emergency Hub — `/citizen/emergency`
+
 Emergency contact cards (999, 109, 333), hotline numbers, location-aware help links.
 
 ---
 
-#### Complaints List — `/citizen/complaints`
+#### 📝 Complaints List — `/citizen/complaints`
 
 | Element | Detail |
 | :--- | :--- |
@@ -356,7 +384,7 @@ Emergency contact cards (999, 109, 333), hotline numbers, location-aware help li
 | List columns | Tracking ID · Title · Category · Status pill · Date filed |
 | Empty state | Inbox icon + descriptive prompt + CTA |
 
-#### Complaint Form — `/citizen/complaints/new`
+#### 📄 Complaint Form — `/citizen/complaints/new`
 
 | Field | Required |
 | :--- | :---: |
@@ -366,7 +394,7 @@ Emergency contact cards (999, 109, 333), hotline numbers, location-aware help li
 | Description | ✅ (Textarea) |
 | Photo upload | ➖ Optional (multipart) |
 
-#### Complaint Detail — `/citizen/complaints/{id}`
+#### 📋 Complaint Detail — `/citizen/complaints/{id}`
 
 - Status pill + Tracking ID in the page header
 - Full timeline component (Submitted → Assigned → In Progress → Resolved)
@@ -375,33 +403,38 @@ Emergency contact cards (999, 109, 333), hotline numbers, location-aware help li
 
 ---
 
-#### Discussions — `/citizen/discussions`
+#### 💬 Discussions — `/citizen/discussions`
+
 - Inline "Start a Discussion" form (title + content fields)
 - Feed: title, author avatar, like/comment counts, bookmark, moderation status badge
 
-#### Discussion Detail — `/citizen/discussions/{id}`
+#### 💭 Discussion Detail — `/citizen/discussions/{id}`
+
 - Full post body
 - Reaction row: `thumb_up` · `thumb_down` · `bookmark`
 - Comment list + "Add a constructive comment..." input
 
 ---
 
-#### Polls — `/citizen/polls`
+#### 🗳️ Polls — `/citizen/polls`
+
 - Active poll cards with radio-button options
 - Live percentage bars rendered after voting
 - Vote count per option
 
-#### Suggestions — `/citizen/suggestions`
+#### 💡 Suggestions — `/citizen/suggestions`
+
 - Submit new suggestion form (inline)
 - Feed: title, upvote/downvote counts, status pill
 
-#### Suggestion Detail — `/citizen/suggestions/{id}`
+#### 💡 Suggestion Detail — `/citizen/suggestions/{id}`
+
 - Full suggestion text + official government feedback block
 - Vote buttons + comment section
 
 ---
 
-#### Leaderboard — `/citizen/leaderboard`
+#### 🏆 Leaderboard — `/citizen/leaderboard`
 
 | Column | Description |
 | :--- | :--- |
@@ -410,12 +443,14 @@ Emergency contact cards (999, 109, 333), hotline numbers, location-aware help li
 | Points | Total earned points |
 | Badge | Tier pill (New / Bronze / Silver / Gold / Platinum) |
 
-#### Notifications — `/citizen/notifications`
+#### 🔔 Notifications — `/citizen/notifications`
+
 - Visual distinction between unread (bold, accent dot) and read entries
 - Type icons: `notifications` (NOTICE), `warning` (ALERT), `emoji_events` (REWARD)
 - Click to mark individual notifications as read
 
-#### Profile & Settings — `/citizen/profile`
+#### ⚙️ Profile & Settings — `/citizen/profile`
+
 - Editable fields: address, division, communication preferences
 - Toggle switches: email notifications, dark mode
 - Verification badges: phone ✅, NID ✅
@@ -425,7 +460,7 @@ Emergency contact cards (999, 109, 333), hotline numbers, location-aware help li
 
 ### 5.5 Government Officer Workspace
 
-#### Dashboard — `/officer/dashboard`
+#### 📊 Dashboard — `/officer/dashboard`
 
 | Widget | Description |
 | :--- | :--- |
@@ -433,27 +468,31 @@ Emergency contact cards (999, 109, 333), hotline numbers, location-aware help li
 | Complaint Queue preview | Top 5 entries with "View all →" link |
 | Recent activity | Timestamped log of status changes and new submissions |
 
-#### Complaint Queue — `/officer/complaints`
+#### 📋 Complaint Queue — `/officer/complaints`
+
 - Filterable data table
 - Columns: Tracking ID · Title · Citizen · Category · Status · Date
 - Row action: "Open" link to detail view
 
-#### Complaint Detail — `/officer/complaints/{id}`
+#### 📄 Complaint Detail — `/officer/complaints/{id}`
+
 - Two-column layout: complaint information (left) + action panel (right)
 - **Update Status** — dropdown selection + optional officer note
 - **Reply to Citizen** — free-text textarea + "Send Reply" action
 - **Assign Officer** — officer dropdown selector
 
-#### Discussion Moderation — `/officer/discussions`
+#### 💬 Discussion Moderation — `/officer/discussions`
+
 - Pending discussions queue
 - Per-row actions: Approve · Reject · Pin · Lock · Post Official Response
 
-#### Suggestion Review — `/officer/suggestions`
+#### 💡 Suggestion Review — `/officer/suggestions`
+
 - Suggestion list with status filter tabs
 - Status update dropdown: Under Review → Accepted / Implemented / Rejected
 - Government feedback textarea
 
-#### Create Poll — `/officer/polls/new`
+#### 🗳️ Create Poll — `/officer/polls/new`
 
 | Field | Description |
 | :--- | :--- |
@@ -466,7 +505,7 @@ Emergency contact cards (999, 109, 333), hotline numbers, location-aware help li
 
 ### 5.6 Super Admin Workspace
 
-#### System Overview — `/admin/dashboard`
+#### 📊 System Overview — `/admin/dashboard`
 
 | Widget | Description |
 | :--- | :--- |
@@ -474,13 +513,13 @@ Emergency contact cards (999, 109, 333), hotline numbers, location-aware help li
 | Quick links | User management · Analytics |
 | Recent activity feed | Platform-wide timestamped event log |
 
-#### User Management — `/admin/users`
+#### 👥 User Management — `/admin/users`
 
 - **Citizens table** — Columns: Name · Phone · Status · Points · Actions
 - **Officers table** — Columns: Name · Email · Department · Status · Actions
 - Action: **Suspend** / **Reactivate** toggle button per row
 
-#### Analytics Dashboard — `/admin/analytics`
+#### 📈 Analytics Dashboard — `/admin/analytics`
 
 | Chart | Type | Data |
 | :--- | :--- | :--- |
@@ -488,18 +527,20 @@ Emergency contact cards (999, 109, 333), hotline numbers, location-aware help li
 | Complaints by Division | Doughnut chart | Geographic distribution |
 | Resolution Trend | Line chart | Resolution rate over time |
 
-Plus metric cards: total complaints, average resolution days, active citizen count.
+> Plus metric cards: total complaints, average resolution days, active citizen count.
 
 ---
 
 ### 5.7 Error Pages
 
 #### 404 — Not Found
+
 - Centered layout, large gradient "404" display text
 - Message: *"Page not found"*
 - CTA: Return Home button
 
 #### 500 — Server Error
+
 - Same centered layout pattern as 404
 - Message: *"Something went wrong on our end"*
 - CTA: Return Home button
@@ -508,64 +549,64 @@ Plus metric cards: total complaints, average resolution days, active citizen cou
 
 ## 6. Navigation Maps
 
-### Citizen Sidebar
+### 📂 Citizen Sidebar
 
 ```
-Overview
-  ├── Dashboard
-  ├── Digital Services
-  └── Emergency Hub
+📁 Overview
+  ├── 📄 Dashboard
+  ├── 📄 Digital Services
+  └── 📄 Emergency Hub
 
-Participate
-  ├── My Complaints
-  ├── Discussions
-  ├── Polls
-  ├── Suggestion Box
-  └── Leaderboard
+📁 Participate
+  ├── 📄 My Complaints
+  ├── 📄 Discussions
+  ├── 📄 Polls
+  ├── 📄 Suggestion Box
+  └── 📄 Leaderboard
 
-Account
-  ├── Notifications  [🔴 unread count]
-  ├── Profile & Settings
+📁 Account
+  ├── 📄 Notifications  [🔴 unread count]
+  ├── 📄 Profile & Settings
   ├── 🌙 Dark Mode toggle
-  └── Logout
+  └── 🚪 Logout
 ```
 
-### Officer Sidebar
+### 📂 Officer Sidebar
 
 ```
-Officer Workspace
-  ├── Dashboard
-  ├── Complaint Queue
-  ├── Discussion Moderation
-  ├── Suggestion Review
-  └── Create Poll
+📁 Officer Workspace
+  ├── 📄 Dashboard
+  ├── 📄 Complaint Queue
+  ├── 📄 Discussion Moderation
+  ├── 📄 Suggestion Review
+  └── 📄 Create Poll
 
-Account
-  └── Logout
+📁 Account
+  └── 🚪 Logout
 ```
 
-### Super Admin Sidebar
+### 📂 Super Admin Sidebar
 
 ```
-Super Admin
-  ├── System Overview
-  ├── Citizens & Officers
-  └── Analytics
+📁 Super Admin
+  ├── 📄 System Overview
+  ├── 📄 Citizens & Officers
+  └── 📄 Analytics
 
-Account
-  └── Logout
+📁 Account
+  └── 🚪 Logout
 ```
 
 ---
 
 ## 7. Responsive Breakpoints
 
-| Breakpoint | Layout Behavior |
-| :--- | :--- |
-| **> 960px** | Full sidebar visible, multi-column grid layouts |
-| **≤ 960px** | Sidebar hidden — slides in from left as a drawer; hamburger + overlay |
-| **≤ 860px** | Auth shell hides the left gradient side panel |
-| **≤ 640px** | All grids collapse to single-column; hero font size reduced |
+| Breakpoint | Icon | Layout Behavior |
+| :--- | :---: | :--- |
+| **> 960px** | 🖥️ | Full sidebar visible, multi-column grid layouts |
+| **≤ 960px** | 💻 | Sidebar hidden — slides in from left as a drawer; hamburger + overlay |
+| **≤ 860px** | 📱 | Auth shell hides the left gradient side panel |
+| **≤ 640px** | 📱 | All grids collapse to single-column; hero font size reduced |
 
 ---
 
@@ -582,8 +623,11 @@ Applied via the `body.dark` class on all citizen-facing pages when the preferenc
 | `--border` | `#E4E9F0` | `#223049` |
 
 **Toggle Locations:**
-1. **Citizen sidebar** — Instant POST to `/citizen/theme/toggle` + redirect to current page
-2. **Profile & Settings page** — Persistent save via form submission
+
+| # | Location | Behavior |
+| :---: | :--- | :--- |
+| 1 | **Citizen sidebar** | Instant POST to `/citizen/theme/toggle` + redirect to current page |
+| 2 | **Profile & Settings page** | Persistent save via form submission |
 
 ---
 
@@ -598,7 +642,7 @@ Applied via the `body.dark` class on all citizen-facing pages when the preferenc
 | Button `:active` scale | 0.15s | Scale `0.97` press feedback |
 | Progress bar width | 1s ease | Poll results bars, profile completion ring |
 
-> **Accessibility:** All animations collapse to an effective `0.001ms` duration when `prefers-reduced-motion: reduce` is detected in the user's OS settings.
+> ♿ **Accessibility:** All animations collapse to an effective `0.001ms` duration when `prefers-reduced-motion: reduce` is detected in the user's OS settings.
 
 ---
 
@@ -608,29 +652,29 @@ Applied via the `body.dark` class on all citizen-facing pages when the preferenc
 
 | Context | Icon Name |
 | :--- | :--- |
-| Brand / Platform | `account_balance` |
-| Dashboard | `space_dashboard` |
-| Complaints | `report` · `assignment` |
-| Discussions | `forum` · `gavel` |
-| Polls | `how_to_vote` |
-| Suggestions | `lightbulb` · `rate_review` |
-| Notifications | `notifications` |
-| Emergency | `emergency` |
-| Leaderboard | `trophy` |
-| Analytics | `monitoring` |
-| User Management | `group` |
-| Dark Mode | `dark_mode` · `light_mode` |
+| 🏛️ Brand / Platform | `account_balance` |
+| 📊 Dashboard | `space_dashboard` |
+| 📝 Complaints | `report` · `assignment` |
+| 💬 Discussions | `forum` · `gavel` |
+| 🗳️ Polls | `how_to_vote` |
+| 💡 Suggestions | `lightbulb` · `rate_review` |
+| 🔔 Notifications | `notifications` |
+| 🚨 Emergency | `emergency` |
+| 🏆 Leaderboard | `trophy` |
+| 📈 Analytics | `monitoring` |
+| 👥 User Management | `group` |
+| 🌙 Dark Mode | `dark_mode` · `light_mode` |
 
 ---
 
 ## 11. File Reference
 
-| Asset | Path |
-| :--- | :--- |
-| Design system CSS | `src/main/resources/static/css/style.css` |
-| Layout fragments | `src/main/resources/templates/fragments/layout.html` |
-| Client JavaScript (mobile menu, progress rings) | `src/main/resources/static/js/main.js` |
-| All page templates (Thymeleaf) | `src/main/resources/templates/` |
+| Asset | Path | Type |
+| :--- | :--- | :---: |
+| 🎨 Design system CSS | `src/main/resources/static/css/style.css` | `CSS` |
+| 📐 Layout fragments | `src/main/resources/templates/fragments/layout.html` | `HTML` |
+| ⚙️ Client JavaScript | `src/main/resources/static/js/main.js` | `JS` |
+| 📄 Page templates (Thymeleaf) | `src/main/resources/templates/` | `HTML` |
 
 ---
 
@@ -640,15 +684,20 @@ The following screen is **intentionally not documented** in this file:
 
 | Page | Route | Reason |
 | :--- | :--- | :--- |
-| Login (all roles) | `/login` | Excluded per original project scope |
+| 🔒 Login (all roles) | `/login` | Excluded per original project scope |
 
-For authentication entry points, refer to the [Registration](#52-registration----register) and [OTP Verification](#53-otp-verification----otp) sections above.
+> For authentication entry points, refer to the [Registration](#52-registration----register) and [OTP Verification](#53-otp-verification----otp) sections above.
 
 ---
 
 <div align="center">
 
-*OpenGovtBD Design System v1.0 · July 2026*  
+### 📐 OpenGovtBD Design System v1.0 · July 2026
+
 *For implementation details, refer to [README.md](README.md)*
+
+**উন্মুক্ত সরকার · সেতু (Bridge)**
+
+---
 
 </div>
