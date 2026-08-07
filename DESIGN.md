@@ -514,17 +514,19 @@ Plus metric cards: total complaints, average resolution days, active citizen cou
 Overview
   ├── Dashboard
   ├── Digital Services
-  └── Emergency
+  └── Emergency Hub
+
 Participate
-  ├── Complaints
+  ├── My Complaints
   ├── Discussions
   ├── Polls
   ├── Suggestion Box
   └── Leaderboard
+
 Account
-  ├── Notifications
+  ├── Notifications  [🔴 unread count]
   ├── Profile & Settings
-  ├── Dark mode toggle
+  ├── 🌙 Dark Mode toggle
   └── Logout
 ```
 
@@ -534,20 +536,22 @@ Account
 Officer Workspace
   ├── Dashboard
   ├── Complaint Queue
-  ├── Discussion Approval
+  ├── Discussion Moderation
   ├── Suggestion Review
   └── Create Poll
+
 Account
   └── Logout
 ```
 
-### Admin Sidebar
+### Super Admin Sidebar
 
 ```
 Super Admin
-  ├── Overview
+  ├── System Overview
   ├── Citizens & Officers
   └── Analytics
+
 Account
   └── Logout
 ```
@@ -556,87 +560,95 @@ Account
 
 ## 7. Responsive Breakpoints
 
-| Breakpoint | Behavior |
-|------------|----------|
-| **>960px** | Full sidebar visible, multi-column grids |
-| **≤960px** | Sidebar hidden (slide-in drawer), 2-column grids |
-| **≤640px** | Single-column grids, reduced hero font size |
-| **≤860px** | Auth shell hides left gradient panel |
+| Breakpoint | Layout Behavior |
+| :--- | :--- |
+| **> 960px** | Full sidebar visible, multi-column grid layouts |
+| **≤ 960px** | Sidebar hidden — slides in from left as a drawer; hamburger + overlay |
+| **≤ 860px** | Auth shell hides the left gradient side panel |
+| **≤ 640px** | All grids collapse to single-column; hero font size reduced |
 
 ---
 
 ## 8. Dark Mode
 
-Applied via `body.dark` class on citizen pages when preference is enabled.
+Applied via the `body.dark` class on all citizen-facing pages when the preference is enabled.
 
-| Token (dark) | Value |
-|--------------|-------|
-| `--bg` | `#0B1220` |
-| `--surface` | `#131C2E` |
-| `--ink` | `#F2F5FA` |
-| `--muted` | `#92A0B8` |
-| `--border` | `#223049` |
+| Token | Light Value | Dark Value |
+| :--- | :---: | :---: |
+| `--bg` | `#F4F7FB` | `#0B1220` |
+| `--surface` | `#FFFFFF` | `#131C2E` |
+| `--ink` | `#101828` | `#F2F5FA` |
+| `--muted` | `#667085` | `#92A0B8` |
+| `--border` | `#E4E9F0` | `#223049` |
 
-**Toggle locations:**
-- Citizen sidebar (instant POST + redirect)
-- Profile preferences page (persistent save)
+**Toggle Locations:**
+1. **Citizen sidebar** — Instant POST to `/citizen/theme/toggle` + redirect to current page
+2. **Profile & Settings page** — Persistent save via form submission
 
 ---
 
 ## 9. Motion & Animation
 
-| Animation | Duration | Use |
-|-----------|----------|-----|
-| `fadeUp` | 0.5s | Page section entrance |
-| `popIn` | 0.3s | Flash alerts, modals |
-| `flow` | 3.2s loop | Bridge SVG dots |
-| `shimmer` | 1.4s loop | Skeleton loading |
-| Button `:active` | 0.15s | Scale 0.97 |
-| Progress bar width | 1s | Poll results, profile ring |
+| Animation Name | Duration | Trigger / Use Case |
+| :--- | :---: | :--- |
+| `fadeUp` | 0.5s | Page section entrance (staggered) |
+| `popIn` | 0.3s | Flash alert appearance, modal entry |
+| `flow` | 3.2s loop | Bridge SVG dot travel animation on landing page |
+| `shimmer` | 1.4s loop | Skeleton loading placeholder state |
+| Button `:active` scale | 0.15s | Scale `0.97` press feedback |
+| Progress bar width | 1s ease | Poll results bars, profile completion ring |
 
-**Reduced motion:** All animations collapse to 0.001ms when `prefers-reduced-motion: reduce`.
+> **Accessibility:** All animations collapse to an effective `0.001ms` duration when `prefers-reduced-motion: reduce` is detected in the user's OS settings.
 
 ---
 
 ## 10. Iconography
 
-**Library:** Material Symbols Rounded (Google Fonts CDN)
+**Library:** Material Symbols Rounded — loaded via Google Fonts CDN.
 
-| Context | Icon |
-|---------|------|
-| Brand | `account_balance` |
+| Context | Icon Name |
+| :--- | :--- |
+| Brand / Platform | `account_balance` |
 | Dashboard | `space_dashboard` |
-| Complaints | `report` / `assignment` |
-| Discussions | `forum` / `gavel` |
+| Complaints | `report` · `assignment` |
+| Discussions | `forum` · `gavel` |
 | Polls | `how_to_vote` |
-| Suggestions | `lightbulb` / `rate_review` |
+| Suggestions | `lightbulb` · `rate_review` |
 | Notifications | `notifications` |
 | Emergency | `emergency` |
 | Leaderboard | `trophy` |
 | Analytics | `monitoring` |
-| Users | `group` |
+| User Management | `group` |
+| Dark Mode | `dark_mode` · `light_mode` |
 
 ---
 
 ## 11. File Reference
 
 | Asset | Path |
-|-------|------|
+| :--- | :--- |
 | Design system CSS | `src/main/resources/static/css/style.css` |
 | Layout fragments | `src/main/resources/templates/fragments/layout.html` |
-| Client JS (mobile menu, progress rings) | `src/main/resources/static/js/main.js` |
-| Page templates | `src/main/resources/templates/` |
+| Client JavaScript (mobile menu, progress rings) | `src/main/resources/static/js/main.js` |
+| All page templates (Thymeleaf) | `src/main/resources/templates/` |
 
 ---
 
 ## 12. Out of Scope
 
-The following screen is intentionally **not documented** in this file:
+The following screen is **intentionally not documented** in this file:
 
-- **Login page** (`/login`) — citizen, officer, and admin tabbed login forms
+| Page | Route | Reason |
+| :--- | :--- | :--- |
+| Login (all roles) | `/login` | Excluded per original project scope |
 
-For authentication flow entry points, refer to the Register and OTP sections above.
+For authentication entry points, refer to the [Registration](#52-registration----register) and [OTP Verification](#53-otp-verification----otp) sections above.
 
 ---
 
-*Last updated: July 2026 · OpenGovtBD Design System v1.0*
+<div align="center">
+
+*OpenGovtBD Design System v1.0 · July 2026*  
+*For implementation details, refer to [README.md](README.md)*
+
+</div>
