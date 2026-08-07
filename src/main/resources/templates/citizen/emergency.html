@@ -1,0 +1,187 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+  <head th:replace="~{fragments/layout :: head('Emergency Services')}"></head>
+  <body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'">
+    <div class="app-shell">
+      <nav
+        th:replace="~{fragments/layout :: sidebar-citizen('emergency')}"
+      ></nav>
+      <div class="sidebar-overlay"></div>
+      <div class="main">
+        <div
+          th:replace="~{fragments/layout :: topbar('Emergency Services', ${citizen.fullName}, ${unreadCount}, '/citizen/notifications')}"
+        ></div>
+        <div class="content">
+          <div class="emergency-banner fade-up" style="margin-bottom: 24px">
+            <span class="material-symbols-rounded">emergency</span>
+            <div>
+              <strong
+                >In a life-threatening emergency, call 999 immediately.</strong
+              >
+              <div class="text-muted" style="font-size: 13px">
+                The National Emergency Service connects you to Police, Fire, and
+                Ambulance.
+              </div>
+            </div>
+          </div>
+
+          <h3 style="margin: 0 0 14px">Quick Call</h3>
+          <div class="grid grid-4" style="margin-bottom: 32px">
+            <a
+              href="tel:999"
+              class="card card-pad hoverable fade-up"
+              style="text-align: center"
+            >
+              <div
+                class="stat-icon"
+                style="
+                  background: var(--error-bg);
+                  color: var(--error);
+                  margin: 0 auto 10px;
+                "
+              >
+                <span class="material-symbols-rounded">local_police</span>
+              </div>
+              <div class="fw-700">Police</div>
+              <div class="text-muted" style="font-size: 13px">999</div>
+            </a>
+            <a
+              href="tel:999"
+              class="card card-pad hoverable fade-up d1"
+              style="text-align: center"
+            >
+              <div
+                class="stat-icon"
+                style="
+                  background: var(--warning-bg);
+                  color: #92600b;
+                  margin: 0 auto 10px;
+                "
+              >
+                <span class="material-symbols-rounded"
+                  >local_fire_department</span
+                >
+              </div>
+              <div class="fw-700">Fire Service</div>
+              <div class="text-muted" style="font-size: 13px">999</div>
+            </a>
+            <a
+              href="tel:999"
+              class="card card-pad hoverable fade-up d2"
+              style="text-align: center"
+            >
+              <div
+                class="stat-icon"
+                style="
+                  background: var(--success-bg);
+                  color: var(--success);
+                  margin: 0 auto 10px;
+                "
+              >
+                <span class="material-symbols-rounded">emergency</span>
+              </div>
+              <div class="fw-700">Ambulance</div>
+              <div class="text-muted" style="font-size: 13px">999</div>
+            </a>
+            <a
+              href="tel:333"
+              class="card card-pad hoverable fade-up d3"
+              style="text-align: center"
+            >
+              <div
+                class="stat-icon"
+                style="
+                  background: var(--setu-blue-light);
+                  color: var(--setu-blue);
+                  margin: 0 auto 10px;
+                "
+              >
+                <span class="material-symbols-rounded">support_agent</span>
+              </div>
+              <div class="fw-700">National Helpline</div>
+              <div class="text-muted" style="font-size: 13px">333</div>
+            </a>
+            <a
+              href="tel:1090"
+              class="card card-pad hoverable fade-up"
+              style="text-align: center"
+            >
+              <div
+                class="stat-icon"
+                style="
+                  background: var(--bd-green-light);
+                  color: var(--bd-green);
+                  margin: 0 auto 10px;
+                "
+              >
+                <span class="material-symbols-rounded">flood</span>
+              </div>
+              <div class="fw-700">Disaster Hotline</div>
+              <div class="text-muted" style="font-size: 13px">1090</div>
+            </a>
+          </div>
+
+          <h3 style="margin: 0 0 14px">Nearby Facilities</h3>
+          <div class="grid grid-2">
+            <div class="card card-pad">
+              <div class="fw-700" style="margin-bottom: 10px">
+                <span
+                  class="material-symbols-rounded"
+                  style="vertical-align: middle"
+                  >local_police</span
+                >
+                Police Stations
+              </div>
+              <div class="text-muted" style="font-size: 13.5px">
+                Savar Model Police Station — 1.2 km<br />Ashulia Police Station
+                — 4.6 km
+              </div>
+            </div>
+            <div class="card card-pad">
+              <div class="fw-700" style="margin-bottom: 10px">
+                <span
+                  class="material-symbols-rounded"
+                  style="vertical-align: middle"
+                  >local_hospital</span
+                >
+                Hospitals
+              </div>
+              <div class="text-muted" style="font-size: 13.5px">
+                Enam Medical College Hospital — 0.8 km<br />Savar Upazila Health
+                Complex — 2.1 km
+              </div>
+            </div>
+            <div class="card card-pad">
+              <div class="fw-700" style="margin-bottom: 10px">
+                <span
+                  class="material-symbols-rounded"
+                  style="vertical-align: middle"
+                  >account_balance</span
+                >
+                Government Offices
+              </div>
+              <div class="text-muted" style="font-size: 13.5px">
+                Savar Upazila Parishad — 1.5 km<br />Union Digital Center — 2.8
+                km
+              </div>
+            </div>
+            <div class="card card-pad">
+              <div class="fw-700" style="margin-bottom: 10px">
+                <span
+                  class="material-symbols-rounded"
+                  style="vertical-align: middle"
+                  >local_fire_department</span
+                >
+                Fire Stations
+              </div>
+              <div class="text-muted" style="font-size: 13.5px">
+                Savar Fire Service Station — 1.9 km
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script th:src="@{/js/main.js}"></script>
+  </body>
+</html>
