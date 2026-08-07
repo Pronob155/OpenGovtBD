@@ -1,22 +1,47 @@
-# OpenGovtBD — UI/UX Design Specification
+<div align="center">
 
-> **উন্মুক্ত সরকার** · Government Citizen Engagement Platform  
-> Design system reference for all screens **except the Login page**.
+# 🎨 OpenGovtBD — UI/UX Design Specification
+
+### উন্মুক্ত সরকার · Government Citizen Engagement Platform
+
+**Design System Reference v1.0** · *July 2026*
+
+> This document covers the complete design system and all page specifications for OpenGovtBD,  
+> **excluding** the Login page (`/login`).
+
+</div>
+
+---
+
+## Table of Contents
+
+1. [Design Philosophy](#1-design-philosophy)
+2. [Design Tokens](#2-design-tokens)
+3. [Layout Systems](#3-layout-systems)
+4. [Component Library](#4-component-library)
+5. [Page Specifications](#5-page-specifications)
+6. [Navigation Maps](#6-navigation-maps)
+7. [Responsive Breakpoints](#7-responsive-breakpoints)
+8. [Dark Mode](#8-dark-mode)
+9. [Motion & Animation](#9-motion--animation)
+10. [Iconography](#10-iconography)
+11. [File Reference](#11-file-reference)
+12. [Out of Scope](#12-out-of-scope)
 
 ---
 
 ## 1. Design Philosophy
 
-OpenGovtBD uses a **government-grade, minimalist, and trustworthy** visual language. The core metaphor is **Setu (Bridge)** — a living connection between citizens and government.
+OpenGovtBD uses a **government-grade, minimalist, and trustworthy** visual language. The core metaphor is **Setu (Bridge)** — a living, animated connection between citizens and their government.
 
 | Principle | Description |
-|-----------|-------------|
-| **Trust** | Clean layouts, official blue/green palette, clear hierarchy |
-| **Accessibility** | Focus rings, skip links, reduced-motion support, readable contrast |
-| **Participation** | Cards, polls, discussions — civic engagement feels approachable |
-| **Transparency** | Status pills, timelines, live metrics, open data visualizations |
+| :--- | :--- |
+| **Trust** | Clean layouts, an official blue/green palette, and a clear visual hierarchy convey institutional authority |
+| **Accessibility** | Focus rings, skip links, reduced-motion support, and WCAG-compliant contrast ratios ensure inclusivity |
+| **Participation** | Cards, polls, and discussions make civic engagement feel approachable and rewarding |
+| **Transparency** | Status pills, timelines, live metrics, and open data visualizations reinforce accountability |
 
-**Signature motif:** The bridge arc (SVG) on the landing page — two nodes (Citizen ↔ Government) joined by animated pulse dots travelling along a gradient arc.
+**Signature Motif:** The **bridge arc SVG** on the landing page — two animated nodes (Citizen ↔ Government) joined by pulsing dots travelling along a gradient arc, symbolizing the platform's core mission.
 
 ---
 
