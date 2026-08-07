@@ -49,33 +49,47 @@ OpenGovtBD uses a **government-grade, minimalist, and trustworthy** visual langu
 
 ### 2.1 Color Palette
 
+#### Brand & Primary
+
 | Token | Hex | Usage |
-|-------|-----|-------|
-| `--setu-blue` | `#0B4F8A` | Primary actions, links, active nav, avatar |
-| `--setu-blue-dark` | `#073761` | Hover states, auth side gradient |
-| `--setu-blue-light` | `#EAF2FB` | Active nav bg, icon containers, info pills |
-| `--bd-green` | `#046A38` | Secondary actions, success accents, gov node |
-| `--bd-green-light` | `#E7F5EC` | Green icon backgrounds, hero eyebrow |
+| :--- | :---: | :--- |
+| `--setu-blue` | `#0B4F8A` | Primary actions, links, active nav, avatar rings |
+| `--setu-blue-dark` | `#073761` | Hover states, auth side-panel gradient |
+| `--setu-blue-light` | `#EAF2FB` | Active nav background, icon containers, info pills |
+| `--bd-green` | `#046A38` | Secondary actions, success accents, government node |
+| `--bd-green-light` | `#E7F5EC` | Green icon backgrounds, hero eyebrow pill |
+
+#### Neutral
+
+| Token | Hex | Usage |
+| :--- | :---: | :--- |
 | `--bg` | `#F4F7FB` | Page background |
-| `--surface` | `#FFFFFF` | Cards, sidebar, inputs |
-| `--ink` | `#101828` | Primary text |
-| `--muted` | `#667085` | Secondary text, labels |
-| `--border` | `#E4E9F0` | Dividers, input borders |
-| `--success` | `#16A34A` | Resolved, verified |
-| `--warning` | `#F59E0B` | Pending, important |
-| `--error` | `#DC2626` | Emergency, errors, unread dot |
+| `--surface` | `#FFFFFF` | Cards, sidebar, modal backgrounds, inputs |
+| `--ink` | `#101828` | Primary body text |
+| `--muted` | `#667085` | Secondary text, labels, placeholders |
+| `--border` | `#E4E9F0` | Dividers, card and input borders |
+
+#### Semantic
+
+| Token | Hex | Usage |
+| :--- | :---: | :--- |
+| `--success` | `#16A34A` | Resolved status, verified badges |
+| `--warning` | `#F59E0B` | Pending status, important notices |
+| `--error` | `#DC2626` | Emergency alerts, validation errors, unread dot |
+
+---
 
 ### 2.2 Typography
 
-| Element | Font | Weight | Size |
-|---------|------|--------|------|
-| Body | Inter, Noto Sans Bengali | 400 | 14–15px |
-| Headings | Inter | 700–800 | 18–46px |
-| Nav links | Inter | 600 | 14px |
-| Section labels | Inter | 700 | 11px (uppercase) |
-| Stat values | Inter | 800 | 24–26px |
+| Element | Font Family | Weight | Size |
+| :--- | :--- | :---: | :--- |
+| Body text | Inter, Noto Sans Bengali | 400 | 14–15px |
+| Page headings | Inter | 700–800 | 18–46px |
+| Navigation links | Inter | 600 | 14px |
+| Section labels | Inter | 700 | 11px (uppercase + letter-spacing) |
+| Stat / metric values | Inter | 800 | 24–26px |
 
-**Fonts loaded:** Inter (400–800), Noto Sans Bengali (400, 600, 700), Material Symbols Rounded.
+**Loaded fonts:** Inter (400–800), Noto Sans Bengali (400, 600, 700), Material Symbols Rounded.
 
 ### 2.3 Spacing & Radius
 
