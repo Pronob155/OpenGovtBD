@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="~{fragments/layout :: head('Profile')}"></head>
+
+<body style="background:var(--bg);min-height:100vh;">
+  <div class="container" style="max-width:640px;padding-top:40px;padding-bottom:60px;">
+    <a href="javascript:history.back()" class="text-muted" style="font-size:13px;">&larr; Back</a>
+
+    <div class="card card-pad fade-up" style="margin-top:16px;text-align:center;">
+      <div class="avatar" style="width:88px;height:88px;font-size:30px;border-radius:22px;margin:0 auto 16px;"
+        th:text="${profileUser.initials}">U</div>
+      <div class="name-with-badge" style="justify-content:center;font-size:22px;font-weight:800;">
+        <span th:text="${profileUser.fullName}">Name</span>
+        <span th:if="${profileUser.class.simpleName == 'Citizen' and profileUser.verified}" class="verified-badge"
+          title="Verified Citizen">
+          <span class="material-symbols-rounded">check</span>
+        </span>
+      </div>
+      <div class="text-muted" style="margin:4px 0 16px;"
+        th:text="${profileUser.displayRole} + ' · @' + ${profileUser.username}">Role</div>
+
+      <div th:if="${profileUser.class.simpleName == 'Citizen'}"
+        style="display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-bottom:6px;">
+        <span class="badge-tier"><span class="material-symbols-rounded"
+            style="font-size:16px;">military_tech</span><span th:text="${profileUser.badge.label}">Badge</span></span>
+        <span class="pill pill-info"><span class="material-symbols-rounded" style="font-size:14px;">stars</span><span
+            th:text="${profileUser.points} + ' points'">0 points</span></span>
+      </div>
+      <div th:if="${profileUser.class.simpleName == 'Officer'}"
+        style="display:flex;justify-content:center;gap:14px;flex-wrap:wrap;">
+        <span class="pill pill-info" th:text="${profileUser.department}">Department</span>
+        <span class="pill pill-muted" th:text="${profileUser.designation}">Designation</span>
+      </div>
+
+      <div class="text-muted" style="font-size:12.5px;margin-top:16px;">
+        Member since <span th:text="${#temporals.format(profileUser.createdAt, 'MMMM yyyy')}">date</span>
+      </div>
+    </div>
+  </div>
+  <script th:src="@{/js/main.js}"></script>
+</body>
+
+</html>
