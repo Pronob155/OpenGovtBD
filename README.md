@@ -2,7 +2,7 @@
 
 Repository: **[github.com/pbs002-s/OpenGovtBD](https://github.com/pbs002-s/OpenGovtBD)**
 
-**OpenGovtBD (Citizen Bridge)** is a full-stack Government Citizen Engagement Platform for Bangladesh, built as a demo-grade, production-styled Java web application. It connects citizens and government through complaint management, public discussions, official polls, a suggestion box, digital service shortcuts, and role-based dashboards for **Citizens**, **Government Officers**, and a **Super Admin**.
+**OpenGovtBD (Citizen Bridge)** is a full-stack Government Citizen Engagement Platform for Bangladesh, built as a demo-grade, production-style Java web application. It connects citizens and government through complaint management, public discussions, official polls, a suggestion box, digital service shortcuts, and role-based dashboards for **Citizens**, **Government Officers**, and a **Super Admin**.
 
 > Built with **Java 17 + Spring Boot 3 (MVC, OOP)**, **Thymeleaf**, and a clean in-memory data layer — no external database required to run the demo.
 
@@ -11,7 +11,7 @@ Repository: **[github.com/pbs002-s/OpenGovtBD](https://github.com/pbs002-s/OpenG
 ## 🆕 Recent updates
 
 - Rebranded from *Nagorik Setu* to **OpenGovtBD**.
-- Fixed: the dark-mode preference saved on the Profile page never actually rendered on any page — the `<body>` tag never received the `dark` class. Now applied across all citizen views.
+- Fixed: the dark-mode preference saved on the Profile page never actually rendered on any page — the `<body>` tag never received the `dark` class, now applied across all citizen views.
 - Fixed: the topbar notification bell only showed a real unread count on the Dashboard; every other citizen page hardcoded it to `0`. A shared `@ControllerAdvice` now computes it once for every page.
 - Added: an instant dark-mode switch in the citizen sidebar (posts to `/citizen/theme/toggle` and redirects back to the current page), plus a matching toggle-switch component styled to replace the old plain checkbox on the Profile page.
 
@@ -89,7 +89,7 @@ New citizens can also register from scratch — the OTP screen displays the demo
 
 **Citizen:** Dashboard · Digital Services directory · Emergency hub · Complaint filing & tracking · Public discussions · Polls · Suggestion box · Leaderboard · Notifications · Profile & preferences
 
-**Officer:** Dashboard · Complaint queue (assign / update status / reply) · Discussion moderation (approve / reject / pin / lock / official response) · Suggestion review · Poll creation
+**Officer:** Dashboard · Complaint queue (assign/update status/reply) · Discussion moderation (approve/reject/pin/lock/official response) · Suggestion review · Poll creation
 
 **Super Admin:** System overview · Citizen & officer management (suspend/reactivate) · Analytics dashboard with live charts (complaints by category/division, resolution rate)
 
