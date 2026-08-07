@@ -1,116 +1,225 @@
-# উন্মুক্ত সরকার · OpenGovtBD
+<div align="center">
 
-Repository: **[github.com/pbs002-s/OpenGovtBD](https://github.com/pbs002-s/OpenGovtBD)**
+# 🏛️ OpenGovtBD — Citizen Bridge
 
-**OpenGovtBD (Citizen Bridge)** is a full-stack Government Citizen Engagement Platform for Bangladesh, built as a demo-grade, production-style Java web application. It connects citizens and government through complaint management, public discussions, official polls, a suggestion box, digital service shortcuts, and role-based dashboards for **Citizens**, **Government Officers**, and a **Super Admin**.
+### উন্মুক্ত সরকার · Government Citizen Engagement Platform for Bangladesh
 
-> Built with **Java 17 + Spring Boot 3 (MVC, OOP)**, **Thymeleaf**, and a clean in-memory data layer — no external database required to run the demo.
+<br/>
+
+[![Java](https://img.shields.io/badge/Java-17-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://openjdk.org/)
+[![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.2-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
+[![Thymeleaf](https://img.shields.io/badge/Thymeleaf-005F0F?style=for-the-badge&logo=thymeleaf&logoColor=white)](https://www.thymeleaf.org/)
+[![Maven](https://img.shields.io/badge/Maven-3.8+-C71A36?style=for-the-badge&logo=apachemaven&logoColor=white)](https://maven.apache.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-3B82F6?style=for-the-badge)](LICENSE)
+
+<br/>
+
+> A full-stack, production-styled Java web application that digitally connects Bangladeshi citizens with their government — built as a demo-grade civic engagement platform.
+
+<br/>
+
+[🚀 Quick Start](#-getting-started) · [✨ Features](#-features) · [🏗️ Architecture](#%EF%B8%8F-architecture--oop-design) · [🛠️ Tech Stack](#%EF%B8%8F-technology-stack) · [⚠️ Disclaimer](#%EF%B8%8F-disclaimer)
+
+</div>
 
 ---
 
-## 🆕 Recent updates
+## 📖 Overview
 
-- Rebranded from *Nagorik Setu* to **OpenGovtBD**.
-- Fixed: the dark-mode preference saved on the Profile page never actually rendered on any page — the `<body>` tag never received the `dark` class, now applied across all citizen views.
-- Fixed: the topbar notification bell only showed a real unread count on the Dashboard; every other citizen page hardcoded it to `0`. A shared `@ControllerAdvice` now computes it once for every page.
-- Added: an instant dark-mode switch in the citizen sidebar (posts to `/citizen/theme/toggle` and redirects back to the current page), plus a matching toggle-switch component styled to replace the old plain checkbox on the Profile page.
+**OpenGovtBD** (formerly *Nagorik Setu*) is a comprehensive, role-driven government-citizen engagement platform demonstrating what a modern, transparent public digital service could look like in Bangladesh. The platform provides a unified workspace for complaint management, public discourse, civic polling, and administrative oversight — all in a single, cohesive application.
+
+Built with **Java 17 + Spring Boot 3 (MVC/OOP)** and **Thymeleaf**, the project uses an **in-memory data layer** — no external database is needed to run the demo, making it instantly portable for evaluation and learning.
 
 ---
 
-## ✨ Highlights
+## ✨ Features
 
-- **Three roles, three experiences** — Citizen, Government Officer, and Super Admin each get a dedicated authenticated workspace with role-based access control (RBAC).
-- **Full complaint lifecycle** — submit → assign → in progress → resolved/rejected, with a live timeline, officer replies, citizen ratings, and reopen flow.
-- **Moderated public discussions** — citizens post, officers approve/reject/pin/lock, with likes, dislikes, bookmarks, comments, and official government responses.
-- **Official polls** — one vote per citizen, live percentage bars, poll archive.
-- **Suggestion box** — upvote/downvote, status workflow (Submitted → Under Review → Accepted/Implemented/Rejected), government feedback.
-- **Gamification** — citizens earn points and badges (New → Bronze → Silver → Gold → Platinum) for participating, with a leaderboard.
-- **Notification center**, **emergency services hub**, **digital services directory**, and an **analytics dashboard** with interactive charts for the Super Admin.
-- **Premium, minimalist, animated UI** — a government-grade design system (Inter font, Material Symbols Rounded icons, 16px rounded corners, soft shadows, glassmorphism accents) with a signature "bridge" motif on the landing page symbolizing citizen ↔ government connection. Smooth entrance animations, animated progress rings/bars, skeleton-ready empty states, and a fully responsive layout down to mobile.
+### 👥 Role-Based Workspaces
+
+Three distinct, secure workspaces with full Role-Based Access Control (RBAC):
+
+| Role | Capabilities |
+| :--- | :--- |
+| **Citizen** | File complaints, join discussions, vote in polls, submit suggestions, earn badges |
+| **Govt. Officer** | Manage complaint queues, moderate discussions, review suggestions, create polls |
+| **Super Admin** | System oversight, citizen & officer management, analytics dashboard |
+
+### 🗂️ Core Modules
+
+- **📋 Complaint Management** — Full lifecycle: Submit → Assign → In Progress → Resolved/Rejected, with timeline tracking, officer replies, citizen ratings, and a reopen flow.
+- **💬 Public Discussions** — Citizen-posted threads with moderation controls (approve, reject, pin, lock, official responses) and social reactions (likes, dislikes, bookmarks, comments).
+- **🗳️ Official Polls** — One vote per citizen, real-time percentage bars, and a full poll archive.
+- **💡 Suggestion Box** — Community-driven idea submission with upvote/downvote and a structured status workflow (Submitted → Under Review → Accepted/Implemented/Rejected).
+- **🏆 Gamification & Leaderboard** — Citizens earn points and badges (New → Bronze → Silver → Gold → Platinum) for civic participation.
+- **🔔 Notification Center** — Real-time unread counts across all pages via a shared `@ControllerAdvice`.
+- **🚨 Emergency Services Hub** — Curated emergency contacts and digital service shortcuts.
+- **📊 Analytics Dashboard** — Interactive Chart.js visualizations for Super Admin (complaints by category/division, resolution rate trends).
+- **🌙 Dark Mode** — Persistent user preference with an instant toggle in the citizen sidebar.
 
 ---
 
 ## 🏗️ Architecture & OOP Design
 
-This is a genuine object-oriented Java project, not just a template renderer:
+OpenGovtBD is a genuine object-oriented Java project demonstrating core OOP principles throughout its design.
+
+### Package Structure
 
 ```
 com.nagoriksetu
-├── model/         Domain entities — abstract User base class with Citizen, Officer,
-│                  Admin subclasses (inheritance + polymorphism), Complaint, Discussion,
-│                  Poll, Suggestion, Notification, Announcement, plus enums for
-│                  Role, ComplaintStatus, SuggestionStatus, Badge.
-├── repository/    In-memory repositories (thread-safe ConcurrentHashMap-backed),
-│                  one per aggregate — no database setup needed for the demo.
-├── service/       Business logic layer — AuthService, ComplaintService,
-│                  DiscussionService, PollService, SuggestionService,
-│                  NotificationService, RewardService, AnalyticsService.
-├── controller/    Spring MVC controllers per role/feature, thin and focused —
-│                  delegate all logic to services.
-└── config/        Session-based RBAC interceptor, MVC config, and a DataSeeder
-                   that populates realistic demo data on startup.
+├── model/         Domain entities
+│                  ├── Abstract User base class (Citizen, Officer, Admin subclasses)
+│                  ├── Complaint, Discussion, Poll, Suggestion, Notification, Announcement
+│                  └── Enums: Role, ComplaintStatus, SuggestionStatus, Badge
+│
+├── repository/    In-memory, thread-safe (ConcurrentHashMap-backed) repositories
+│                  └── One per aggregate — no database setup required
+│
+├── service/       Business logic layer
+│                  └── AuthService, ComplaintService, DiscussionService,
+│                      PollService, SuggestionService, NotificationService,
+│                      RewardService, AnalyticsService
+│
+├── controller/    Thin Spring MVC controllers, delegate all logic to services
+│
+└── config/        Session-based RBAC interceptor, MVC config,
+                   and a DataSeeder that populates realistic demo data on startup
 ```
 
-Key OOP decisions:
-- `User` is an **abstract class** — `Citizen`, `Officer`, and `Admin` extend it and override `getDashboardUrl()`, `getDisplayRole()`, and `getLoginIdentifier()`, demonstrating inheritance and polymorphism throughout the auth and routing layers.
-- Enums (`ComplaintStatus`, `SuggestionStatus`, `Badge`) encapsulate both data and behavior (labels, color "tones", point thresholds).
-- Services are interfaced through constructor injection and contain all business rules (points, notifications, timelines); controllers stay thin.
+### Key OOP Decisions
+
+- **Inheritance & Polymorphism:** `User` is an `abstract` class — `Citizen`, `Officer`, and `Admin` extend it and override `getDashboardUrl()`, `getDisplayRole()`, and `getLoginIdentifier()`.
+- **Behavior-Rich Enums:** `ComplaintStatus`, `SuggestionStatus`, and `Badge` encapsulate both data and behavior (UI labels, color tones, point thresholds).
+- **Thin Controllers, Rich Services:** All business rules (points, notifications, timelines) live in the service layer; controllers stay focused on routing.
 
 ---
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-- **Java 17+**
-- **Maven 3.8+**
 
-### Run locally
+| Tool | Required Version |
+| :--- | :--- |
+| Java (JDK) | 17 or higher |
+| Apache Maven | 3.8 or higher |
+
+### Run Locally
+
 ```bash
-git clone https://github.com/<your-username>/opengovtbd.git
-cd opengovtbd
-mvn spring-boot:run
-```
-Then open **http://localhost:8080**
+# 1. Clone the repository
+git clone https://github.com/pbs002-s/OpenGovtBD.git
+cd OpenGovtBD
 
-### Demo accounts (auto-seeded on startup — no signup needed)
+# 2. Start the application
+mvn spring-boot:run
+
+# 3. Open your browser at:
+#    http://localhost:8080
+```
+
+> The application auto-seeds all demo data on startup. No manual setup or database configuration required.
+
+### 🔑 Demo Accounts
 
 | Role | Login | Password |
-|---|---|---|
-| Citizen | Phone: `01700000000` | `citizen123` |
-| Citizen (alt) | Phone: `01812345678` | `citizen123` |
-| Government Officer | ID: `OFC-1001`, Email: `kamrul.hasan@dhaka.gov.bd` | `officer123` |
-| Super Admin | Email: `admin@opengovtbd.gov.bd` | `admin123` |
+| :--- | :--- | :--- |
+| **Citizen** | Phone: `01700000000` | `citizen123` |
+| **Citizen (Alt)** | Phone: `01812345678` | `citizen123` |
+| **Government Officer** | ID: `OFC-1001` · Email: `kamrul.hasan@dhaka.gov.bd` | `officer123` |
+| **Super Admin** | Email: `admin@opengovtbd.gov.bd` | `admin123` |
 
-New citizens can also register from scratch — the OTP screen displays the demo one-time code (`123456`) directly on the page, since no real SMS gateway is wired up.
-
----
-
-## 📱 Feature Tour
-
-**Citizen:** Dashboard · Digital Services directory · Emergency hub · Complaint filing & tracking · Public discussions · Polls · Suggestion box · Leaderboard · Notifications · Profile & preferences
-
-**Officer:** Dashboard · Complaint queue (assign/update status/reply) · Discussion moderation (approve/reject/pin/lock/official response) · Suggestion review · Poll creation
-
-**Super Admin:** System overview · Citizen & officer management (suspend/reactivate) · Analytics dashboard with live charts (complaints by category/division, resolution rate)
+> 💡 **New citizen registration** is supported. The simulated OTP (`123456`) is displayed directly on the verification page.
 
 ---
 
-## 🛠️ Tech Stack
+## 🗺️ Feature Tour
 
-- Java 17, Spring Boot 3.2 (Web MVC, Thymeleaf)
-- Server-side session-based authentication with a custom RBAC interceptor (no external auth library — intentionally transparent for a learning/demo project)
-- In-memory, thread-safe repositories (no database configuration required)
-- Chart.js (CDN) for the analytics dashboard
-- Google Fonts **Inter** + **Material Symbols Rounded**
+<details>
+<summary><strong>🧑‍💼 Citizen Workspace</strong></summary>
+
+| Page | Key Capabilities |
+| :--- | :--- |
+| Dashboard | Welcome banner, profile completion ring, emergency alerts, stat cards, quick services |
+| Digital Services | Directory of e-government portals (NID, e-Passport, Tax Portal, etc.) |
+| Emergency Hub | Hotline numbers (999, 109, 333) and emergency contacts |
+| Complaints | File, track, rate, and reopen; full timeline view with officer replies |
+| Discussions | Post, comment, like, bookmark, follow government responses |
+| Polls | Vote and view live percentage results |
+| Suggestion Box | Submit ideas, upvote/downvote, track government feedback |
+| Leaderboard | Community rankings by points and badge tier |
+| Notifications | Unread/read distinction with type-based icons |
+| Profile & Settings | Edit details, dark mode, earned points and badges |
+
+</details>
+
+<details>
+<summary><strong>🏢 Government Officer Workspace</strong></summary>
+
+| Page | Key Capabilities |
+| :--- | :--- |
+| Dashboard | Stats on open complaints, pending discussions, suggestion queue |
+| Complaint Queue | Filterable table; assign, update status, reply to citizens |
+| Discussion Approval | Approve, reject, pin, lock threads; post official responses |
+| Suggestion Review | Update status workflow; provide formal government feedback |
+| Create Poll | Dynamic option builder with category and end date |
+
+</details>
+
+<details>
+<summary><strong>🛡️ Super Admin Workspace</strong></summary>
+
+| Page | Key Capabilities |
+| :--- | :--- |
+| System Overview | Platform-wide metrics and recent activity feed |
+| User Management | Citizen and officer tables with suspend/reactivate controls |
+| Analytics | Interactive charts: complaints by category (bar), by division (doughnut), resolution trend (line) |
+
+</details>
 
 ---
 
-## ⚠️ Demo Disclaimer
+## 🛠️ Technology Stack
 
-This is an educational/portfolio demo of a government platform concept. Passwords are stored in plain text in memory, OTP is simulated, and data resets on every restart. **Do not use this authentication approach in production** — a real deployment would need a persistent database, hashed credentials, a real SMS/2FA gateway, and a security review.
+| Layer | Technology |
+| :--- | :--- |
+| **Language** | Java 17 |
+| **Framework** | Spring Boot 3.2 (Web MVC) |
+| **Templating Engine** | Thymeleaf |
+| **Data Layer** | In-Memory (`ConcurrentHashMap`) — zero configuration |
+| **Security** | Custom session-based RBAC interceptor (no external auth library) |
+| **Data Visualization** | Chart.js (CDN) |
+| **Typography** | Google Fonts — Inter, Noto Sans Bengali |
+| **Icons** | Material Symbols Rounded (Google Fonts CDN) |
+| **Build Tool** | Apache Maven |
+
+---
+
+## 📋 Changelog
+
+**Recent Updates**
+
+- ✅ **Rebranded** from *Nagorik Setu* to **OpenGovtBD**
+- 🐛 **Fixed:** Dark mode preference saved on Profile page never applied the `dark` class to `<body>` — now correctly applied across all citizen views
+- 🐛 **Fixed:** Notification bell unread count was hardcoded to `0` on all pages except the Dashboard — a shared `@ControllerAdvice` now computes it once globally
+- ✨ **Added:** Instant dark mode toggle in the citizen sidebar (POST `/citizen/theme/toggle` + redirect) and a styled toggle-switch component replacing the old plain checkbox on Profile
+
+---
+
+## ⚠️ Disclaimer
+
+This project is an **educational and portfolio demonstration** of a government platform concept.
+
+> **Not production-ready.** Passwords are stored as plain text in memory, OTPs are simulated, and all data resets on every restart. A real-world deployment requires a persistent database (e.g., PostgreSQL), password hashing (BCrypt/Argon2), a genuine SMS/2FA gateway, and a full security audit. **Do not use this authentication approach in production.**
 
 ---
 
 ## 📄 License
 
-MIT — free to use for learning and portfolio purposes.
+Distributed under the **MIT License** — free to use for learning, modification, and portfolio purposes. See [`LICENSE`](LICENSE) for details.
+
+---
+
+<div align="center">
+
+*Built with ❤️ for a more transparent and digitally connected Bangladesh.*
+
+</div>
