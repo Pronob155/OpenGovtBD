@@ -28,7 +28,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }, 4500);
   });
 
-  // --- Animate progress rings (SVG circle stroke-dashoffset) ---
   document.querySelectorAll('.progress-ring-fg').forEach(function (circle) {
     const pct = parseFloat(circle.getAttribute('data-pct') || '0');
     const radius = circle.r.baseVal.value;
@@ -60,12 +59,10 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // --- Simple client-side search/filter highlight for select+form auto-submit ---
   document.querySelectorAll('[data-autosubmit]').forEach(function (el) {
     el.addEventListener('change', function () { el.closest('form').submit(); });
   });
 
-  // --- Reveal-on-scroll for landing sections ---
   const revealEls = document.querySelectorAll('.reveal');
   if ('IntersectionObserver' in window && revealEls.length) {
     const io = new IntersectionObserver(function (entries) {
@@ -79,8 +76,6 @@ document.addEventListener('DOMContentLoaded', function () {
     revealEls.forEach(function (el) { io.observe(el); });
   }
 
-  // --- Client-side theme toggle for pages without a server-persisted preference
-  //     (public/auth/officer/admin). Citizen pages manage dark mode server-side. ---
   document.querySelectorAll('[data-client-theme-toggle]').forEach(function (btn) {
     const stored = localStorage.getItem('ogbd-theme');
     if (stored === 'dark') { document.body.classList.add('dark'); btn.classList.add('on'); }
@@ -107,7 +102,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  // --- Reply-to-comment toggle ---
   document.querySelectorAll('[data-reply-toggle]').forEach(function (btn) {
     btn.addEventListener('click', function () {
       const form = document.querySelector('[data-reply-form="' + btn.getAttribute('data-reply-toggle') + '"]');
@@ -133,7 +127,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  // --- Profile completion celebration (fires once per citizen per session) ---
   const celebrationTrigger = document.querySelector('[data-celebrate-completion]');
   if (celebrationTrigger) {
     const pct = parseInt(celebrationTrigger.getAttribute('data-celebrate-completion'), 10);
@@ -169,7 +162,6 @@ document.addEventListener('DOMContentLoaded', function () {
     backdrop.querySelector('[data-close-celebration]').addEventListener('click', close);
   }
 
-  // --- Toasts (used for AJAX-driven feedback) ---
   window.ogbdToast = function (message, type) {
     let stack = document.querySelector('.toast-stack');
     if (!stack) {
@@ -231,7 +223,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if (link) hidePopoverSoon();
   });
 
-  // --- @Mention autocomplete for comment/discussion composer textareas ---
   document.querySelectorAll('[data-mention-input]').forEach(function (input) {
     let box = null;
     input.addEventListener('input', function () {
