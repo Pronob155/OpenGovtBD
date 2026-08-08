@@ -116,6 +116,6 @@ We value security researchers who help us improve. With your permission, we will
 
 **© 2026 OpenGovtBD Development Team · All Rights Reserved**
 
-**উন্মুক্ত সরকার · সেতু (Bridge) 🇧🇩**
+**উন্মুক্ত সরকার - OpenGovtBD**
 
 </div>
