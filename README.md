@@ -215,8 +215,7 @@ This project is an **educational and portfolio demonstration** of a government p
 ---
 
 ## 📄 License
-
-Distributed under the **MIT License** —  not for personal use. See [`LICENSE`](LICENSE) for details.
+ Not for personal use. See [`LICENSE`](LICENSE) for details.
 
 ---
 
