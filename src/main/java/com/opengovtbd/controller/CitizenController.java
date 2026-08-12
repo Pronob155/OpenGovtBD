@@ -31,10 +31,10 @@ public class CitizenController {
     private final FileStorageService fileStorageService;
 
     public CitizenController(AuthService authService, ComplaintService complaintService,
-            DiscussionService discussionService, PollService pollService,
-            SuggestionService suggestionService, NotificationService notificationService,
-            AnnouncementRepository announcementRepository, UserRepository userRepository,
-            RewardService rewardService, FileStorageService fileStorageService) {
+                              DiscussionService discussionService, PollService pollService,
+                              SuggestionService suggestionService, NotificationService notificationService,
+                              AnnouncementRepository announcementRepository, UserRepository userRepository,
+                              RewardService rewardService, FileStorageService fileStorageService) {
         this.authService = authService;
         this.complaintService = complaintService;
         this.discussionService = discussionService;
@@ -53,8 +53,7 @@ public class CitizenController {
         var complaints = complaintService.forCitizen(citizen.getId());
         model.addAttribute("citizen", citizen);
         model.addAttribute("complaints", complaints);
-        model.addAttribute("resolvedCount",
-                complaints.stream().filter(com.opengovtbd.model.Complaint::isResolved).count());
+        model.addAttribute("resolvedCount", complaints.stream().filter(com.opengovtbd.model.Complaint::isResolved).count());
         model.addAttribute("activePolls", pollService.active());
         model.addAttribute("discussions", discussionService.approvedFeed(null, null, null).stream().limit(3).toList());
         model.addAttribute("suggestions", suggestionService.forCitizen(citizen.getId()));
@@ -62,6 +61,8 @@ public class CitizenController {
         model.addAttribute("notifications", notificationService.forUser(citizen.getId()).stream().limit(5).toList());
         model.addAttribute("unreadCount", notificationService.unreadCount(citizen.getId()));
 
+        // Leaderboard preview (Component 3b): reuse the real ranked-citizen data that
+        // powers the full /citizen/leaderboard page.
         List<Citizen> allRanked = userRepository.findAllCitizens().stream()
                 .sorted(Comparator.comparingInt(Citizen::getPoints).reversed())
                 .collect(Collectors.toList());
@@ -82,6 +83,19 @@ public class CitizenController {
         return "citizen/dashboard";
     }
 
+    @GetMapping("/announcements/{id}")
+    public String announcementDetails(@PathVariable Long id, HttpSession session, Model model) {
+        Citizen citizen = SessionUser.requireCitizen(session, authService);
+        var announcement = announcementRepository.findById(id).orElse(null);
+        if (announcement == null) {
+            return "error/404";
+        }
+        model.addAttribute("citizen", citizen);
+        model.addAttribute("announcement", announcement);
+        model.addAttribute("unreadCount", notificationService.unreadCount(citizen.getId()));
+        return "citizen/announcement-details";
+    }
+
     @GetMapping("/services")
     public String services(HttpSession session, Model model) {
         model.addAttribute("citizen", SessionUser.requireCitizen(session, authService));
@@ -96,8 +110,8 @@ public class CitizenController {
 
     @GetMapping("/notifications")
     public String notifications(HttpSession session, Model model,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(required = false) String category) {
+                                 @RequestParam(defaultValue = "0") int page,
+                                 @RequestParam(required = false) String category) {
         Citizen citizen = SessionUser.requireCitizen(session, authService);
         List<com.opengovtbd.model.Notification> all = notificationService.forUser(citizen.getId());
         if (category != null && !category.isBlank() && !category.equalsIgnoreCase("all")) {
@@ -124,10 +138,7 @@ public class CitizenController {
         return "redirect:/citizen/notifications";
     }
 
-    /**
-     * Used by the notification center's client-side JS to clear a single unread dot
-     * without a full page reload.
-     */
+    /** Used by the notification center's client-side JS to clear a single unread dot without a full page reload. */
     @PostMapping("/notifications/{id}/read")
     @ResponseBody
     public java.util.Map<String, Boolean> markOneRead(@PathVariable Long id, HttpSession session) {
@@ -150,10 +161,10 @@ public class CitizenController {
 
     @PostMapping("/profile")
     public String updateProfile(@RequestParam String fullName, @RequestParam(required = false) String address,
-            @RequestParam(required = false) String division,
-            @RequestParam(required = false) String email,
-            @RequestParam(required = false) String secondaryPhone,
-            HttpSession session) {
+                                 @RequestParam(required = false) String division,
+                                 @RequestParam(required = false) String email,
+                                 @RequestParam(required = false) String secondaryPhone,
+                                 HttpSession session) {
         Citizen citizen = SessionUser.requireCitizen(session, authService);
         citizen.setFullName(fullName);
         citizen.setAddress(address);
@@ -166,8 +177,8 @@ public class CitizenController {
 
     @PostMapping("/profile/preferences")
     public String updatePreferences(@RequestParam(required = false) String language,
-            @RequestParam(required = false) String darkMode,
-            HttpSession session) {
+                                     @RequestParam(required = false) String darkMode,
+                                     HttpSession session) {
         Citizen citizen = SessionUser.requireCitizen(session, authService);
         citizen.setLanguage(language == null ? "en" : language);
         citizen.setDarkMode("on".equals(darkMode));
@@ -182,7 +193,7 @@ public class CitizenController {
         return "redirect:" + (referer != null && !referer.isBlank() ? referer : "/citizen/dashboard");
     }
 
-    // ---------- Identity verification (NID + selfie, simulated AI check)
+    // ---------- Identity verification (NID + selfie, simulated AI check) ----------
 
     @GetMapping("/verification")
     public String verificationPage(HttpSession session, Model model) {
@@ -192,7 +203,7 @@ public class CitizenController {
 
     @PostMapping("/verification/submit")
     public String submitVerification(@RequestParam MultipartFile nidImage, @RequestParam MultipartFile selfie,
-            HttpSession session) {
+                                      HttpSession session) {
         Citizen citizen = SessionUser.requireCitizen(session, authService);
         String nidPath = fileStorageService.store(nidImage, "nid");
         String selfiePath = fileStorageService.store(selfie, "selfie");
@@ -200,15 +211,12 @@ public class CitizenController {
         citizen.setSelfieImagePath(selfiePath);
         citizen.setVerificationSubmittedAt(java.time.LocalDateTime.now());
         citizen.setVerificationStatus(Citizen.VerificationStatus.PENDING);
-        // Simulated AI verification: in this demo, a well-formed submission (both files
-        // present)
-        // is instantly "approved" — in production this would call a real face-match/NID
-        // OCR service.
+        // Simulated AI verification: in this demo, a well-formed submission (both files present)
+        // is instantly "approved" — in production this would call a real face-match/NID OCR service.
         if (nidPath != null && selfiePath != null) {
             citizen.markVerified();
             rewardService.award(citizen, RewardService.POINTS_COMPLAINT, "Completed identity verification");
-            notificationService.notify(citizen.getId(),
-                    "Your identity has been verified. You now have the Verified badge!",
+            notificationService.notify(citizen.getId(), "Your identity has been verified. You now have the Verified badge!",
                     com.opengovtbd.model.Notification.Type.SECURITY, "/citizen/profile");
         } else {
             citizen.setVerificationStatus(Citizen.VerificationStatus.REJECTED);
@@ -229,8 +237,46 @@ public class CitizenController {
         return "citizen/saved";
     }
 
+    @GetMapping("/activity")
+    public String activity(HttpSession session, Model model) {
+        Citizen citizen = SessionUser.requireCitizen(session, authService);
+        model.addAttribute("citizen", citizen);
+
+        List<com.opengovtbd.model.ActivityItem> items = new java.util.ArrayList<>();
+
+        for (var c : complaintService.forCitizen(citizen.getId())) {
+            items.add(new com.opengovtbd.model.ActivityItem(
+                    "Complaint", "report", c.getTitle(),
+                    c.getStatus().getLabel(), c.getStatus().getTone(),
+                    c.getCreatedAt(), "/citizen/complaints/" + c.getId()));
+        }
+
+        for (var d : discussionService.forCitizen(citizen.getId())) {
+            String statusLabel = d.isApproved() ? "Published" : "Pending Approval";
+            String statusTone = d.isApproved() ? "success" : "warning";
+            items.add(new com.opengovtbd.model.ActivityItem(
+                    "Discussion", "forum", d.getTitle(),
+                    statusLabel, statusTone,
+                    d.getCreatedAt(),
+                    d.isApproved() ? "/citizen/discussions/" + d.getId() : "/citizen/activity"));
+        }
+
+        for (var s : suggestionService.forCitizen(citizen.getId())) {
+            items.add(new com.opengovtbd.model.ActivityItem(
+                    "Suggestion", "lightbulb", s.getTitle(),
+                    s.getStatus().getLabel(), s.getStatus().getTone(),
+                    s.getCreatedAt(), "/citizen/suggestions/" + s.getId()));
+        }
+
+        items.sort(Comparator.comparing(com.opengovtbd.model.ActivityItem::getTimestamp).reversed());
+        model.addAttribute("items", items);
+        return "citizen/activity";
+    }
+
     @GetMapping("/leaderboard")
-    public String leaderboard(HttpSession session, Model model) {
+    public String leaderboard(HttpSession session, Model model,
+                              @RequestParam(required = false) String period,
+                              @RequestParam(required = false) Long focusId) {
         Citizen citizen = SessionUser.requireCitizen(session, authService);
         model.addAttribute("citizen", citizen);
         List<Citizen> ranked = userRepository.findAllCitizens().stream()
@@ -242,6 +288,10 @@ public class CitizenController {
                 .sorted(Comparator.comparingInt(o -> -rewardService.pointsForOfficer(o.getId())))
                 .collect(Collectors.toList()));
         model.addAttribute("rewardService", rewardService);
+        model.addAttribute("period", period == null ? "month" : period);
+        if (focusId != null) {
+            model.addAttribute("selectedCitizen", ranked.stream().filter(c -> c.getId().equals(focusId)).findFirst().orElse(null));
+        }
 
         int myRank = 0;
         for (int i = 0; i < ranked.size(); i++) {
