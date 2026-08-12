@@ -15,7 +15,7 @@
           <div class="card card-pad" style="margin-bottom:20px;">
             <span class="pill" th:classappend="'pill-' + ${complaint.status.tone}" th:text="${complaint.status.label}">Status</span>
             <h2 style="margin:12px 0 4px;" th:text="${complaint.title}">Title</h2>
-            <div class="text-muted" style="font-size:13px;" th:text="${complaint.trackingId} + ' · Filed by ' + (${citizen != null ? citizen.fullName : 'Citizen'})">meta</div>
+            <div class="text-muted mono" style="font-size:13px;" th:text="${complaint.trackingId} + ' · Filed by ' + (${citizen != null ? citizen.fullName : 'Citizen'})">meta</div>
             <p style="margin:16px 0 0;" th:text="${complaint.description}">Description</p>
             <div class="text-muted" style="font-size:13px;margin-top:14px;" th:text="${complaint.category} + ' · ' + ${complaint.division} + ', ' + ${complaint.district} + ', ' + ${complaint.upazila}">meta</div>
           </div>
@@ -27,7 +27,7 @@
                 <div class="timeline-dot"></div>
                 <div class="fw-600" th:text="${t.title}">Event</div>
                 <div class="text-muted" style="font-size:13px;" th:text="${t.description}">desc</div>
-                <div class="text-muted" style="font-size:11.5px;" th:text="${t.actor} + ' · ' + ${#temporals.format(t.timestamp, 'dd MMM, hh:mm a')}">meta</div>
+                <div class="text-muted mono" style="font-size:11.5px;" th:text="${t.actor} + ' · ' + ${#temporals.format(t.timestamp, 'dd MMM, hh:mm a')}">meta</div>
               </div>
             </div>
           </div>
@@ -35,10 +35,28 @@
 
         <div style="display:flex;flex-direction:column;gap:20px;">
           <div class="card card-pad" th:if="${complaint.assignedOfficerId == null}">
-            <h3 style="margin:0 0 12px;">Assign to Me</h3>
+            <h3 style="margin:0 0 4px;">Assign Complaint</h3>
+            <p class="text-muted" style="font-size:12.5px;margin:0 0 14px;">Not yet assigned to anyone.</p>
             <form th:action="@{'/officer/complaints/' + ${complaint.id} + '/assign'}" method="post">
-              <button class="btn btn-primary btn-block" type="submit">Take Ownership</button>
+              <button class="btn btn-primary btn-block" type="submit"><span class="material-symbols-rounded">person_add</span>Assign to Me</button>
             </form>
+            <div th:if="${not #lists.isEmpty(otherOfficers)}">
+              <div style="display:flex;align-items:center;gap:10px;margin:16px 0 12px;">
+                <div style="flex:1;height:1px;background:var(--border);"></div>
+                <span class="text-muted" style="font-size:11.5px;">or assign to another officer</span>
+                <div style="flex:1;height:1px;background:var(--border);"></div>
+              </div>
+              <form th:action="@{'/officer/complaints/' + ${complaint.id} + '/reassign'}" method="post">
+                <div class="field">
+                  <select class="input" name="toOfficerId" required>
+                    <option value="" disabled selected>Choose an officer…</option>
+                    <option th:each="o : ${otherOfficers}" th:value="${o.id}" th:text="${o.fullName} + ' — ' + ${o.department}"></option>
+                  </select>
+                </div>
+                <div class="field"><input class="input" name="reason" placeholder="Reason (optional)"/></div>
+                <button class="btn btn-outline btn-block" type="submit"><span class="material-symbols-rounded">swap_horiz</span>Assign to Officer</button>
+              </form>
+            </div>
           </div>
 
           <div class="card card-pad">
@@ -51,6 +69,20 @@
               </div>
               <div class="field"><textarea class="input" name="note" rows="3" placeholder="Add a note (optional)"></textarea></div>
               <button class="btn btn-green btn-block" type="submit">Update Status</button>
+            </form>
+          </div>
+
+          <div class="card card-pad" th:if="${complaint.assignedOfficerId != null and not #lists.isEmpty(otherOfficers)}">
+            <h3 style="margin:0 0 12px;">Reassign To Another Officer</h3>
+            <form th:action="@{'/officer/complaints/' + ${complaint.id} + '/reassign'}" method="post">
+              <div class="field">
+                <select class="input" name="toOfficerId" required>
+                  <option value="" disabled selected>Choose an officer…</option>
+                  <option th:each="o : ${otherOfficers}" th:value="${o.id}" th:text="${o.fullName} + ' — ' + ${o.department}"></option>
+                </select>
+              </div>
+              <div class="field"><input class="input" name="reason" placeholder="Reason for reassignment (optional)"/></div>
+              <button class="btn btn-outline btn-block" type="submit"><span class="material-symbols-rounded">swap_horiz</span>Reassign Complaint</button>
             </form>
           </div>
 
