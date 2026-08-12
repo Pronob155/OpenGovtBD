@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }, 4500);
   });
 
+  // --- Animate progress rings (SVG circle stroke-dashoffset) ---
   document.querySelectorAll('.progress-ring-fg').forEach(function (circle) {
     const pct = parseFloat(circle.getAttribute('data-pct') || '0');
     const radius = circle.r.baseVal.value;
@@ -59,10 +60,12 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  // --- Simple client-side search/filter highlight for select+form auto-submit ---
   document.querySelectorAll('[data-autosubmit]').forEach(function (el) {
     el.addEventListener('change', function () { el.closest('form').submit(); });
   });
 
+  // --- Reveal-on-scroll for landing sections ---
   const revealEls = document.querySelectorAll('.reveal');
   if ('IntersectionObserver' in window && revealEls.length) {
     const io = new IntersectionObserver(function (entries) {
@@ -76,13 +79,21 @@ document.addEventListener('DOMContentLoaded', function () {
     revealEls.forEach(function (el) { io.observe(el); });
   }
 
+  // --- Client-side theme toggle for pages without a server-persisted preference
+  //     (public/auth/officer/admin). Citizen pages manage dark mode server-side. ---
   document.querySelectorAll('[data-client-theme-toggle]').forEach(function (btn) {
     const stored = localStorage.getItem('ogbd-theme');
-    if (stored === 'dark') { document.body.classList.add('dark'); btn.classList.add('on'); }
+    const icon = btn.querySelector('.theme-icon');
+    if (stored === 'dark') {
+      document.body.classList.add('dark');
+      btn.classList.add('on');
+      if (icon) icon.textContent = 'light_mode';
+    }
     btn.addEventListener('click', function () {
       const nowDark = !document.body.classList.contains('dark');
       document.body.classList.toggle('dark', nowDark);
       btn.classList.toggle('on', nowDark);
+      if (icon) icon.textContent = nowDark ? 'light_mode' : 'dark_mode';
       localStorage.setItem('ogbd-theme', nowDark ? 'dark' : 'light');
     });
   });
@@ -102,6 +113,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
+  // --- Reply-to-comment toggle ---
   document.querySelectorAll('[data-reply-toggle]').forEach(function (btn) {
     btn.addEventListener('click', function () {
       const form = document.querySelector('[data-reply-form="' + btn.getAttribute('data-reply-toggle') + '"]');
@@ -127,6 +139,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
+  // --- Profile completion celebration (fires once per citizen per session) ---
   const celebrationTrigger = document.querySelector('[data-celebrate-completion]');
   if (celebrationTrigger) {
     const pct = parseInt(celebrationTrigger.getAttribute('data-celebrate-completion'), 10);
@@ -162,6 +175,7 @@ document.addEventListener('DOMContentLoaded', function () {
     backdrop.querySelector('[data-close-celebration]').addEventListener('click', close);
   }
 
+  // --- Toasts (used for AJAX-driven feedback) ---
   window.ogbdToast = function (message, type) {
     let stack = document.querySelector('.toast-stack');
     if (!stack) {
@@ -215,7 +229,7 @@ document.addEventListener('DOMContentLoaded', function () {
       el.style.left = Math.max(12, Math.min(window.innerWidth - 296, rect.left)) + 'px';
       el.style.top = (rect.bottom + 8) + 'px';
       el.classList.add('show');
-    }).catch(function () {});
+    }).catch(function () { });
   });
 
   document.addEventListener('mouseout', function (e) {
@@ -223,6 +237,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (link) hidePopoverSoon();
   });
 
+  // --- @Mention autocomplete for comment/discussion composer textareas ---
   document.querySelectorAll('[data-mention-input]').forEach(function (input) {
     let box = null;
     input.addEventListener('input', function () {
@@ -254,8 +269,61 @@ document.addEventListener('DOMContentLoaded', function () {
           });
           input.parentElement.style.position = 'relative';
           input.parentElement.appendChild(box);
-        }).catch(function () {});
+        }).catch(function () { });
     });
     input.addEventListener('blur', function () { setTimeout(function () { if (box) { box.remove(); box = null; } }, 150); });
+  });
+});
+
+// =========================================================
+// UI REFRESH — ui-refresh-design.md
+// Tilt-on-hover, floating CTA, sliding-pill auth tabs
+// =========================================================
+document.addEventListener('DOMContentLoaded', function () {
+
+  // --- Tilt-on-hover (landing page cards only, .tilt class) ---
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!reduceMotion) {
+    document.querySelectorAll('.tilt').forEach(function (card) {
+      card.addEventListener('mousemove', function (e) {
+        var rect = card.getBoundingClientRect();
+        var x = (e.clientX - rect.left) / rect.width - 0.5;
+        var y = (e.clientY - rect.top) / rect.height - 0.5;
+        var maxTilt = 6;
+        card.style.transform = 'perspective(800px) rotateX(' + (-y * maxTilt) + 'deg) rotateY(' + (x * maxTilt) + 'deg) translateY(-2px)';
+      });
+      card.addEventListener('mouseleave', function () {
+        card.style.transform = '';
+      });
+    });
+  }
+
+  // --- Floating CTA: show after hero, hide near footer ---
+  var fab = document.querySelector('.floating-cta');
+  var hero = document.querySelector('.hero');
+  var footer = document.querySelector('.site-footer');
+  if (fab && hero) {
+    window.addEventListener('scroll', function () {
+      var heroBottom = hero.getBoundingClientRect().bottom;
+      var footerTop = footer ? footer.getBoundingClientRect().top : Infinity;
+      var pastHero = heroBottom < 0;
+      var nearFooter = footerTop < window.innerHeight;
+      if (pastHero && !nearFooter) fab.classList.add('show');
+      else fab.classList.remove('show');
+    }, { passive: true });
+  }
+
+  // --- Sliding-pill active tab (auth role tabs) ---
+  document.querySelectorAll('.role-tabs-slide').forEach(function (group) {
+    var thumb = group.querySelector('.slide-thumb');
+    var active = group.querySelector('a.active');
+    if (thumb && active) {
+      var place = function () {
+        thumb.style.left = active.offsetLeft + 'px';
+        thumb.style.width = active.offsetWidth + 'px';
+      };
+      place();
+      window.addEventListener('resize', place);
+    }
   });
 });
