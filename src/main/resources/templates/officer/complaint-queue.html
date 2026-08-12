@@ -32,7 +32,7 @@
           <thead><tr><th>Tracking ID</th><th>Title</th><th>Category</th><th>Location</th><th>Status</th><th></th></tr></thead>
           <tbody>
           <tr th:each="c : ${complaints}">
-            <td th:text="${c.trackingId}">ID</td>
+            <td class="mono" th:text="${c.trackingId}">ID</td>
             <td th:text="${c.title}">Title</td>
             <td th:text="${c.category}">Category</td>
             <td th:text="${c.district} + ', ' + ${c.upazila}">Loc</td>
