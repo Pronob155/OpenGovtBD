@@ -4,8 +4,7 @@
 
 <head th:replace="~{fragments/layout :: head('My Activity')}"></head>
 
-<body th:classappend="${darkMode} ? 'dark-mode' : ''">
-
+<body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'">
 <div class="app-shell">
 
     <nav th:replace="~{fragments/layout :: sidebar-citizen('activity')}"></nav>
