@@ -38,7 +38,6 @@ public class DiscussionRepository {
         return findAll().stream().filter(d -> !d.isApproved()).collect(Collectors.toList());
     }
 
-    /** All discussions started by a given citizen, including ones still pending approval. */
     public List<Discussion> findByAuthorId(Long authorId) {
         return findAll().stream().filter(d -> d.getAuthorId().equals(authorId)).collect(Collectors.toList());
     }
