@@ -20,7 +20,11 @@ public class AnnouncementRepository {
 
     public List<Announcement> findAll() {
         return announcements.values().stream()
-            .sorted(Comparator.comparing(Announcement::getCreatedAt).reversed())
-            .collect(Collectors.toList());
+                .sorted(Comparator.comparing(Announcement::getCreatedAt).reversed())
+                .collect(Collectors.toList());
+    }
+
+    public java.util.Optional<Announcement> findById(Long id) {
+        return java.util.Optional.ofNullable(announcements.get(id));
     }
 }
