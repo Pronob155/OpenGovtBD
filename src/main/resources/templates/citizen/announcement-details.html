@@ -1,0 +1,59 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+  <head th:replace="~{fragments/layout :: head('Announcement')}"></head>
+  <body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'">
+    <div class="app-shell">
+      <nav
+        th:replace="~{fragments/layout :: sidebar-citizen('dashboard')}"
+      ></nav>
+      <div class="sidebar-overlay"></div>
+      <div class="main">
+        <div
+          th:replace="~{fragments/layout :: topbar('Announcement', ${citizen.fullName}, ${unreadCount}, '/citizen/notifications')}"
+        ></div>
+        <div class="content" style="max-width: 860px">
+          <a
+            href="/citizen/dashboard"
+            class="text-muted"
+            style="
+              display: inline-flex;
+              align-items: center;
+              gap: 6px;
+              margin-bottom: 16px;
+            "
+          >
+            <span class="material-symbols-rounded">arrow_back</span> Back to
+            dashboard
+          </a>
+          <div class="card card-pad fade-up">
+            <div
+              class="pill"
+              th:classappend="${announcement.priority.name() == 'EMERGENCY'} ? 'pill-error' : (${announcement.priority.name() == 'IMPORTANT'} ? 'pill-warning' : 'pill-info')"
+              style="margin-bottom: 12px"
+              th:text="${announcement.priority}"
+            >
+              NORMAL
+            </div>
+            <h2 style="margin: 0 0 8px" th:text="${announcement.title}">
+              Title
+            </h2>
+            <p
+              class="text-muted"
+              style="margin: 0 0 16px"
+              th:text="${#temporals.format(announcement.createdAt, 'dd MMM yyyy, HH:mm')}"
+            >
+              Date
+            </p>
+            <div
+              style="font-size: 15px; line-height: 1.7; white-space: pre-wrap"
+              th:text="${announcement.content}"
+            >
+              Content
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script th:src="@{/js/main.js}"></script>
+  </body>
+</html>
