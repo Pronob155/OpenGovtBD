@@ -28,8 +28,7 @@
           <div class="card card-pad fade-up">
             <div
               class="pill"
-              th:with="priorityName=${announcement.priority.name()}"
-              th:classappend="${priorityName == 'EMERGENCY'} ? 'pill-error' : (${priorityName == 'IMPORTANT'} ? 'pill-warning' : 'pill-info')"
+              th:classappend="${announcement.priority.name() == 'EMERGENCY'} ? 'pill-error' : (${announcement.priority.name() == 'IMPORTANT'} ? 'pill-warning' : 'pill-info')"
               style="margin-bottom: 12px"
               th:text="${announcement.priority}"
             >
