@@ -34,7 +34,7 @@
                 <td><span class="pill pill-muted" th:text="${s.category}">Category</span></td>
                 <td><a th:href="${s.externalUrl}" target="_blank" rel="noopener" class="text-muted"
                     style="font-size:12.5px;" th:text="${s.externalUrl}">url</a></td>
-                <td class="text-muted" th:text="${#temporals.format(s.createdAt, 'dd MMM yyyy')}">date</td>
+                <td class="text-muted mono" th:text="${#temporals.format(s.createdAt, 'dd MMM yyyy')}">date</td>
               </tr>
               <tr th:if="${#lists.isEmpty(services)}">
                 <td colspan="4" class="text-muted" style="text-align:center;padding:24px;">No services published yet.
