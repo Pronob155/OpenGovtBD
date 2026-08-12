@@ -29,7 +29,7 @@
             <div class="text-muted" style="font-size:13px;margin:4px 0 10px;"
               th:text="${targetUser.displayRole} + ' · @' + ${targetUser.username}">Role</div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;">
-              <span class="pill"
+              <span class="pill mono"
                 th:classappend="${targetUser.banned} ? 'pill-banned' : (${targetUser.isCurrentlySuspended()} ? 'pill-suspended' : 'pill-success')"
                 th:text="${targetUser.banned} ? 'Permanently Banned' : (${targetUser.isCurrentlySuspended()} ? ('Suspended until ' + ${#temporals.format(targetUser.suspendedUntil, 'dd MMM yyyy')}) : 'Active')">Status</span>
               <span class="pill pill-muted" th:text="${targetUser.suspensionCount} + ' prior suspension(s)'">0
@@ -67,7 +67,7 @@
             <div th:if="${targetUser.class.simpleName == 'Officer'}">
               <div
                 style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
-                <span class="text-muted">Officer ID</span><span class="fw-600"
+                <span class="text-muted">Officer ID</span><span class="fw-600 mono"
                   th:text="${targetUser.officerId}">-</span></div>
               <div
                 style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
@@ -124,11 +124,11 @@
           <div class="timeline">
             <div class="timeline-item done" th:each="r : ${targetUser.suspensionHistory}">
               <div class="timeline-dot"></div>
-              <div class="fw-600"
+              <div class="fw-600 mono"
                 th:text="${r.type} + (${r.until} != null ? (' until ' + ${#temporals.format(r.until, 'dd MMM yyyy')}) : ' (permanent)')">
                 Event</div>
               <div class="text-muted" style="font-size:13px;margin:2px 0 4px;" th:text="${r.reason}">Reason</div>
-              <div class="text-muted" style="font-size:11.5px;"
+              <div class="text-muted mono" style="font-size:11.5px;"
                 th:text="'By ' + ${r.issuedBy} + ' · ' + ${#temporals.format(r.issuedAt, 'dd MMM yyyy, hh:mm a')}">meta
               </div>
             </div>
