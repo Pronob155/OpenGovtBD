@@ -44,6 +44,7 @@ public class ComplaintService {
     public List<Complaint> forOfficer(Long officerId) { return complaintRepository.findByAssignedOfficerId(officerId); }
     public Optional<Complaint> find(Long id) { return complaintRepository.findById(id); }
 
+    /** Complaints a citizen has bookmarked/saved, newest first. */
     public List<Complaint> savedBy(Long citizenId) {
         return complaintRepository.findAll().stream()
                 .filter(c -> c.getBookmarkedBy().contains(citizenId))
@@ -62,6 +63,35 @@ public class ComplaintService {
         rewardService.awardOfficer(officer, RewardService.POINTS_OFFICER_ACCEPT);
         notificationService.notify(complaint.getCitizenId(),
                 "Your complaint " + complaint.getTrackingId() + " was assigned to an officer.",
+                Notification.Type.COMPLAINT, "/citizen/complaints/" + complaint.getId());
+    }
+
+    /**
+     * Assigns (or reassigns) a complaint to a specific officer chosen from the
+     * queue — used both for a still-unassigned complaint ("assign to officer")
+     * and an already-assigned one being handed off (e.g. wrong department,
+     * overload, escalation). Mirrors {@link #assign} but records both the
+     * acting officer and the receiving officer in the timeline, and does not
+     * re-award the "accepted" reward point (only the receiving officer's
+     * future actions count).
+     */
+    public void reassign(Complaint complaint, Officer fromOfficer, Officer toOfficer, String reason) {
+        boolean wasUnassigned = complaint.getAssignedOfficerId() == null;
+        complaint.setAssignedOfficerId(toOfficer.getId());
+        if (wasUnassigned && (complaint.getStatus() == ComplaintStatus.SUBMITTED || complaint.getStatus() == ComplaintStatus.PENDING)) {
+            complaint.setStatus(ComplaintStatus.ASSIGNED);
+        }
+        String description = wasUnassigned
+                ? "Assigned to " + toOfficer.getFullName() + " (" + toOfficer.getDepartment() + ") by "
+                        + fromOfficer.getFullName() + (reason != null && !reason.isBlank() ? " — " + reason : "")
+                : "Moved from " + fromOfficer.getFullName() + " (" + fromOfficer.getDepartment() + ") to "
+                        + toOfficer.getFullName() + " (" + toOfficer.getDepartment() + ")"
+                        + (reason != null && !reason.isBlank() ? " — " + reason : "");
+        complaint.addTimelineEvent(wasUnassigned ? "Assigned to officer" : "Reassigned", description, fromOfficer.getFullName());
+        notificationService.notify(complaint.getCitizenId(),
+                wasUnassigned
+                        ? "Your complaint " + complaint.getTrackingId() + " was assigned to an officer."
+                        : "Your complaint " + complaint.getTrackingId() + " was reassigned to another officer.",
                 Notification.Type.COMPLAINT, "/citizen/complaints/" + complaint.getId());
     }
 
@@ -97,6 +127,7 @@ public class ComplaintService {
         complaint.addTimelineEvent("Complaint reopened", reason, "Citizen");
     }
 
+    // ---------- Comments (with reply threading, likes, @mentions) ----------
 
     public Comment addComment(Complaint complaint, Long authorId, String content, Long parentId) {
         Comment comment = new Comment(authorId, content, parentId);
@@ -127,12 +158,14 @@ public class ComplaintService {
     public long resolved() { return complaintRepository.countResolved(); }
     public long pending() { return complaintRepository.countPending(); }
 
+    /** "Pending" bucket for officer dashboard filter cards: freshly submitted / not yet actioned. */
     public long pendingBucket() {
         return complaintRepository.findAll().stream()
                 .filter(c -> c.getStatus() == ComplaintStatus.SUBMITTED || c.getStatus() == ComplaintStatus.PENDING)
                 .count();
     }
 
+    /** "Awaiting" bucket: actively being worked on / waiting on a response. */
     public long awaitingBucket() {
         return complaintRepository.findAll().stream()
                 .filter(c -> c.getStatus() == ComplaintStatus.ASSIGNED || c.getStatus() == ComplaintStatus.UNDER_REVIEW
