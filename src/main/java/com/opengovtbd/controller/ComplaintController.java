@@ -25,6 +25,7 @@ public class ComplaintController {
         this.userRepository = userRepository;
     }
 
+    // ---------- Citizen side ----------
 
     @GetMapping("/citizen/complaints")
     public String list(HttpSession session, Model model) {
@@ -104,6 +105,7 @@ public class ComplaintController {
         return "redirect:/citizen/complaints/" + id + "#comments";
     }
 
+    // ---------- Officer side ----------
 
     @GetMapping("/officer/complaints")
     public String queue(HttpSession session, Model model,
@@ -139,6 +141,9 @@ public class ComplaintController {
         model.addAttribute("complaint", complaint);
         model.addAttribute("statuses", ComplaintStatus.values());
         userRepository.findById(complaint.getCitizenId()).ifPresent(c -> model.addAttribute("citizen", c));
+        model.addAttribute("otherOfficers", userRepository.findAllOfficers().stream()
+                .filter(o -> !o.getId().equals(complaint.getAssignedOfficerId()))
+                .toList());
         return "officer/complaint-details";
     }
 
@@ -147,6 +152,19 @@ public class ComplaintController {
         Officer officer = SessionUser.requireOfficer(session, authService);
         Complaint complaint = complaintService.find(id).orElseThrow();
         complaintService.assign(complaint, officer);
+        return "redirect:/officer/complaints/" + id;
+    }
+
+    @PostMapping("/officer/complaints/{id}/reassign")
+    public String reassign(@PathVariable Long id, @RequestParam Long toOfficerId,
+                            @RequestParam(required = false) String reason, HttpSession session) {
+        Officer fromOfficer = SessionUser.requireOfficer(session, authService);
+        Complaint complaint = complaintService.find(id).orElseThrow();
+        Officer toOfficer = userRepository.findAllOfficers().stream()
+                .filter(o -> o.getId().equals(toOfficerId))
+                .findFirst()
+                .orElseThrow();
+        complaintService.reassign(complaint, fromOfficer, toOfficer, reason);
         return "redirect:/officer/complaints/" + id;
     }
 
