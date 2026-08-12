@@ -27,7 +27,7 @@
         <a th:each="c : ${complaints}" th:href="@{'/citizen/complaints/' + ${c.id}}" class="card card-pad hoverable fade-up">
           <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:10px;">
             <span class="pill" th:classappend="'pill-' + ${c.status.tone}" th:text="${c.status.label}">Status</span>
-            <span class="text-muted" style="font-size:12px;" th:text="${c.trackingId}">ID</span>
+            <span class="text-muted mono" style="font-size:12px;" th:text="${c.trackingId}">ID</span>
           </div>
           <h4 style="margin:0 0 6px;" th:text="${c.title}">Title</h4>
           <p class="text-muted" style="font-size:13px;margin:0 0 10px;" th:text="${#strings.abbreviate(c.description, 110)}">Description</p>
