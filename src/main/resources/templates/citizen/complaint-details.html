@@ -12,7 +12,7 @@
 
       <div th:if="${submitted}" class="alert alert-success" style="margin:16px 0;" data-flash>
         <span class="material-symbols-rounded">check_circle</span>
-        <span>Complaint submitted! Your tracking ID is <strong th:text="${complaint.trackingId}"></strong>.</span>
+        <span>Complaint submitted! Your tracking ID is <strong class="mono" th:text="${complaint.trackingId}"></strong>.</span>
       </div>
 
       <div class="card card-pad" style="margin:16px 0 22px;">
@@ -20,7 +20,7 @@
           <div>
             <span class="pill" th:classappend="'pill-' + ${complaint.status.tone}" th:text="${complaint.status.label}">Status</span>
             <h2 style="margin:12px 0 4px;" th:text="${complaint.title}">Title</h2>
-            <div class="text-muted" style="font-size:13px;" th:text="'Tracking ID: ' + ${complaint.trackingId}">ID</div>
+            <div class="text-muted mono" style="font-size:13px;" th:text="'Tracking ID: ' + ${complaint.trackingId}">ID</div>
           </div>
           <div style="text-align:right;font-size:13px;" class="text-muted">
             <div th:text="${complaint.category}">Category</div>
@@ -48,7 +48,7 @@
             <div class="timeline-dot"></div>
             <div class="fw-600" th:text="${t.title}">Event</div>
             <div class="text-muted" style="font-size:13px;margin:2px 0 4px;" th:text="${t.description}">Description</div>
-            <div class="text-muted" style="font-size:11.5px;" th:text="${t.actor} + ' · ' + ${#temporals.format(t.timestamp, 'dd MMM yyyy, hh:mm a')}">meta</div>
+            <div class="text-muted mono" style="font-size:11.5px;" th:text="${t.actor} + ' · ' + ${#temporals.format(t.timestamp, 'dd MMM yyyy, hh:mm a')}">meta</div>
           </div>
         </div>
       </div>
