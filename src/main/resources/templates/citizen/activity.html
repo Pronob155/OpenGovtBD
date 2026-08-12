@@ -1,0 +1,67 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+  <head th:replace="~{fragments/layout :: head('My Activity')}"></head>
+  <body>
+    <div class="app-shell">
+      <nav
+        th:replace="~{fragments/layout :: sidebar-citizen('activity')}"
+      ></nav>
+      <div class="sidebar-overlay"></div>
+      <div class="main">
+        <div
+          th:replace="~{fragments/layout :: topbar('My Activity', ${citizen.fullName}, 0, '/citizen/notifications')}"
+        ></div>
+        <div class="content" style="max-width: 760px">
+          <p class="text-muted" style="margin: 0 0 20px">
+            Every complaint, discussion, and suggestion you've submitted, in one
+            place — including discussions still awaiting officer approval, which
+            aren't visible anywhere else yet.
+          </p>
+
+          <div th:if="${#lists.isEmpty(items)}" class="card empty-state">
+            <div class="ico">
+              <span class="material-symbols-rounded">history</span>
+            </div>
+            <h3>Nothing here yet</h3>
+            <p>
+              Once you file a complaint, start a discussion, or submit a
+              suggestion, it'll show up here with its current status.
+            </p>
+          </div>
+
+          <div class="card card-pad" th:if="${not #lists.isEmpty(items)}">
+            <div class="activity-row" th:each="item : ${items}">
+              <div class="activity-icon">
+                <span class="material-symbols-rounded" th:text="${item.icon}"
+                  >history</span
+                >
+              </div>
+              <div style="flex: 1">
+                <a
+                  th:href="${item.link}"
+                  class="fw-600"
+                  style="font-size: 14.5px"
+                  th:text="${item.title}"
+                  >Title</a
+                >
+                <div
+                  class="activity-time"
+                  th:text="${item.type} + ' · ' + ${#temporals.format(item.timestamp, 'dd MMM yyyy, hh:mm a')}"
+                >
+                  meta
+                </div>
+              </div>
+              <span
+                class="pill"
+                th:classappend="'pill-' + ${item.statusTone}"
+                th:text="${item.statusLabel}"
+                >Status</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script th:src="@{/js/main.js}"></script>
+  </body>
+</html>
