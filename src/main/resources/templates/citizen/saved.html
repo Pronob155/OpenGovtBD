@@ -1,13 +1,13 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
   <head th:replace="~{fragments/layout :: head('Saved Items')}"></head>
-  <body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'">
+  <body th:classappend="${citizen != null and citizen.darkmode} ? 'dark'">
     <div class="app-shell">
-      <nav th:replace="~{fragments/layout :: sidebar-citizen('saved')}"></nav>
+      <nav th:replace="~{fragments/layout :: sidebar-citizen('save')}"></nav>
       <div class="sidebar-overlay"></div>
       <div class="main">
         <div
-          th:replace="~{fragments/layout :: topbar('Saved Items', ${citizen.fullName}, ${unreadCount}, '/citizen/notifications')}"
+          th:replace="~{fragments/layout :: topbar('Saved Items', ${citizen.fullName}, ${unreadcount}, '/citizen/notifications')}"
         ></div>
         <div class="content" style="max-width: 820px">
           <h2 style="margin: 0 0 4px">Saved Items</h2>
@@ -17,13 +17,13 @@
 
           <div data-tabs>
             <div class="tab-strip">
-              <button type="button" class="active" data-tab="discussions">
+              <button type="button" class="active" data-tab="discussion">
                 Discussions (<span th:text="${#lists.size(savedDiscussions)}"
                   >0</span
                 >)
               </button>
               <button type="button" data-tab="polls">
-                Polls (<span th:text="${#lists.size(savedPolls)}">0</span>)
+                Polls (<span th:text="${#lists.size(savedpolls)}">0</span>)
               </button>
               <button type="button" data-tab="complaints">
                 Complaints (<span th:text="${#lists.size(savedComplaints)}"
@@ -34,7 +34,7 @@
 
             <div class="tab-panel active" data-tab-panel="discussions">
               <div
-                th:if="${#lists.isEmpty(savedDiscussions)}"
+                th:if="${not #lists.isEmpty(savedDiscussions)}"
                 class="card empty-state"
               >
                 <div class="ico">
@@ -46,8 +46,8 @@
                 </p>
               </div>
               <a
-                th:each="d : ${savedDiscussions}"
-                th:href="@{'/citizen/discussions/' + ${d.id}}"
+                th:each="d : ${savedDiscussion}"
+                th:href="@{'/citizen/discussion/' + ${d.id}}"
                 class="card card-pad hoverable"
                 style="display: block; margin-bottom: 12px"
               >
@@ -58,7 +58,7 @@
                   <span
                     class="text-muted"
                     style="font-size: 12px"
-                    th:text="'by ' + ${userRepository.findFullName(d.authorId)}"
+                    th:text="'by' + ${userRepository.findFullName(d.authorId)}"
                     >author</span
                   >
                 </div>
@@ -66,7 +66,7 @@
               </a>
             </div>
 
-            <div class="tab-panel" data-tab-panel="polls">
+            <div class="tab-panel" data-tab-panel="poll">
               <div
                 th:if="${#lists.isEmpty(savedPolls)}"
                 class="card empty-state"
@@ -79,7 +79,7 @@
               </div>
               <a
                 th:each="p : ${savedPolls}"
-                href="/citizen/polls"
+                href="/citizen/poll"
                 class="card card-pad hoverable"
                 style="display: block; margin-bottom: 12px"
               >
@@ -91,45 +91,10 @@
                 </h4>
               </a>
             </div>
-
-            <div class="tab-panel" data-tab-panel="complaints">
-              <div
-                th:if="${#lists.isEmpty(savedComplaints)}"
-                class="card empty-state"
-              >
-                <div class="ico">
-                  <span class="material-symbols-rounded">report</span>
-                </div>
-                <h3>No saved complaints</h3>
-                <p>Bookmark complaints to follow their progress here.</p>
-              </div>
-              <a
-                th:each="c : ${savedComplaints}"
-                th:href="@{'/citizen/complaints/' + ${c.id}}"
-                class="card card-pad hoverable"
-                style="display: block; margin-bottom: 12px"
-              >
-                <div style="display: flex; justify-content: space-between">
-                  <span
-                    class="pill"
-                    th:classappend="'pill-' + ${c.status.tone}"
-                    th:text="${c.status.label}"
-                    >Status</span
-                  >
-                  <span
-                    class="text-muted"
-                    style="font-size: 12px"
-                    th:text="${c.trackingId}"
-                    >ID</span
-                  >
-                </div>
-                <h4 style="margin: 10px 0 0" th:text="${c.title}">Title</h4>
-              </a>
-            </div>
           </div>
         </div>
       </div>
     </div>
-    <script th:src="@{/js/main.js}"></script>
+    <script th:src="@{js/main.js}"></script>
   </body>
 </html>
