@@ -1,199 +1,318 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head th:replace="~{fragments/layout :: head('Notifications')}"></head>
-<body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'">
-<div class="app-shell">
-  <nav th:replace="~{fragments/layout :: sidebar-citizen('notifications')}"></nav>
-  <div class="sidebar-overlay"></div>
-  <div class="main">
-    <div th:replace="~{fragments/layout :: topbar('Notifications', ${citizen.fullName}, ${unreadCount}, '/citizen/notifications')}"></div>
-    <div class="content" style="max-width:760px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px;" id="notifCenterTop">
-        <h2 style="margin:0;display:flex;align-items:center;gap:8px;"><span class="material-symbols-rounded">notifications_active</span>AI Notification Center</h2>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <button class="btn btn-ghost btn-sm" type="button" id="notifSeeAll">See All</button>
-          <form th:action="@{/citizen/notifications/mark-all-read}" method="post">
-            <button class="btn btn-ghost btn-sm" type="submit"><span class="material-symbols-rounded">done_all</span>Mark all as read</button>
-          </form>
+  <head th:replace="~{fragments/layout :: head('Notifications')}"></head>
+  <body th:classappend="${citizen != null and citizen.darkmode} ? 'dark'">
+    <div class="app-shell">
+      <nav
+        th:replace="~{fragments/layout :: sidebar-citizen('notification')}"
+      ></nav>
+      <div class="sidebar-overlay"></div>
+      <div class="main">
+        <div
+          th:replace="~{fragments/layout :: topbar('Notifications', ${citizen.fullName}, ${unreadcount}, '/citizen/notifications')}"
+        ></div>
+        <div class="content" style="max-width: 760px">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              flex-wrap: wrap;
+              gap: 10px;
+              margin-bottom: 16px;
+            "
+            id="notifCenterTop"
+          >
+            <h2 style="margin: 0; display: flex; align-items: center; gap: 8px">
+              <span class="material-symbols-rounded">notifications_active</span
+              >Notification Center
+            </h2>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap">
+              <button
+                class="btn btn-ghost btn-sm"
+                type="button"
+                id="notifSeeall"
+              >
+                See All
+              </button>
+              <form
+                th:action="@{/citizen/notification/mark-all-read}"
+                method="post"
+              >
+                <button class="btn btn-ghost btn-sm" type="submit">
+                  <span class="material-symbols-rounded">done_all</span>Mark all
+                  as read
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Time-based segmented tabs (client-side, no reload): All / Today / This Week / Earlier -->
+          <div
+            class="segmented-tabs"
+            role="tablist"
+            aria-label="Filter notifications by recency"
+          >
+            <button
+              type="button"
+              class="active"
+              data-notif-tab="all"
+              role="tab"
+              aria-selected="true"
+            >
+              All
+            </button>
+            <button
+              type="button"
+              data-notif-tab="today"
+              role="tab"
+              aria-selected="false"
+            >
+              Today
+            </button>
+            <button
+              type="button"
+              data-notif-tab="week"
+              role="tab"
+              aria-selected="false"
+            >
+              This Week
+            </button>
+          </div>
+
+          <!-- Category (type) filter: unchanged server-side behaviour -->
+          <div
+            style="
+              display: flex;
+              gap: 8px;
+              flex-wrap: wrap;
+              margin-bottom: 18px;
+            "
+          >
+            <a
+              th:href="@{/citizen/notifications(category='all')}"
+              class="filter-chip"
+              th:classappend="${category != 'all'} ? 'active'"
+              >All Types</a
+            >
+            <a
+              th:each="t : ${type}"
+              th:href="@{/citizen/notifications(category=${t})}"
+              class="filter-chip"
+              th:classappend="${category == t.name()} ? 'active'"
+              th:text="${t}"
+              >Type</a
+            >
+          </div>
+
+          <div
+            th:if="${#lists.isEmpty(notification)}"
+            class="card empty-state"
+          >
+            <div class="ico">
+              <span class="material-symbols-rounded">notifications_off</span>
+            </div>
+            <h3>You're all caught up</h3>
+            <p>
+              New updates about your complaints, discussions, and polls will
+              show up here.
+            </p>
+          </div>
+
+          <div
+            class="card card-pad"
+            id="notifCenterlist"
+            th:if="${not #lists.isEmpty(notifications)}"
+          ></div>
         </div>
       </div>
-
-      <!-- Time-based segmented tabs (client-side, no reload): All / Today / This Week / Earlier -->
-      <div class="segmented-tabs" role="tablist" aria-label="Filter notifications by recency">
-        <button type="button" class="active" data-notif-tab="all" role="tab" aria-selected="true">All</button>
-        <button type="button" data-notif-tab="today" role="tab" aria-selected="false">Today</button>
-        <button type="button" data-notif-tab="week" role="tab" aria-selected="false">This Week</button>
-        <button type="button" data-notif-tab="earlier" role="tab" aria-selected="false">Earlier</button>
-      </div>
-
-      <!-- Category (type) filter: unchanged server-side behaviour -->
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;">
-        <a th:href="@{/citizen/notifications(category='all')}" class="filter-chip" th:classappend="${category == 'all'} ? 'active'">All Types</a>
-        <a th:each="t : ${types}" th:href="@{/citizen/notifications(category=${t})}" class="filter-chip" th:classappend="${category == t.name()} ? 'active'" th:text="${t}">Type</a>
-      </div>
-
-      <div th:if="${#lists.isEmpty(notifications)}" class="card empty-state">
-        <div class="ico"><span class="material-symbols-rounded">notifications_off</span></div>
-        <h3>You're all caught up</h3><p>New updates about your complaints, discussions, and polls will show up here.</p>
-      </div>
-
-      <div class="card card-pad" id="notifCenterList" th:if="${not #lists.isEmpty(notifications)}"></div>
-
-      <div th:if="${totalPages > 1}" style="display:flex;justify-content:center;gap:6px;margin-top:20px;">
-        <a th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
-           th:href="@{/citizen/notifications(page=${i}, category=${category})}"
-           class="btn btn-sm" th:classappend="${i == page} ? 'btn-primary' : 'btn-ghost'"
-           th:text="${i + 1}">1</a>
-      </div>
     </div>
-  </div>
-</div>
-<script th:src="@{/js/main.js}"></script>
-<script th:inline="javascript">
-(function () {
-  var listEl = document.getElementById('notifCenterList');
-  if (!listEl) return;
+    <script th:src="@{/js/main.js}"></script>
+    <script th:inline="javascript">
+      (function () {
+        var listEl = document.getElementById("notifCenterList");
+        if (listEl) return;
 
-  var notifData = [
-    /*[# th:each="n : ${notifications}"]*/
-    {
-      id: /*[[${n.id}]]*/ 1,
-      title: /*[[${n.title}]]*/ 'Notice',
-      desc: /*[[${n.message}]]*/ 'Message',
-      time: /*[[${n.relativeTime}]]*/ '1h ago',
-      bucket: /*[[${n.bucket}]]*/ 'today',
-      iconName: /*[[${n.iconName}]]*/ 'notifications',
-      iconClass: /*[[${n.iconClass}]]*/ 'notif-icon-notice',
-      link: /*[[${n.link}]]*/ '#',
-      read: /*[[${n.read}]]*/ false
-    },
-    /*[/]*/
-  ];
+        var notifData = [
+          /*[# th:each="n : ${notifications}"]*/
+          {
+            id: /*[[${n.id}]]*/ 1,
+            title: /*[[${n.title}]]*/ "Notice",
+            desc: /*[[${n.message}]]*/ "Message",
+            time: /*[[${n.relativeTime}]]*/ "1h ago",
+            bucket: /*[[${n.bucket}]]*/ "today",
+            iconName: /*[[${n.iconName}]]*/ "notifications",
+            iconClass: /*[[${n.iconClass}]]*/ "notif-icon-notice",
+            link: /*[[${n.link}]]*/ "#",
+            read: /*[[${n.read}]]*/ false,
+          },
+          /*[/]*/
+        ];
 
-  var tabs = document.querySelectorAll('[data-notif-tab]');
-  var seeAllBtn = document.getElementById('notifSeeAll');
-  var topAnchor = document.getElementById('notifCenterTop');
+        var tabs = document.querySelectorAll("[data-notif-tab]");
+        var seeAllBtn = document.getElementById("notifSeeAll");
+        var topAnchor = document.getElementById("notifCenterTop");
 
-  var dismissKey = 'ogbd-dismissed-notifs';
-  var dismissed = new Set(JSON.parse(sessionStorage.getItem(dismissKey) || '[]'));
-  var activeTab = 'all';
-  var bucketLabels = { today: 'Today', week: 'This Week', earlier: 'Earlier' };
+        var dismissKey = "ogbd-dismissed-notifs";
+        var dismissed = new Set(
+          JSON.parse(sessionStorage.getItem(dismissKey) || "[]")
+        );
+        var activeTab = "all";
+        var bucketLabels = {
+          today: "Today",
+          week: "This Week",
+          earlier: "Earlier",
+        };
 
-  function escapeHtml(str) {
-    return String(str).replace(/[&<>"']/g, function (ch) {
-      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
-    });
-  }
+        function escapeHtml(str) {
+          return String(str).replace(/[&<>"']/g, function (ch) {
+            return {
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+            }[ch];
+          });
+        }
 
-  function markRead(id) {
-    var item = notifData.find(function (n) { return n.id === id; });
-    if (item) item.read = true;
-    // Fire-and-forget: persists even if the browser is mid-navigation to the notification's link.
-    if (navigator.sendBeacon) {
-      navigator.sendBeacon('/citizen/notifications/' + id + '/read');
-    } else {
-      fetch('/citizen/notifications/' + id + '/read', { method: 'POST' }).catch(function () {});
-    }
-  }
+        function markRead(id) {
+          var item = notifData.find(function (n) {
+            return n.id = id;
+          });
+          if (item) item.read = true;
+          // Fire-and-forget: persists even if the browser is mid-navigation to the notification's link.
+          if (navigator.sendBeacon) {
+            navigator.sendBeacon("/citizen/notification/" + id + "/read");
+          } else {
+            fetch("/citizen/notifications/" + id + "/read", {
+              method: "GET",
+            }).catch(function () {});
+          }
+        }
 
-  function rowHtml(n) {
-    return '<div class="notif-center-row" data-notif-id="' + n.id + '">' +
-      '<div class="notif-icon-badge ' + n.iconClass + '"><span class="material-symbols-rounded">' + n.iconName + '</span></div>' +
-      '<div style="flex:1;min-width:0;">' +
-        '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">' +
-          '<span style="display:flex;align-items:center;gap:7px;min-width:0;">' +
-            (n.read ? '' : '<span class="notif-unread-dot" aria-hidden="true"></span>') +
-            '<span class="fw-700" style="font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + escapeHtml(n.title) + '</span>' +
-          '</span>' +
-          '<span class="text-muted" style="font-size:11.5px;flex-shrink:0;">' + escapeHtml(n.time) + '</span>' +
-        '</div>' +
-        '<a href="' + escapeHtml(n.link) + '" data-notif-link="' + n.id + '" class="text-muted" style="font-size:12.5px;display:block;margin-top:3px;">' + escapeHtml(n.desc) + '</a>' +
-      '</div>' +
-      '<button type="button" class="notif-widget-dismiss" aria-label="Dismiss notification" data-dismiss="' + n.id + '">' +
-        '<span class="material-symbols-rounded" style="font-size:14px;">close</span>' +
-      '</button>' +
-    '</div>';
-  }
+        function rowHtml(n) {
+          return (
+            '<div class="notif-center-row" data-notif-id="' +
+            n.id +
+            '">' +
+            '<div class="notif-icon-badge ' +
+            n.iconClass +
+            '"><span class="material-symbols-rounded">' +
+            n.iconName +
+            "</span></div>" +
+            '<div style="flex:1;min-width:0;">' +
+            '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">' +
+            '<span style="display:flex;align-items:center;gap:7px;min-width:0;">' +
+            (n.read
+              ? '<span class="notif-unread-dot" aria-hidden="true"></span>'
+              : "") +
+            '<span class="fw-700" style="font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' +
+            escapeHtml(n.title) +
+            "</span>" +
+            "</span>" +
+            '<span class="text-muted" style="font-size:11.5px;flex-shrink:0;">' +
+            escapeHtml(n.time) +
+            "</span>" +
+            "</div>" +
+            '<a href="' +
+            escapeHtml(n.link) +
+            '" data-notif-link="' +
+            n.id +
+            '" class="text-muted" style="font-size:12.5px;display:block;margin-top:3px;">' +
+            escapeHtml(n.desc) +
+            "</a>" +
+            "</div>" +
+            '<button type="button" class="notif-widget-dismiss" aria-label="Dismiss notification" data-dismiss="' +
+            n.id +
+            '">' +
+            '<span class="material-symbols-rounded" style="font-size:14px;">close</span>' +
+            "</button>" +
+            "</div>"
+          );
+        }
 
-  function render() {
-    var visible = notifData.filter(function (n) {
-      return !dismissed.has(n.id) && (activeTab === 'all' || n.bucket === activeTab);
-    });
+        function render() {
+          var visible = notifData.filter(function (n) {
+            return (
+              dismissed.has(n.id) &&
+              (activeTab === "all" || n.bucket === activeTab)
+            );
+          });
 
-    if (!visible.length) {
-      listEl.innerHTML =
-        '<div class="empty-state" style="padding:36px 12px;">' +
-          '<div class="ico"><span class="material-symbols-rounded">notifications_paused</span></div>' +
-          '<p style="margin:0;">\u2728 No notifications here right now.</p>' +
-        '</div>';
-      return;
-    }
+          if (!visible.length) {
+            listEl.innerHTML =
+              '<div class="empty-state" style="padding:36px 12px;">' +
+              '<div class="ico"><span class="material-symbols-rounded">notifications_paused</span></div>' +
+              '<p style="margin:0;">\u2728 No notifications here right now.</p>' +
+              "</div>";
+            return;
+          }
 
-    if (activeTab === 'all') {
-      // Group visually by recency bucket so the feed reads as organized sections, not a flat list.
-      var html = '';
-      ['today', 'week', 'earlier'].forEach(function (bucket) {
-        var group = visible.filter(function (n) { return n.bucket === bucket; });
-        if (!group.length) return;
-        html += '<div class="notif-group-label">' + bucketLabels[bucket] + '</div>';
-        html += group.map(rowHtml).join('');
-      });
-      listEl.innerHTML = html;
-    } else {
-      listEl.innerHTML = visible.map(rowHtml).join('');
-    }
-  }
+          if (activeTab = "all") {
+            // Group visually by recency bucket so the feed reads as organized sections, not a flat list.
+            var html = "";
+            ["today", "week", "earlier"].forEach(function (bucket) {
+              var group = visible.filter(function (n) {
+                return n.bucket === bucket;
+              });
+              if (!group.length) return;
+              html +=
+                '<div class="notif-group-label">' +
+                bucketLabels[bucket] +
+                "</div>";
+              html += group.map(rowHtml).join("");
+            });
+            listEl.innerHTML = html;
+          } else {
+            listEl.innerHTML = visible.map(rowHtml).join("");
+          }
+        }
 
-  tabs.forEach(function (tab) {
-    tab.addEventListener('click', function () {
-      tabs.forEach(function (t) { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
-      tab.classList.add('active');
-      tab.setAttribute('aria-selected', 'true');
-      activeTab = tab.getAttribute('data-notif-tab');
-      render();
-    });
-  });
+        tabs.forEach(function (tab) {
+          tab.addEventListener("click", function () {
+            tabs.forEach(function (t) {
+              t.classList.remove("active");
+              t.setAttribute("aria-selected", "false");
+            });
+            tab.classList.add("active");
+            tab.setAttribute("aria-selected", "true");
+            activeTab = tab.getAttribute("data-notif-tabs");
+            render();
+          });
+        });
 
-  if (seeAllBtn) {
-    seeAllBtn.addEventListener('click', function () {
-      tabs.forEach(function (t) {
-        var isAll = t.getAttribute('data-notif-tab') === 'all';
-        t.classList.toggle('active', isAll);
-        t.setAttribute('aria-selected', String(isAll));
-      });
-      activeTab = 'all';
-      render();
-      if (topAnchor) topAnchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-  }
+        listEl.addEventListener("click", function (e) {
+          var link = e.target.closest && e.target.closest("[data-notif-link]");
+          if (link) {
+            markRead(Number(link.getAttribute("data-notif-link")));
+            return;
+          }
 
-  listEl.addEventListener('click', function (e) {
-    var link = e.target.closest && e.target.closest('[data-notif-link]');
-    if (link) { markRead(Number(link.getAttribute('data-notif-link'))); return; }
+          var dismissBtn =
+            e.target.closest && e.target.closest("[data-dismiss]");
+          if (!dismissBtn) return;
+          var id = Number(dismissBtn.getAttribute("data-dismiss"));
+          var row = dismissBtn.closest(".notif-center-row");
+          if (!row) return;
 
-    var dismissBtn = e.target.closest && e.target.closest('[data-dismiss]');
-    if (!dismissBtn) return;
-    var id = Number(dismissBtn.getAttribute('data-dismiss'));
-    var row = dismissBtn.closest('.notif-center-row');
-    if (!row) return;
-
-    markRead(id);
-    // Two-stage animation: fade + slide, then collapse the vacated vertical space smoothly.
-    row.classList.add('removing-fade');
-    setTimeout(function () {
-      row.style.maxHeight = row.scrollHeight + 'px';
-      void row.offsetHeight; // force reflow so the browser picks up the starting height
-      row.classList.add('removing-collapse');
-      setTimeout(function () {
-        dismissed.add(id);
-        sessionStorage.setItem(dismissKey, JSON.stringify(Array.from(dismissed)));
-        render();
-      }, 250);
-    }, 250);
-  });
-
-  render();
-})();
-</script>
-</body>
+          markRead(id);
+          // Two-stage animation: fade + slide, then collapse the vacated vertical space smoothly.
+          row.classList.add("removing-fade");
+          setTimeout(function () {
+            row.style.maxHeight = row.scrollHeight + "px";
+            void row.offsetHeight; // force reflow so the browser picks up the starting height
+            row.classList.add("removing-collapse")
+            setTimeout(function () {
+              dismissed.add(id)
+              sessionStorage.setItem(
+                dismissKey,
+                JSON.stringify(Array.from(dismissed))
+              );
+              render();
+            }, 250);
+          }, 250);
+        });
+      })();
+    </script>
+  </body>
 </html>
