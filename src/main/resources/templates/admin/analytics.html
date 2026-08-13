@@ -1,134 +1,119 @@
-package com.opengovtbd.controller;
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+  <head th:replace="~{fragments/layout :: head('Analytics')}"></head>
+  <body>
+    <div class="app-shell">
+      <nav th:replace="~{fragments/layout :: sidebar-admin('analytics')}"></nav>
+      <div class="sidebar-overlay"></div>
+      <div class="main">
+        <div
+          th:replace="~{fragments/layout :: topbar('Analytics Dashboard', ${admin.fullName}, ${unreadCount}, '/admin/dashboard')}"
+        ></div>
+        <div class="content">
+          <div class="analytics-dark">
+            <div class="grid grid-4 fade-up" style="margin-bottom: 22px">
+              <div class="panel">
+                <div class="label">Discussions</div>
+                <div class="metric" th:text="${analytics.totalDiscussions()}">
+                  0
+                </div>
+              </div>
+              <div class="panel">
+                <div class="label">Polls Created</div>
+                <div class="metric" th:text="${analytics.totalPolls()}">0</div>
+              </div>
+              <div class="panel">
+                <div class="label">Suggestions</div>
+                <div class="metric" th:text="${analytics.totalSuggestions()}">
+                  0
+                </div>
+              </div>
+              <div class="panel">
+                <div class="label">Complaints Resolved</div>
+                <div class="metric" th:text="${analytics.resolvedComplaints()}">
+                  0
+                </div>
+              </div>
+            </div>
 
-import com.opengovtbd.model.Admin;
-import com.opengovtbd.model.User;
-import com.opengovtbd.repository.UserRepository;
-import com.opengovtbd.service.AnalyticsService;
-import com.opengovtbd.service.AuthService;
-import com.opengovtbd.service.DiscussionService;
-import com.opengovtbd.service.GovServiceService;
-import com.opengovtbd.service.SuggestionService;
-import jakarta.servlet.http.HttpSession;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+            <div class="grid grid-2">
+              <div class="panel fade-up d1">
+                <h3 style="margin: 0 0 16px; color: #fff">
+                  Complaints by Category
+                </h3>
+                <canvas id="categoryChart" height="220"></canvas>
+              </div>
+              <div class="panel fade-up d2">
+                <h3 style="margin: 0 0 16px; color: #fff">
+                  Complaints by Division
+                </h3>
+                <canvas id="divisionChart" height="220"></canvas>
+              </div>
+            </div>
 
-import java.time.LocalDate;
+            <div class="panel fade-up d3" style="margin-top: 22px">
+              <h3 style="margin: 0 0 16px; color: #fff">Resolution Rate</h3>
+              <div style="display: flex; align-items: center; gap: 20px">
+                <div
+                  class="progress-bar"
+                  style="flex: 1; height: 14px; background: #27272a"
+                >
+                  <div
+                    th:attr="data-bar-pct=${analytics.resolutionRate()}"
+                    style="width: 0; background: #818cf8"
+                  ></div>
+                </div>
+                <div
+                  class="metric mono"
+                  style="font-size: 18px"
+                  th:text="${#numbers.formatDecimal(analytics.resolutionRate(),1,1)} + '%'"
+                >
+                  0%
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-@Controller
-@RequestMapping("/admin")
-public class AdminController {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <script th:inline="javascript">
+      const categoryData = /*[[${analytics.complaintsByCategory()}]]*/ {};
+      const divisionData = /*[[${analytics.complaintsByDivision()}]]*/ {};
 
-    private final AuthService authService;
-    private final AnalyticsService analyticsService;
-    private final UserRepository userRepository;
-    private final DiscussionService discussionService;
-    private final SuggestionService suggestionService;
-    private final GovServiceService govServiceService;
-
-    public AdminController(AuthService authService, AnalyticsService analyticsService, UserRepository userRepository,
-            DiscussionService discussionService, SuggestionService suggestionService,
-            GovServiceService govServiceService) {
-        this.authService = authService;
-        this.analyticsService = analyticsService;
-        this.userRepository = userRepository;
-        this.discussionService = discussionService;
-        this.suggestionService = suggestionService;
-        this.govServiceService = govServiceService;
-    }
-
-    @GetMapping("/dashboard")
-    public String dashboard(HttpSession session, Model model) {
-        Admin admin = SessionUser.requireAdmin(session, authService);
-        model.addAttribute("admin", admin);
-        model.addAttribute("analytics", analyticsService);
-        model.addAttribute("citizens", userRepository.findAllCitizens());
-        model.addAttribute("officers", userRepository.findAllOfficers());
-        model.addAttribute("servicesCount", govServiceService.count());
-        return "admin/dashboard";
-    }
-
-    @GetMapping("/users")
-    public String users(HttpSession session, Model model, @RequestParam(required = false) String phone) {
-        model.addAttribute("admin", SessionUser.requireAdmin(session, authService));
-        model.addAttribute("citizens", phone == null || phone.isBlank()
-                ? userRepository.findAllCitizens()
-                : userRepository.searchCitizensByPhone(phone));
-        model.addAttribute("officers", userRepository.findAllOfficers());
-        model.addAttribute("phoneQuery", phone == null ? "" : phone);
-        return "admin/users";
-    }
-
-    @GetMapping("/users/{id}")
-    public String userDetail(@PathVariable Long id, HttpSession session, Model model) {
-        SessionUser.requireAdmin(session, authService);
-        User user = userRepository.findById(id).orElseThrow();
-        model.addAttribute("admin", SessionUser.requireAdmin(session, authService));
-        model.addAttribute("targetUser", user);
-        return "admin/user-detail";
-    }
-
-    @PostMapping("/users/{id}/toggle-active")
-    public String toggleActive(@PathVariable Long id, HttpSession session) {
-        SessionUser.requireAdmin(session, authService);
-        userRepository.findById(id).ifPresent(User::reinstate);
-        return "redirect:/admin/users";
-    }
-
-    @PostMapping("/users/{id}/suspend")
-    public String suspend(@PathVariable Long id, @RequestParam String endDate,
-            @RequestParam(required = false) String reason,
-            HttpSession session, RedirectAttributes redirectAttributes) {
-        Admin admin = SessionUser.requireAdmin(session, authService);
-        User user = userRepository.findById(id).orElseThrow();
-        user.suspend(LocalDate.parse(endDate), reason == null || reason.isBlank() ? "Policy violation" : reason,
-                admin.getFullName());
-        redirectAttributes.addFlashAttribute("success", user.isBanned()
-                ? user.getFullName() + " has been permanently banned after repeated suspensions."
-                : user.getFullName() + " has been suspended until " + endDate + ".");
-        return "redirect:/admin/users/" + id;
-    }
-
-    @PostMapping("/users/{id}/ban")
-    public String ban(@PathVariable Long id, @RequestParam(required = false) String reason,
-            HttpSession session, RedirectAttributes redirectAttributes) {
-        Admin admin = SessionUser.requireAdmin(session, authService);
-        User user = userRepository.findById(id).orElseThrow();
-        user.ban(reason == null || reason.isBlank() ? "Permanently banned by admin" : reason, admin.getFullName());
-        redirectAttributes.addFlashAttribute("success", user.getFullName() + " has been permanently banned.");
-        return "redirect:/admin/users/" + id;
-    }
-
-    @PostMapping("/users/{id}/reinstate")
-    public String reinstate(@PathVariable Long id, HttpSession session, RedirectAttributes redirectAttributes) {
-        SessionUser.requireAdmin(session, authService);
-        User user = userRepository.findById(id).orElseThrow();
-        user.reinstate();
-        redirectAttributes.addFlashAttribute("success", user.getFullName() + "'s account has been reinstated.");
-        return "redirect:/admin/users/" + id;
-    }
-
-    @GetMapping("/analytics")
-    public String analytics(HttpSession session, Model model) {
-        model.addAttribute("admin", SessionUser.requireAdmin(session, authService));
-        model.addAttribute("analytics", analyticsService);
-        return "admin/analytics";
-    }
-
-    @GetMapping("/discussions")
-    public String discussions(HttpSession session, Model model) {
-        model.addAttribute("admin", SessionUser.requireAdmin(session, authService));
-        model.addAttribute("discussions", discussionService.approvedFeed(null, null, null));
-        model.addAttribute("pending", discussionService.pendingApproval());
-        return "admin/discussions";
-    }
-
-    @GetMapping("/reports")
-    public String reports(HttpSession session, Model model) {
-        model.addAttribute("admin", SessionUser.requireAdmin(session, authService));
-        model.addAttribute("analytics", analyticsService);
-        model.addAttribute("suggestions", suggestionService.all());
-        return "admin/reports";
-    }
-}
+      function paint(id, data, color) {
+        const ctx = document.getElementById(id);
+        if (!ctx) return;
+        new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: Object.keys(data),
+            datasets: [
+              {
+                data: Object.values(data),
+                backgroundColor: color,
+                borderRadius: 8,
+                maxBarThickness: 42,
+              },
+            ],
+          },
+          options: {
+            plugins: { legend: { display: false } },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: { precision: 0, color: "#A1A1AA" },
+                grid: { color: "#27272A" },
+              },
+              x: { ticks: { color: "#A1A1AA" }, grid: { color: "#27272A" } },
+            },
+          },
+        });
+      }
+      paint("categoryChart", categoryData, "#818CF8");
+      paint("divisionChart", divisionData, "#F472B6");
+    </script>
+    <script th:src="@{/js/main.js}"></script>
+  </body>
+</html>
