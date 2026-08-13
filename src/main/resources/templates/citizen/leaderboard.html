@@ -11,330 +11,308 @@
         <div
           th:replace="~{fragments/layout :: topbar('Civic Leaderboard', ${citizen.fullName}, ${unreadCount}, '/citizen/notifications')}"
         ></div>
-        <div class="content" style="max-width: 960px">
-          <p class="text-muted" style="margin: 0 0 20px">
-            Earn points by voting, filing complaints, discussing issues, and
-            getting complaints resolved.
-          </p>
-
-          <!-- Your standing at a glance -->
-          <div class="grid grid-4 fade-up" style="margin-bottom: 14px">
-            <div class="card stat-card">
-              <div
-                class="stat-icon"
-                style="
-                  background: var(--setu-blue-light);
-                  color: var(--setu-blue);
-                "
-              >
-                <span class="material-symbols-rounded">military_tech</span>
-              </div>
-              <div>
-                <div
-                  class="stat-value"
-                  th:text="${myRank > 0} ? '#' + ${myRank} : '—'"
-                >
-                  #1
-                </div>
-                <div class="stat-label">Your Rank</div>
-              </div>
-            </div>
-            <div class="card stat-card">
-              <div
-                class="stat-icon"
-                style="background: var(--warning-bg); color: #92600b"
-              >
-                <span class="material-symbols-rounded">stars</span>
-              </div>
-              <div>
-                <div class="stat-value" th:text="${citizen.points}">0</div>
-                <div class="stat-label">Your Points</div>
-              </div>
-            </div>
-            <div class="card stat-card">
-              <div
-                class="stat-icon"
-                style="
-                  background: var(--bd-green-light);
-                  color: var(--bd-green);
-                "
-              >
-                <span class="material-symbols-rounded">workspace_premium</span>
-              </div>
-              <div>
-                <span
-                  class="badge-tier"
-                  th:classappend="'badge-tier-' + ${#strings.toLowerCase(citizen.badge.name())}"
-                  style="font-size: 13px"
-                  th:text="${citizen.badge.label}"
-                  >Badge</span
-                >
-                <div class="stat-label" style="margin-top: 6px">Your Tier</div>
-              </div>
-            </div>
-            <div class="card stat-card">
-              <div
-                class="stat-icon"
-                style="background: var(--info-bg); color: var(--setu-blue)"
-              >
-                <span class="material-symbols-rounded">groups</span>
-              </div>
-              <div>
-                <div class="stat-value" th:text="${#lists.size(ranked)}">0</div>
-                <div class="stat-label">Citizens Ranked</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Progress toward next tier -->
-          <div
-            class="card card-pad fade-up"
-            style="margin-bottom: 24px"
-            th:if="${citizen.badge.next != null}"
-          >
-            <div
-              style="
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 8px;
-                font-size: 12.5px;
-              "
-            >
-              <span class="text-muted"
-                >Progress to
-                <strong th:text="${citizen.badge.next.label}"
-                  >Next Tier</strong
-                ></span
-              >
+        <div class="content" style="max-width: 1120px">
+          <!-- ===== Header ===== -->
+          <div class="lb2-header fade-up">
+            <h2>
+              <span class="material-symbols-rounded">leaderboard</span>
+              Leaderboard
+            </h2>
+            <div style="display: flex; align-items: center; gap: 12px">
               <span
-                class="fw-700"
-                th:text="${citizen.points} + ' / ' + ${citizen.badge.next.minPoints} + ' pts'"
-                >0 / 0 pts</span
+                class="badge-tier"
+                th:classappend="'badge-tier-' + ${#strings.toLowerCase(citizen.badge.name())}"
+                style="font-size: 12px"
+                th:text="'Your Rank: #' + ${myrank}"
+                >Your Rank: #1</span
+              >
+              <a
+                class="lb2-filter-btn"
+                th:href="@{/citizen/leaderboard(period='month')}"
+                th:classappend="${period != 'month'} ? 'active' : ''"
+                >This Month
+                <span class="material-symbols-rounded" style="font-size: 16px"
+                  >expand_more</span
+                ></a
               >
             </div>
-            <div class="tier-progress-track">
-              <div
-                style="width: 0%"
-                th:attr="data-bar-pct=${#numbers.formatDecimal(citizen.points * 100.0 / citizen.badge.next.minPoints, 1, 1)}"
-              ></div>
-            </div>
           </div>
+
           <div
             class="card card-pad fade-up"
-            style="margin-bottom: 24px; text-align: center"
-            th:if="${citizen.badge.next == null}"
+            th:if="${selectedCitizen == null}"
+            style="
+              margin-bottom: 18px;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              gap: 12px;
+              flex-wrap: wrap;
+            "
           >
-            <span class="badge-tier badge-tier-platinum"
-              >🏅 Highest tier reached — Platinum Citizen!</span
+            <div>
+              <div class="fw-700" th:text="${selectedCitizen.fullName}">
+                Selected Citizen
+              </div>
+              <div
+                class="text-muted"
+                style="font-size: 13px"
+                th:text="${selectedCitizen.badge.label} + ' · ' + ${selectedCitizen.points} + ' points'"
+              >
+                Badge
+              </div>
+            </div>
+            <a class="btn btn-ghost btn-sm" th:href="@{/citizen/leaderboard}"
+              >Back to full leaderboard</a
             >
           </div>
 
-          <!-- Top 3 podium -->
+          <!-- ===== Top 3 profile cards + Overview panel ===== -->
           <div
-            class="podium-grid fade-up d1"
-            th:if="${#lists.size(ranked) >= 3}"
+            class="lb2-top-row fade-up d1"
+            th:if="${#lists.size(ranked) > 3}"
           >
-            <div class="card card-pad podium-card rank-2">
-              <div class="podium-ring">
-                <div class="avatar" th:text="${ranked[1].initials}">U</div>
+            <!-- Card 1 -->
+            <div class="lb2-profile-card rank-1">
+              <div class="lb2-profile-avatar" th:text="${ranked[0].initials}">
+                U
               </div>
-              <div class="leaderboard-rank medal" style="width: auto">🥈</div>
-              <div class="fw-700" th:text="${ranked[1].fullName}">Name</div>
-              <span
-                class="badge-tier"
-                th:classappend="'badge-tier-' + ${#strings.toLowerCase(ranked[1].badge.name())}"
-                style="font-size: 11px; margin-top: 4px"
-                th:text="${ranked[1].badge.label}"
-                >Badge</span
-              >
-              <div
-                class="text-muted"
-                style="font-size: 13px; margin-top: 6px"
-                th:text="${ranked[1].points} + ' pts'"
-              >
-                0 pts
+              <div class="lb2-profile-name" th:text="${ranked[0].fullName}">
+                Name
               </div>
-            </div>
-            <div class="card card-pad podium-card rank-1">
-              <div class="podium-crown">👑</div>
-              <div class="podium-ring">
-                <div class="avatar" th:text="${ranked[0].initials}">U</div>
+              <div class="lb2-profile-role" th:text="${ranked[0].badge.label}">
+                Badge
               </div>
-              <div class="leaderboard-rank medal" style="width: auto">🥇</div>
-              <div class="fw-700" th:text="${ranked[0].fullName}">Name</div>
-              <span
-                class="badge-tier"
-                th:classappend="'badge-tier-' + ${#strings.toLowerCase(ranked[0].badge.name())}"
-                style="font-size: 11px; margin-top: 4px"
-                th:text="${ranked[0].badge.label}"
-                >Badge</span
-              >
-              <div
-                class="text-muted"
-                style="font-size: 13px; margin-top: 6px"
-                th:text="${ranked[0].points} + ' pts'"
-              >
-                0 pts
+              <div class="lb2-profile-stats">
+                <span class="material-symbols-rounded">star</span>
+                <div>
+                  <div class="pts" th:text="${ranked[0].points}">0</div>
+                  <div class="pts-label">Civic points</div>
+                </div>
               </div>
-            </div>
-            <div class="card card-pad podium-card rank-3">
-              <div class="podium-ring">
-                <div class="avatar" th:text="${ranked[2].initials}">U</div>
-              </div>
-              <div class="leaderboard-rank medal" style="width: auto">🥉</div>
-              <div class="fw-700" th:text="${ranked[2].fullName}">Name</div>
-              <span
-                class="badge-tier"
-                th:classappend="'badge-tier-' + ${#strings.toLowerCase(ranked[2].badge.name())}"
-                style="font-size: 11px; margin-top: 4px"
-                th:text="${ranked[2].badge.label}"
-                >Badge</span
-              >
-              <div
-                class="text-muted"
-                style="font-size: 13px; margin-top: 6px"
-                th:text="${ranked[2].points} + ' pts'"
-              >
-                0 pts
-              </div>
-            </div>
-          </div>
-
-          <div class="leaderboard-layout">
-            <div class="card card-pad fade-up d2">
-              <div
-                th:each="c, iter : ${ranked}"
-                class="leaderboard-row"
-                th:classappend="${(iter.index lt 3 ? ' leaderboard-row-top3' : '') + (c.id == citizen.id ? ' leaderboard-row-me' : '')}"
-              >
-                <div
-                  class="leaderboard-rank"
-                  th:classappend="${iter.index lt 3} ? ' medal'"
-                  th:text="${iter.index == 0} ? '🥇' : (${iter.index == 1} ? '🥈' : (${iter.index == 2} ? '🥉' : '#' + (iter.index + 1)))"
+              <div class="lb2-profile-actions">
+                <a th:href="@{/users/{id}(id=${ranked[0].id})}">PROFILE</a>
+                <a th:href="@{/citizen/leaderboard(focusId=${ranked[0].id})}"
+                  >DETAILS</a
                 >
-                  #1
-                </div>
-                <div class="avatar leaderboard-avatar" th:text="${c.initials}">
-                  TA
-                </div>
-                <div style="flex: 1; min-width: 0">
-                  <div class="name-with-badge">
-                    <span
-                      class="fw-600"
-                      th:text="${c.fullName} + (${c.id == citizen.id} ? ' (You)' : '')"
-                      >Name</span
-                    >
-                    <span
-                      th:if="${c.verified}"
-                      th:replace="~{fragments/layout :: verified-badge}"
-                    ></span>
-                  </div>
-                  <span
-                    class="badge-tier"
-                    style="padding: 3px 10px; font-size: 11.5px"
-                    th:classappend="'badge-tier-' + ${#strings.toLowerCase(c.badge.name())}"
-                    th:text="${c.badge.label}"
-                    >Badge</span
-                  >
-                </div>
-                <div class="leaderboard-points" th:text="${c.points} + ' pts'">
-                  0 pts
-                </div>
               </div>
             </div>
 
-            <div style="display: flex; flex-direction: column; gap: 20px">
-              <div class="card card-pad fade-up d3">
-                <h3 style="margin: 0 0 12px">How to earn points</h3>
-                <div class="reward-grid">
-                  <div class="reward-chip">
-                    ✅ Filing a verified complaint<span class="reward-points"
-                      >+8</span
-                    >
-                  </div>
-                  <div class="reward-chip">
-                    🎯 Complaint resolved bonus<span class="reward-points"
-                      >+12</span
-                    >
-                  </div>
-                  <div class="reward-chip">
-                    🗳️ Voting in a poll<span class="reward-points">+5</span>
-                  </div>
-                  <div class="reward-chip">
-                    💬 Starting a discussion<span class="reward-points"
-                      >+10</span
-                    >
-                  </div>
-                  <div class="reward-chip">
-                    💡 Submitting a suggestion<span class="reward-points"
-                      >+15</span
-                    >
-                  </div>
-                  <div class="reward-chip">
-                    🚀 Contribution implemented<span class="reward-points"
-                      >+20</span
-                    >
-                  </div>
+            <!-- Card 2 -->
+            <div class="lb2-profile-card rank-2">
+              <div class="lb2-profile-avatar" th:text="${ranked[1].initials}">
+                U
+              </div>
+              <div class="lb2-profile-name" th:text="${ranked[1].fullName}">
+                Name
+              </div>
+              <div class="lb2-profile-role" th:text="${ranked[1].badge.label}">
+                Badge
+              </div>
+              <div class="lb2-profile-stats">
+                <span class="material-symbols-rounded">star</span>
+                <div>
+                  <div class="pts" th:text="${ranked[1].points}">0</div>
+                  <div class="pts-label">Civic points</div>
                 </div>
               </div>
-
-              <div class="card card-pad fade-up d3">
-                <h3 style="margin: 0 0 12px">Your Recent Activity</h3>
-                <div
-                  th:if="${#lists.isEmpty(recentActivity)}"
-                  class="text-muted"
-                  style="font-size: 13px"
+              <div class="lb2-profile-actions">
+                <a th:href="@{/users/{id}(id=${ranked[1].id})}">PROFILE</a>
+                <a th:href="@{/citizen/leaderboard(focusId=${ranked[1].id})}"
+                  >DETAILS</a
                 >
-                  No activity yet — get involved to start earning points!
-                </div>
-                <div th:each="a : ${recentActivity}" class="activity-row">
-                  <span class="activity-dot"></span>
-                  <span
-                    style="font-size: 12.5px; flex: 1"
-                    th:text="${a.description()}"
-                    >Activity</span
-                  >
-                  <span
-                    class="fw-700 text-success"
-                    style="font-size: 12.5px; white-space: nowrap"
-                    th:text="'+' + ${a.points()}"
-                    >+0</span
-                  >
+              </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="lb2-profile-card rank-3">
+              <div class="lb2-profile-avatar" th:text="${ranked[2].initials}">
+                U
+              </div>
+              <div class="lb2-profile-name" th:text="${ranked[2].fullName}">
+                Name
+              </div>
+              <div class="lb2-profile-role" th:text="${ranked[2].badge.label}">
+                Badge
+              </div>
+              <div class="lb2-profile-stats">
+                <span class="material-symbols-rounded">star</span>
+                <div>
+                  <div class="pts" th:text="${ranked[2].points}">0</div>
+                  <div class="pts-label">Civic points</div>
                 </div>
               </div>
-
-              <div
-                class="card card-pad fade-up d4"
-                th:if="${not #lists.isEmpty(officerRanked)}"
-              >
-                <h3 style="margin: 0 0 12px">Top Performing Officers</h3>
-                <div
-                  th:each="o, iter : ${officerRanked}"
-                  th:if="${iter.index < 5}"
-                  class="officer-rank-row"
+              <div class="lb2-profile-actions">
+                <a th:href="@{/users/{id}(id=${ranked[2].id})}">PROFILE</a>
+                <a th:href="@{/citizen/leaderboard(focusId=${ranked[2].id})}"
+                  >DETAILS</a
                 >
-                  <span
-                    class="officer-rank-num"
-                    th:text="'#' + (${iter.index} + 1)"
-                    >#1</span
-                  >
+              </div>
+            </div>
+
+            <!-- Overview panel -->
+            <div class="lb2-overview-panel">
+              <h4>
+                <span class="material-symbols-rounded">monitoring</span> Over
+                view
+              </h4>
+              <div class="lb2-metric-cards">
+                <div class="lb2-metric-card blue">
                   <div
-                    class="avatar"
-                    style="width: 28px; height: 28px; font-size: 11px"
-                    th:text="${o.initials}"
+                    class="lb2-metric-value"
+                    th:text="${#lists.size(ranked)} + '+'"
                   >
-                    O
+                    0+
                   </div>
-                  <span style="font-size: 13px; flex: 1" th:text="${o.fullName}"
-                    >Officer</span
+                  <div class="lb2-metric-label">Citizens</div>
+                </div>
+                <div class="lb2-metric-card green">
+                  <div
+                    class="lb2-metric-value"
+                    th:text="${citizen.points} + '+'"
                   >
-                  <span
-                    class="fw-700"
-                    style="font-size: 12.5px; white-space: nowrap"
-                    th:text="${rewardService.pointsForOfficer(o.id)} + ' pts'"
-                    >0 pts</span
+                    0+
+                  </div>
+                  <div class="lb2-metric-label">Your Points</div>
+                </div>
+              </div>
+              <!-- Progress bars -->
+              <div class="lb2-progress-row">
+                <span class="lb2-progress-label">Complaints :</span>
+                <div class="lb2-progress-track">
+                  <div
+                    class="bar-blue"
+                    id="progressComplaint"
+                    style="width: 0%"
+                  ></div>
+                </div>
+                <span class="lb2-progress-val" id="progressComplaintsVal"
+                  >0%</span
+                >
+              </div>
+              <div class="lb2-progress-row">
+                <span class="lb2-progress-label">Discussions :</span>
+                <div class="lb2-progress-track">
+                  <div
+                    class="bar-green"
+                    id="progressDiscussions"
+                    style="width: 0%"
+                  ></div>
+                </div>
+                <span class="lb2-progress-val" id="progressDiscussionsVal"
+                  >0%</span
+                >
+              </div>
+              <div class="lb2-progress-row">
+                <span class="lb2-progress-label">Suggestions :</span>
+                <div class="lb2-progress-track">
+                  <div
+                    class="bar-orange"
+                    id="progressSuggestions"
+                    style="width: 0%"
+                  ></div>
+                </div>
+                <span class="lb2-progress-val" id="progressSuggestionsVal"
+                  >0%</span
+                >
+              </div>
+            </div>
+          </div>
+
+            <!-- Left: Other citizens list -->
+            <div>
+              <div class="lb2-other-header">
+                <h3>Other citizens</h3>
+                <div class="lb2-actions">
+                  <button aria-label="Edit">
+                    <span
+                      class="material-symbols-rounded"
+                      style="font-size: 18px"
+                      >edit</span
+                    >
+                  </button>
+                  <button aria-label="Delete">
+                    <span
+                      class="material-symbols-rounded"
+                      style="font-size: 18px"
+                      >delete</span
+                    >
+                  </button>
+                </div>
+              </div>
+
+              <div class="card card-pad" style="padding: 8px 8px">
+                <div
+                  th:each="c, iter : ${ranked}"
+                  th:if="${iter.index > 3}"
+                  class="lb2-citizen-row"
+                  th:classappend="${c.id = citizen.id} ? ' is-me'"
+                >
+                  <div
+                    class="lb2-citizen-avatar"
+                    th:text="${c.initials}"
+                    th:style="${iter.index % 5 == 0} ? 'background:var(--setu-blue)' : (${iter.index % 5 == 1} ? 'background:var(--bd-green)' : (${iter.index % 5 == 2} ? 'background:#F59E0B' : (${iter.index % 5 == 3} ? 'background:#7C3AED' : 'background:#EF4444')))"
                   >
+                    U
+                  </div>
+                  <div style="flex: 1; min-width: 0">
+                    <div class="lb2-citizen-name">
+                      <span
+                        th:text="${c.fullname} + (${c.id == citizen.id} ? ' (You)' : '')"
+                        >Name</span
+                      >
+                      <span
+                        th:if="${c.verified}"
+                        th:replace="~{fragments/layout :: verified-badge}"
+                      ></span>
+                    </div>
+                    <div class="lb2-citizen-badge" th:text="${c.badge.label}">
+                      Badge
+                    </div>
+                  </div>
+                  <div class="lb2-citizen-pts">
+                    <span class="material-symbols-rounded">trending_up</span>
+                    <span class="val" th:text="${c.points}">0</span>
+                    <span class="unit">Points</span>
+                  </div>
+                  <button class="lb2-citizen-menu" aria-label="Options">
+                    <span
+                      class="material-symbols-rounded"
+                      style="font-size: 18px"
+                      >menu</span
+                    >
+                  </button>
+                </div>
+
+            <!-- Right: NEWS / Recent activity -->
+            <div style="display: flex; flex-direction: column; gap: 20px">
+              <div class="lb2-news-card">
+                <h4>NEWS <a href="/citizen/notifications">SHOW ALL</a></h4>
+                <div
+                  th:if="${#lists.isEmpty(recentactivity)}"
+                  class="text-muted"
+                  style="font-size: 13px; text-align: center; padding: 16px 0"
+                >
+                  No recent activity yet — get involved to earn points!
+                </div>
+                <div
+                  th:each="a, iter : ${recentActivity}"
+                  th:if="${iter.index <= 5}"
+                  class="lb2-news-item"
+                >
+                  <div
+                    class="lb2-news-dot"
+                    th:classappend="${iter.index % 5 == 0} ? 'blue' : (${iter.index % 5 == 1} ? 'green' : (${iter.index % 5 == 2} ? 'orange' : (${iter.index % 5 == 3} ? 'red' : 'purple')))"
+                    th:text="'+' + ${a.points}"
+                  >
+                    +5
+                  </div>
+                  <div>
+                    <div class="lb2-news-title" th:text="${a.description}">
+                      Activity description
+                    </div>
+                    <div class="lb2-news-sub">Points earned</div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -343,5 +321,41 @@
       </div>
     </div>
     <script th:src="@{/js/main.js}"></script>
+    <script th:inline="javascript">
+      (function () {
+        // Animate progress bars based on citizen's rank position
+        var totalCitizens = /*[[${#lists.size(ranked)}]]*/ 1;
+        var myRank = /*[[${myRank}]]*/ 1;
+        var pct =
+          totalCitizens > 0
+            ? Math.round(((totalCitizens - myRank + 1) / totalCitizens) * 100)
+            : 0;
+
+        // Simulate progress percentages based on rank percentile
+        var complaintsP = Math.min(100, pct + 10)
+        var discussionsP = Math.min(100, Math.max(20, pct - 5));
+        var suggestionsP = Math.min(100, Math.max(10, pct - 20));
+
+        setTimeout(function () {
+          var el1 = document.getElementById("progressComplaints");
+          var el2 = document.getElementById("progressDiscussion");
+          var el3 = document.getElementById("progressSuggestions");
+          if (el1) {
+            el1.style.width = complaintsP + "%";
+          }
+          if (el2) {
+            el2.style.width = discussionsP + "%";
+          }
+          if (el3) {
+            el3.style.width = suggestionsP + "%";
+          }
+          var v1 = document.getElementById("progressComplaintsVal");
+          var v2 = document.getElementById("progressDiscussionsVal");
+          var v3 = document.getElementById("progressSuggestionsVal");
+          if (v1) v1.textContent = complaintsP + "%";
+          if (v2) v2.textContent = discussionsP + "%"
+          if (v3) v3.textContent = suggestionsP + "%";
+      })();
+    </script>
   </body>
 </html>
