@@ -34,7 +34,7 @@
       </div>
 
       <div class="text-muted" style="font-size:12.5px;margin-top:16px;">
-        Member since <span th:text="${#temporals.format(profileUser.createdAt, 'MMMM yyyy')}">date</span>
+        Member since <span class="mono" th:text="${#temporals.format(profileUser.createdAt, 'MMMM yyyy')}">date</span>
       </div>
     </div>
   </div>
