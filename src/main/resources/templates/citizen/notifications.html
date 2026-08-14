@@ -1,15 +1,15 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
   <head th:replace="~{fragments/layout :: head('Notifications')}"></head>
-  <body th:classappend="${citizen != null and citizen.darkmode} ? 'dark'">
+  <body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'">
     <div class="app-shell">
       <nav
-        th:replace="~{fragments/layout :: sidebar-citizen('notification')}"
+        th:replace="~{fragments/layout :: sidebar-citizen('notifications')}"
       ></nav>
       <div class="sidebar-overlay"></div>
       <div class="main">
         <div
-          th:replace="~{fragments/layout :: topbar('Notifications', ${citizen.fullName}, ${unreadcount}, '/citizen/notifications')}"
+          th:replace="~{fragments/layout :: topbar('Notifications', ${citizen.fullName}, ${unreadCount}, '/citizen/notifications')}"
         ></div>
         <div class="content" style="max-width: 760px">
           <div
@@ -31,12 +31,12 @@
               <button
                 class="btn btn-ghost btn-sm"
                 type="button"
-                id="notifSeeall"
+                id="notifSeeAll"
               >
                 See All
               </button>
               <form
-                th:action="@{/citizen/notification/mark-all-read}"
+                th:action="@{/citizen/notifications/mark-all-read}"
                 method="post"
               >
                 <button class="btn btn-ghost btn-sm" type="submit">
@@ -78,6 +78,14 @@
             >
               This Week
             </button>
+            <button
+              type="button"
+              data-notif-tab="earlier"
+              role="tab"
+              aria-selected="false"
+            >
+              Earlier
+            </button>
           </div>
 
           <!-- Category (type) filter: unchanged server-side behaviour -->
@@ -92,11 +100,11 @@
             <a
               th:href="@{/citizen/notifications(category='all')}"
               class="filter-chip"
-              th:classappend="${category != 'all'} ? 'active'"
+              th:classappend="${category == 'all'} ? 'active'"
               >All Types</a
             >
             <a
-              th:each="t : ${type}"
+              th:each="t : ${types}"
               th:href="@{/citizen/notifications(category=${t})}"
               class="filter-chip"
               th:classappend="${category == t.name()} ? 'active'"
@@ -106,7 +114,7 @@
           </div>
 
           <div
-            th:if="${#lists.isEmpty(notification)}"
+            th:if="${#lists.isEmpty(notifications)}"
             class="card empty-state"
           >
             <div class="ico">
@@ -121,9 +129,28 @@
 
           <div
             class="card card-pad"
-            id="notifCenterlist"
+            id="notifCenterList"
             th:if="${not #lists.isEmpty(notifications)}"
           ></div>
+
+          <div
+            th:if="${totalPages > 1}"
+            style="
+              display: flex;
+              justify-content: center;
+              gap: 6px;
+              margin-top: 20px;
+            "
+          >
+            <a
+              th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+              th:href="@{/citizen/notifications(page=${i}, category=${category})}"
+              class="btn btn-sm"
+              th:classappend="${i == page} ? 'btn-primary' : 'btn-ghost'"
+              th:text="${i + 1}"
+              >1</a
+            >
+          </div>
         </div>
       </div>
     </div>
@@ -131,7 +158,7 @@
     <script th:inline="javascript">
       (function () {
         var listEl = document.getElementById("notifCenterList");
-        if (listEl) return;
+        if (!listEl) return;
 
         var notifData = [
           /*[# th:each="n : ${notifications}"]*/
@@ -155,7 +182,7 @@
 
         var dismissKey = "ogbd-dismissed-notifs";
         var dismissed = new Set(
-          JSON.parse(sessionStorage.getItem(dismissKey) || "[]")
+          JSON.parse(sessionStorage.getItem(dismissKey) || "[]"),
         );
         var activeTab = "all";
         var bucketLabels = {
@@ -171,21 +198,22 @@
               "<": "&lt;",
               ">": "&gt;",
               '"': "&quot;",
+              "'": "&#39;",
             }[ch];
           });
         }
 
         function markRead(id) {
           var item = notifData.find(function (n) {
-            return n.id = id;
+            return n.id === id;
           });
           if (item) item.read = true;
           // Fire-and-forget: persists even if the browser is mid-navigation to the notification's link.
           if (navigator.sendBeacon) {
-            navigator.sendBeacon("/citizen/notification/" + id + "/read");
+            navigator.sendBeacon("/citizen/notifications/" + id + "/read");
           } else {
             fetch("/citizen/notifications/" + id + "/read", {
-              method: "GET",
+              method: "POST",
             }).catch(function () {});
           }
         }
@@ -204,8 +232,8 @@
             '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">' +
             '<span style="display:flex;align-items:center;gap:7px;min-width:0;">' +
             (n.read
-              ? '<span class="notif-unread-dot" aria-hidden="true"></span>'
-              : "") +
+              ? ""
+              : '<span class="notif-unread-dot" aria-hidden="true"></span>') +
             '<span class="fw-700" style="font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' +
             escapeHtml(n.title) +
             "</span>" +
@@ -234,7 +262,7 @@
         function render() {
           var visible = notifData.filter(function (n) {
             return (
-              dismissed.has(n.id) &&
+              !dismissed.has(n.id) &&
               (activeTab === "all" || n.bucket === activeTab)
             );
           });
@@ -248,7 +276,7 @@
             return;
           }
 
-          if (activeTab = "all") {
+          if (activeTab === "all") {
             // Group visually by recency bucket so the feed reads as organized sections, not a flat list.
             var html = "";
             ["today", "week", "earlier"].forEach(function (bucket) {
@@ -276,10 +304,24 @@
             });
             tab.classList.add("active");
             tab.setAttribute("aria-selected", "true");
-            activeTab = tab.getAttribute("data-notif-tabs");
+            activeTab = tab.getAttribute("data-notif-tab");
             render();
           });
         });
+
+        if (seeAllBtn) {
+          seeAllBtn.addEventListener("click", function () {
+            tabs.forEach(function (t) {
+              var isAll = t.getAttribute("data-notif-tab") === "all";
+              t.classList.toggle("active", isAll);
+              t.setAttribute("aria-selected", String(isAll));
+            });
+            activeTab = "all";
+            render();
+            if (topAnchor)
+              topAnchor.scrollIntoView({ behavior: "smooth", block: "start" });
+          });
+        }
 
         listEl.addEventListener("click", function (e) {
           var link = e.target.closest && e.target.closest("[data-notif-link]");
@@ -301,17 +343,19 @@
           setTimeout(function () {
             row.style.maxHeight = row.scrollHeight + "px";
             void row.offsetHeight; // force reflow so the browser picks up the starting height
-            row.classList.add("removing-collapse")
+            row.classList.add("removing-collapse");
             setTimeout(function () {
-              dismissed.add(id)
+              dismissed.add(id);
               sessionStorage.setItem(
                 dismissKey,
-                JSON.stringify(Array.from(dismissed))
+                JSON.stringify(Array.from(dismissed)),
               );
               render();
             }, 250);
           }, 250);
         });
+
+        render();
       })();
     </script>
   </body>
