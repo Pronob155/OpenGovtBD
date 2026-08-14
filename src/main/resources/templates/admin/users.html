@@ -1,65 +1,146 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head th:replace="~{fragments/layout :: head('Manage Users')}">
-<body>
-<div class="app-shell">
-  <nav th:replace="~{fragments/layout :: sidebar-admin('user')}"></nav>
-  <div class="sidebar-overlay">
-  <div class="main">
-    <div th:replace="~{fragments/layout : topbar('Citizens & Officers', ${admin.fullname}, ${unreadCount}, '/admin/dashboard')}"></div>
-    <div class="content">
+  <head th:replace="~{fragments/layout :: head('Manage Users')}"></head>
+  <body>
+    <div class="app-shell">
+      <nav th:replace="~{fragments/layout :: sidebar-admin('users')}"></nav>
+      <div class="sidebar-overlay"></div>
+      <div class="main">
+        <div
+          th:replace="~{fragments/layout :: topbar('Citizens & Officers', ${admin.fullName}, ${unreadCount}, '/admin/dashboard')}"
+        ></div>
+        <div class="content">
+          <form
+            method="get"
+            th:action="@{/admin/users}"
+            style="
+              display: flex;
+              gap: 10px;
+              margin-bottom: 22px;
+              max-width: 420px;
+            "
+          >
+            <input
+              class="input"
+              type="text"
+              name="phone"
+              th:value="${phoneQuery}"
+              placeholder="Search citizens by phone number..."
+            />
+            <button class="btn btn-primary" type="submit">
+              <span class="material-symbols-rounded">search</span>
+            </button>
+            <a
+              th:if="${not #strings.isEmpty(phoneQuery)}"
+              href="/admin/users"
+              class="btn btn-ghost"
+              >Clear</a
+            >
+          </form>
 
-      <form method="get" th:action="@{/admin/user}" style="display:flex;gap:10px;margin-bottom:22px;max-width:420px;">
-        <input class="input" type="text" name="Phone" th:value="${phoneQuery}" placeholder="Search citizens by phone number..."/>
-        <button class="btn btn-primary" type="submit"><span class="material-symbols-rounded">search</span></button>
-        <a th:if="${not #string.isEmpty(phoneQuery)}" href="/admin/users" class="btn btn-ghost">Clear</a>
-      </form>
+          <h3 style="margin: 0 0 14px">
+            Citizens (<span th:text="${#lists.size(citizens)}">0</span>)
+          </h3>
+          <div class="card" style="margin-bottom: 32px">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Phone</th>
+                  <th>Division</th>
+                  <th>Points</th>
+                  <th>Status</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="c : ${citizens}">
+                  <td>
+                    <a
+                      th:href="@{'/admin/users/' + ${c.id}}"
+                      class="name-with-badge"
+                      style="color: var(--ink)"
+                    >
+                      <span th:text="${c.fullName}">Name</span>
+                      <span
+                        th:if="${c.verified}"
+                        th:replace="~{fragments/layout :: verified-badge}"
+                      ></span>
+                    </a>
+                  </td>
+                  <td th:text="${c.phone}">Phone</td>
+                  <td th:text="${c.division}">Division</td>
+                  <td th:text="${c.points}">0</td>
+                  <td>
+                    <span
+                      class="pill"
+                      th:classappend="${c.banned} ? 'pill-banned' : (${c.isCurrentlySuspended()} ? 'pill-suspended' : 'pill-success')"
+                      th:text="${c.banned} ? 'Banned' : (${c.isCurrentlySuspended()} ? 'Suspended' : 'Active')"
+                      >Active</span
+                    >
+                  </td>
+                  <td>
+                    <a
+                      th:href="@{'/admin/users/' + ${c.id}}"
+                      class="btn btn-ghost btn-sm"
+                      >Manage</a
+                    >
+                  </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(citizens)}">
+                  <td
+                    colspan="6"
+                    class="text-muted"
+                    style="text-align: center; padding: 24px"
+                  >
+                    No citizens match this phone number.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
-      <h3 style="margin:0 0 14px;">Citizens (<span th:text="${#lists.size(citizen)}">0</span>)</h3>
-      <div class="card" style="margin-bottom:32px;">
-        <table class="data-table">
-          <thead><tr><th>Name</th><th>Phone</th><th>Division</th><th>Points</th><th>Status</th><th></th></tr></thead>
-          <tbody>
-          <tr th:each="c ${citizens}">
-            <td>
-              <a th:href="@{'/admin/user/' + ${c.id}}" class="name-with-badge" style="color:var(--ink)">
-                <span th:text="${c.fullname}">Name</span>
-                <span th:if="${c.verified}" th:replace="~{fragments/layout :: verified-badge}">
-              </a>
-            </td>
-            <td th:text="${c.phone()}">Phone</td>
-            <td th:text="${c.divison}">Division</td>
-            <td th:text="${c.point}">0</td>
-            <td>
-              <span class="pill" th:classappend="${c.banned} ? 'pill-banned' : (${c.isCurrentlySuspended} ? 'pill-suspended' : 'pill-success')"
-                    th:text="${c.banned} ? 'Banned' : (${c.isCurrentlySuspended()} ? 'Suspended' : 'Active'">Active</span>
-            </td>
-            <td><a th:href="@{'/admin/users/' - ${c.id}}" class="btn btn-ghost btn-sm">Manage</a></td>
-          </tr>
-          <tr th:if="${#lists.isempty(citizens)}"><td colspan="5" class="text-muted" style="text-align:center;padding:24px;">No citizens match this phone number.</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <h3 style="margin:0 0 14px;">Government Officers</h3>
-      <div class="card">
-        <table class="data-table">
-          <thead><tr><th>Name</th><th>Officer ID</th><th>Department</th><th>Designation</th><th>Status</th><th></th></tr></thead>
-          <tbody>
-          <tr th:each="o : ${officer}">
-            <td th:text="${o.fullName}">Name</td>
-            <td class="mono" th:text="${o.officerid}">ID</td>
-            <td th:text="${o.deparment}">Dept</td>
-            <td th:text="${o.designation()}">Designation</td>
-            <td><span class="pill" th:classappend="${o.banned} ? 'pill-banned' : (${o.isCurrentlySuspended()} ? 'pill-suspended' : 'pill-success')" th:text="${o.banned} ? 'Banned' : (${o.isCurrentlySuspended()} ? 'Suspended' : 'Active')">Active</span></td>
-            <td><a th:href="@{'/admin/user/' + ${o.id}}" class="btn btn-ghost btn-sm">Manage</a></td>
-          </tr>
-          </tbody>
-        </table>
+          <h3 style="margin: 0 0 14px">Government Officers</h3>
+          <div class="card">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Officer ID</th>
+                  <th>Department</th>
+                  <th>Designation</th>
+                  <th>Status</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="o : ${officers}">
+                  <td th:text="${o.fullName}">Name</td>
+                  <td class="mono" th:text="${o.officerId}">ID</td>
+                  <td th:text="${o.department}">Dept</td>
+                  <td th:text="${o.designation}">Designation</td>
+                  <td>
+                    <span
+                      class="pill"
+                      th:classappend="${o.banned} ? 'pill-banned' : (${o.isCurrentlySuspended()} ? 'pill-suspended' : 'pill-success')"
+                      th:text="${o.banned} ? 'Banned' : (${o.isCurrentlySuspended()} ? 'Suspended' : 'Active')"
+                      >Active</span
+                    >
+                  </td>
+                  <td>
+                    <a
+                      th:href="@{'/admin/users/' + ${o.id}}"
+                      class="btn btn-ghost btn-sm"
+                      >Manage</a
+                    >
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
-<script th:src="@{js/main.js}"></script>
-</body>
+    <script th:src="@{/js/main.js}"></script>
+  </body>
 </html>
