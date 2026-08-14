@@ -1,50 +1,138 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head th:replace="~{fragments/layout :: head('Verify OTP')}"></head>
-<body>
-<div class="auth-shell">
-  <div class="auth-side">
-    <a href="/" class="brand" style="color:#fff;"><div class="brand-mark" style="background:rgba(255,255,255,0.15);"><span class="material-symbols-rounded">account_balance</span></div>OpenGovtBD</a>
-    <div>
-      <h1 style="font-size:34px;line-height:1.25;max-width:420px;">One quick step to verify it's really you.</h1>
-      <p style="opacity:.85;max-width:380px;">We've sent a 6-digit verification code to your mobile number.</p>
-    </div>
-    <div style="opacity:.75;font-size:13px;">This demo uses a simulated SMS gateway.</div>
-  </div>
-  <div class="auth-form-side">
-    <div class="auth-card pop-in" style="text-align:center;">
-      <div class="stat-icon" style="background:var(--setu-blue-light);color:var(--setu-blue);margin:0 auto 18px;width:60px;height:60px;"><span class="material-symbols-rounded" style="font-size:28px;">sms</span></div>
-      <h2 style="margin:0 0 6px;">Verify your number</h2>
-      <p class="text-muted" style="margin:0 0 8px;">Code sent to <strong th:text="'+88 ' + ${phone}">phone</strong></p>
-      <div class="alert alert-info" style="margin:14px 0;text-align:left;">
-        <span class="material-symbols-rounded">info</span>
-        <span>Demo mode — your one-time code is <strong th:text="${demoOtp}">123456</strong></span>
-      </div>
-      <div th:if="${error}" class="alert alert-error" style="margin-bottom:14px;text-align:left;"><span class="material-symbols-rounded">error</span><span th:text="${error}"></span></div>
-
-      <form method="post" th:action="@{/otp/verify}">
-        <div class="otp-input" style="margin-bottom:22px;">
-          <input type="text" maxlength="1" style="width:100%;" oninput="if(this.value)this.nextElementSibling?.focus();"/>
-          <input type="text" maxlength="1" style="width:100%;" oninput="if(this.value)this.nextElementSibling?.focus();"/>
-          <input type="text" maxlength="1" style="width:100%;" oninput="if(this.value)this.nextElementSibling?.focus();"/>
-          <input type="text" maxlength="1" style="width:100%;" oninput="if(this.value)this.nextElementSibling?.focus();"/>
-          <input type="text" maxlength="1" style="width:100%;" oninput="if(this.value)this.nextElementSibling?.focus();"/>
-          <input type="text" maxlength="1" style="width:100%;" oninput="if(this.value)this.nextElementSibling?.focus();"/>
+  <head th:replace="~{fragments/layout :: head('Verify OTP')}"></head>
+  <body class="neuform-page">
+    <div class="auth-shell">
+      <a href="/" class="auth-topbrand"
+        ><div class="brand-mark">
+          <span class="material-symbols-rounded" style="color: #fff"
+            >account_balance</span
+          >
         </div>
-        <input type="hidden" name="otp" th:value="${demoOtp}"/>
-        <button class="btn btn-primary btn-block" type="submit">Verify &amp; Create Profile</button>
-      </form>
-      <p style="margin-top:16px;font-size:13px;" class="text-muted">Didn't get a code? <a href="#" style="color:var(--setu-blue);font-weight:600;">Resend</a></p>
-    </div>
-  </div>
-</div>
-<script>
-  // Sync the 6 visual boxes into the hidden "otp" field so the demo OTP still verifies correctly
-  document.querySelector('form').addEventListener('submit', function () {
-    const boxes = Array.from(document.querySelectorAll('.otp-input input')).map(i => i.value).join('');
-    if (boxes.length === 6) document.querySelector('input[name=otp]').value = boxes;
-  });
-</script>
-</body>
-</html>
+        OpenGovtBD</a
+      >
+      <button
+        type="button"
+        class="icon-btn theme-fab"
+        data-client-theme-toggle
+        aria-label="Toggle dark mode"
+        style="position: absolute; top: 20px; right: 20px"
+      >
+        <span class="material-symbols-rounded theme-icon">dark_mode</span>
+      </button>
+      <div class="auth-form-side">
+        <div
+          class="auth-card neuform-card pop-in"
+          style="text-align: center; padding: 24px"
+        >
+          <div
+            class="stat-icon"
+            style="
+              background: var(--setu-blue-light);
+              color: var(--setu-blue);
+              margin: 0 auto 18px;
+              width: 56px;
+              height: 56px;
+            "
+          >
+            <span class="material-symbols-rounded" style="font-size: 26px"
+              >sms</span
+            >
+          </div>
+          <h2 class="auth-display-title" style="margin: 0 0 6px">
+            Verify your number
+          </h2>
+          <p class="text-muted" style="margin: 0 0 8px">
+            Code sent to <strong th:text="'+88 ' + ${phone}">phone</strong>
+          </p>
+          <div
+            class="alert alert-info"
+            style="margin: 14px 0; text-align: left"
+          >
+            <span class="material-symbols-rounded">info</span>
+            <span
+              >Demo mode — your one-time code is
+              <strong th:text="${demoOtp}">123456</strong></span
+            >
+          </div>
+          <div
+            th:if="${error}"
+            class="alert alert-error"
+            style="margin-bottom: 14px; text-align: left"
+          >
+            <span class="material-symbols-rounded">error</span
+            ><span th:text="${error}"></span>
+          </div>
 
+          <form method="post" th:action="@{/otp/verify}">
+            <div class="otp-input" style="margin-bottom: 22px">
+              <input
+                type="text"
+                maxlength="1"
+                class="neuform-input"
+                style="width: 100%"
+                oninput="if (this.value) this.nextElementSibling?.focus();"
+              />
+              <input
+                type="text"
+                maxlength="1"
+                class="neuform-input"
+                style="width: 100%"
+                oninput="if (this.value) this.nextElementSibling?.focus();"
+              />
+              <input
+                type="text"
+                maxlength="1"
+                class="neuform-input"
+                style="width: 100%"
+                oninput="if (this.value) this.nextElementSibling?.focus();"
+              />
+              <input
+                type="text"
+                maxlength="1"
+                class="neuform-input"
+                style="width: 100%"
+                oninput="if (this.value) this.nextElementSibling?.focus();"
+              />
+              <input
+                type="text"
+                maxlength="1"
+                class="neuform-input"
+                style="width: 100%"
+                oninput="if (this.value) this.nextElementSibling?.focus();"
+              />
+              <input
+                type="text"
+                maxlength="1"
+                class="neuform-input"
+                style="width: 100%"
+                oninput="if (this.value) this.nextElementSibling?.focus();"
+              />
+            </div>
+            <input type="hidden" name="otp" th:value="${demoOtp}" />
+            <button class="btn btn-primary btn-block" type="submit">
+              Verify &amp; Create Profile
+            </button>
+          </form>
+          <p style="margin-top: 16px; font-size: 13px" class="text-muted">
+            Didn't get a code?
+            <a href="#" style="color: var(--setu-blue); font-weight: 600"
+              >Resend</a
+            >
+          </p>
+        </div>
+      </div>
+    </div>
+    <script th:src="@{/js/main.js}"></script>
+    <script>
+      // Sync the 6 visual boxes into the hidden "otp" field so the demo OTP still verifies correctly
+      document.querySelector("form").addEventListener("submit", function () {
+        const boxes = Array.from(document.querySelectorAll(".otp-input input"))
+          .map((i) => i.value)
+          .join("");
+        if (boxes.length === 6)
+          document.querySelector("input[name=otp]").value = boxes;
+      });
+    </script>
+  </body>
+</html>

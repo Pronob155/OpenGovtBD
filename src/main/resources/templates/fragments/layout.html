@@ -1,140 +1,410 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
+  <!-- ============ HEAD ============ -->
+  <head th:fragment="head(title)">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="${title} + ' · OpenGovtBD'">OpenGovtBD</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Noto+Sans+Bengali:wght@400;600;700&amp;family=JetBrains+Mono:wght@500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <style>
+      .material-symbols-rounded {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 500,
+          "GRAD" 0,
+          "opsz" 24;
+        font-size: 20px;
+        vertical-align: middle;
+        line-height: 1;
+      }
+    </style>
+  </head>
 
-<!-- ============ HEAD ============ -->
-<head th:fragment="head(title)">
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title th:text="${title} + ' · OpenGovtBD'">OpenGovtBD</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Noto+Sans+Bengali:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
-  <link rel="stylesheet" th:href="@{/css/style.css}"/>
-  <style>.material-symbols-rounded{font-variation-settings:'FILL' 0,'wght' 500,'GRAD' 0,'opsz' 24;font-size:20px;vertical-align:middle;line-height:1;}</style>
-</head>
+  <body>
+    <!-- ============ FLASH / ALERTS ============ -->
+    <div th:fragment="flash" class="container" style="padding-top: 18px">
+      <div
+        th:if="${error}"
+        class="alert alert-error pop-in"
+        data-flash
+        style="margin-bottom: 14px"
+      >
+        <span class="material-symbols-rounded">error</span>
+        <span th:text="${error}">Error</span>
+      </div>
+      <div
+        th:if="${success}"
+        class="alert alert-success pop-in"
+        data-flash
+        style="margin-bottom: 14px"
+      >
+        <span class="material-symbols-rounded">check_circle</span>
+        <span th:text="${success}">Success</span>
+      </div>
+    </div>
 
-<body>
+    <!-- ============ Reusable: Verified badge ============ -->
+    <span
+      th:fragment="verified-badge"
+      class="verified-badge"
+      title="Verified Citizen"
+    >
+      <span class="material-symbols-rounded">check</span>
+    </span>
 
-<!-- ============ FLASH / ALERTS ============ -->
-<div th:fragment="flash" class="container" style="padding-top:18px;">
-  <div th:if="${error}" class="alert alert-error pop-in" data-flash style="margin-bottom:14px;">
-    <span class="material-symbols-rounded">error</span>
-    <span th:text="${error}">Error</span>
-  </div>
-  <div th:if="${success}" class="alert alert-success pop-in" data-flash style="margin-bottom:14px;">
-    <span class="material-symbols-rounded">check_circle</span>
-    <span th:text="${success}">Success</span>
-  </div>
-</div>
+    <!-- ============ Reusable: language switch pill ============ -->
+    <div th:fragment="lang-switch" class="lang-switch">
+      <a href="?lang=en" th:classappend="${#locale.language == 'en'} ? 'active'"
+        >EN</a
+      >
+      <a href="?lang=bn" th:classappend="${#locale.language == 'bn'} ? 'active'"
+        >বাং</a
+      >
+    </div>
 
-<!-- ============ Reusable: Verified badge ============ -->
-<span th:fragment="verified-badge" class="verified-badge" title="Verified Citizen">
-  <span class="material-symbols-rounded">check</span>
-</span>
+    <!-- ============ TOPBAR (shared by all dashboards) ============ -->
+    <div
+      th:fragment="topbar(title, fullName, unread, notifLink)"
+      class="topbar"
+    >
+      <div style="display: flex; align-items: center; gap: 14px">
+        <button class="icon-btn mobile-menu-btn" aria-label="Toggle menu">
+          <span class="material-symbols-rounded">menu</span>
+        </button>
+        <div class="topbar-title" th:text="${title}">Dashboard</div>
+      </div>
+      <div class="topbar-right">
+        <div th:replace="~{fragments/layout :: lang-switch}"></div>
+        <button
+          type="button"
+          class="icon-btn theme-fab"
+          data-client-theme-toggle
+          aria-label="Toggle dark mode"
+        >
+          <span class="material-symbols-rounded theme-icon">dark_mode</span>
+        </button>
+        <a th:href="${notifLink}" class="icon-btn" aria-label="Notifications">
+          <span class="material-symbols-rounded">notifications</span>
+          <span
+            th:if="${unread != null and unread > 0}"
+            class="dot-flag"
+          ></span>
+        </a>
+        <div
+          class="avatar"
+          th:text="${#strings.length(fullName) > 0 ? #strings.substring(fullName,0,1) : 'U'}"
+        >
+          U
+        </div>
+      </div>
+    </div>
 
-<!-- ============ Reusable: language switch pill ============ -->
-<div th:fragment="lang-switch" class="lang-switch">
-  <a href="?lang=en" th:classappend="${#locale.language == 'en'} ? 'active'">EN</a>
-  <a href="?lang=bn" th:classappend="${#locale.language == 'bn'} ? 'active'">বাং</a>
-</div>
+    <!-- ============ SIDEBAR: CITIZEN ============ -->
+    <nav th:fragment="sidebar-citizen(active)" class="sidebar">
+      <a href="/" class="sidebar-brand">
+        <div class="brand-mark">
+          <span class="material-symbols-rounded">account_balance</span>
+        </div>
+        <span th:text="#{brand.name}">OpenGovtBD</span>
+      </a>
+      <div class="nav-section-label" th:text="#{nav.overviewSection}">
+        Overview
+      </div>
+      <a
+        href="/citizen/dashboard"
+        class="nav-link"
+        th:classappend="${active == 'dashboard'} ? 'active'"
+        ><span class="material-symbols-rounded">space_dashboard</span
+        ><span th:text="#{nav.dashboard}">Dashboard</span></a
+      >
+      <a
+        href="/citizen/services"
+        class="nav-link"
+        th:classappend="${active == 'services'} ? 'active'"
+        ><span class="material-symbols-rounded">apps</span
+        ><span th:text="#{nav.services}">Digital Services</span></a
+      >
+      <a
+        href="/citizen/emergency"
+        class="nav-link"
+        th:classappend="${active == 'emergency'} ? 'active'"
+        ><span class="material-symbols-rounded">emergency</span
+        ><span th:text="#{nav.emergency}">Emergency</span></a
+      >
+      <div class="nav-section-label" th:text="#{nav.participate}">
+        Participate
+      </div>
+      <a
+        href="/citizen/complaints"
+        class="nav-link"
+        th:classappend="${active == 'complaints'} ? 'active'"
+        ><span class="material-symbols-rounded">report</span
+        ><span th:text="#{nav.complaints}">Complaints</span></a
+      >
+      <a
+        href="/citizen/discussions"
+        class="nav-link"
+        th:classappend="${active == 'discussions'} ? 'active'"
+        ><span class="material-symbols-rounded">forum</span
+        ><span th:text="#{nav.discussions}">Discussions</span></a
+      >
+      <a
+        href="/citizen/polls"
+        class="nav-link"
+        th:classappend="${active == 'polls'} ? 'active'"
+        ><span class="material-symbols-rounded">how_to_vote</span
+        ><span th:text="#{nav.polls}">Polls</span></a
+      >
+      <a
+        href="/citizen/suggestions"
+        class="nav-link"
+        th:classappend="${active == 'suggestions'} ? 'active'"
+        ><span class="material-symbols-rounded">lightbulb</span
+        ><span th:text="#{nav.suggestions}">Suggestion Box</span></a
+      >
+      <a
+        href="/citizen/leaderboard"
+        class="nav-link"
+        th:classappend="${active == 'leaderboard'} ? 'active'"
+        ><span class="material-symbols-rounded">trophy</span
+        ><span th:text="#{nav.leaderboard}">Leaderboard</span></a
+      >
+      <div class="nav-section-label" th:text="#{nav.account}">Account</div>
+      <a
+        href="/citizen/activity"
+        class="nav-link"
+        th:classappend="${active == 'activity'} ? 'active'"
+        ><span class="material-symbols-rounded">history</span
+        ><span th:text="#{nav.activity}">My Activity</span></a
+      >
+      <a
+        href="/citizen/notifications"
+        class="nav-link"
+        th:classappend="${active == 'notifications'} ? 'active'"
+        ><span class="material-symbols-rounded">notifications</span
+        ><span th:text="#{nav.notifications}">Notifications</span></a
+      >
+      <a
+        href="/citizen/saved"
+        class="nav-link"
+        th:classappend="${active == 'saved'} ? 'active'"
+        ><span class="material-symbols-rounded">bookmark</span
+        ><span th:text="#{nav.saved}">Saved Items</span></a
+      >
+      <a
+        href="/citizen/verification"
+        class="nav-link"
+        th:classappend="${active == 'verification'} ? 'active'"
+      >
+        <span class="material-symbols-rounded">verified_user</span
+        ><span th:text="#{nav.verification}">Get Verified</span>
+        <span
+          th:if="${citizen != null and citizen.verified}"
+          class="verified-badge"
+          style="margin-left: auto"
+          ><span class="material-symbols-rounded">check</span></span
+        >
+      </a>
+      <a
+        href="/citizen/profile"
+        class="nav-link"
+        th:classappend="${active == 'profile'} ? 'active'"
+        ><span class="material-symbols-rounded">person</span
+        ><span th:text="#{nav.profile}">Profile &amp; Settings</span></a
+      >
+      <a href="/credits" class="nav-link"
+        ><span class="material-symbols-rounded">groups</span
+        ><span th:text="#{nav.credits}">Credits</span></a
+      >
+      <form
+        th:action="@{/citizen/theme/toggle}"
+        method="post"
+        class="theme-toggle-row"
+      >
+        <span class="material-symbols-rounded">dark_mode</span>
+        <span class="theme-toggle-label" th:text="#{nav.darkMode}"
+          >Dark mode</span
+        >
+        <button
+          type="submit"
+          class="switch"
+          th:classappend="${citizen != null and citizen.darkMode} ? 'on'"
+          aria-label="Toggle dark mode"
+        >
+          <span class="switch-knob"></span>
+        </button>
+      </form>
+      <a href="/logout" class="nav-link"
+        ><span class="material-symbols-rounded">logout</span
+        ><span th:text="#{nav.logout}">Logout</span></a
+      >
+    </nav>
 
-<!-- ============ TOPBAR (shared by all dashboards) ============ -->
-<div th:fragment="topbar(title, fullName, unread, notifLink)" class="topbar">
-  <div style="display:flex;align-items:center;gap:14px;">
-    <button class="icon-btn mobile-menu-btn" aria-label="Toggle menu"><span class="material-symbols-rounded">menu</span></button>
-    <div class="topbar-title" th:text="${title}">Dashboard</div>
-  </div>
-  <div class="topbar-right">
-    <div th:replace="~{fragments/layout :: lang-switch}"></div>
-    <a th:href="${notifLink}" class="icon-btn" aria-label="Notifications">
-      <span class="material-symbols-rounded">notifications</span>
-      <span th:if="${unread != null and unread > 0}" class="dot-flag"></span>
-    </a>
-    <div class="avatar" th:text="${#strings.length(fullName) > 0 ? #strings.substring(fullName,0,1) : 'U'}">U</div>
-  </div>
-</div>
+    <!-- ============ SIDEBAR: OFFICER ============ -->
+    <nav th:fragment="sidebar-officer(active)" class="sidebar">
+      <a href="/" class="sidebar-brand">
+        <div class="brand-mark">
+          <span class="material-symbols-rounded">account_balance</span>
+        </div>
+        <span th:text="#{brand.name}">OpenGovtBD</span>
+      </a>
+      <div class="nav-section-label" th:text="#{nav.officerWorkspace}">
+        Officer Workspace
+      </div>
+      <a
+        href="/officer/dashboard"
+        class="nav-link"
+        th:classappend="${active == 'dashboard'} ? 'active'"
+        ><span class="material-symbols-rounded">space_dashboard</span
+        ><span th:text="#{nav.dashboard}">Dashboard</span></a
+      >
+      <a
+        href="/officer/complaints"
+        class="nav-link"
+        th:classappend="${active == 'complaints'} ? 'active'"
+        ><span class="material-symbols-rounded">assignment</span
+        ><span th:text="#{nav.complaintQueue}">Complaint Queue</span></a
+      >
+      <a
+        href="/officer/discussions"
+        class="nav-link"
+        th:classappend="${active == 'discussions'} ? 'active'"
+        ><span class="material-symbols-rounded">gavel</span
+        ><span th:text="#{nav.discussionApproval}">Discussion Approval</span></a
+      >
+      <a
+        href="/officer/suggestions"
+        class="nav-link"
+        th:classappend="${active == 'suggestions'} ? 'active'"
+        ><span class="material-symbols-rounded">rate_review</span
+        ><span th:text="#{nav.suggestionReview}">Suggestion Review</span></a
+      >
+      <a
+        href="/officer/polls/new"
+        class="nav-link"
+        th:classappend="${active == 'polls'} ? 'active'"
+        ><span class="material-symbols-rounded">how_to_vote</span
+        ><span th:text="#{nav.createPoll}">Create Poll</span></a
+      >
+      <a
+        href="/officer/services"
+        class="nav-link"
+        th:classappend="${active == 'services'} ? 'active'"
+        ><span class="material-symbols-rounded">apps</span
+        ><span th:text="#{nav.manageServices}">Manage Services</span></a
+      >
+      <div class="nav-section-label" th:text="#{nav.account}">Account</div>
+      <a href="/credits" class="nav-link"
+        ><span class="material-symbols-rounded">groups</span
+        ><span th:text="#{nav.credits}">Credits</span></a
+      >
+      <div class="theme-toggle-row">
+        <span class="material-symbols-rounded">dark_mode</span>
+        <span class="theme-toggle-label" th:text="#{nav.darkMode}"
+          >Dark mode</span
+        >
+        <button
+          type="button"
+          class="icon-btn theme-fab"
+          data-client-theme-toggle
+          aria-label="Toggle dark mode"
+        >
+          <span class="material-symbols-rounded theme-icon">dark_mode</span>
+        </button>
+      </div>
+      <a href="/logout" class="nav-link"
+        ><span class="material-symbols-rounded">logout</span
+        ><span th:text="#{nav.logout}">Logout</span></a
+      >
+    </nav>
 
-<!-- ============ SIDEBAR: CITIZEN ============ -->
-<nav th:fragment="sidebar-citizen(active)" class="sidebar">
-  <a href="/" class="sidebar-brand">
-    <div class="brand-mark"><span class="material-symbols-rounded">account_balance</span></div>
-    <span th:text="#{brand.name}">OpenGovtBD</span>
-  </a>
-  <div class="nav-section-label" th:text="#{nav.overviewSection}">Overview</div>
-  <a href="/citizen/dashboard" class="nav-link" th:classappend="${active == 'dashboard'} ? 'active'"><span class="material-symbols-rounded">space_dashboard</span><span th:text="#{nav.dashboard}">Dashboard</span></a>
-  <a href="/citizen/services" class="nav-link" th:classappend="${active == 'services'} ? 'active'"><span class="material-symbols-rounded">apps</span><span th:text="#{nav.services}">Digital Services</span></a>
-  <a href="/citizen/emergency" class="nav-link" th:classappend="${active == 'emergency'} ? 'active'"><span class="material-symbols-rounded">emergency</span><span th:text="#{nav.emergency}">Emergency</span></a>
-  <div class="nav-section-label" th:text="#{nav.participate}">Participate</div>
-  <a href="/citizen/complaints" class="nav-link" th:classappend="${active == 'complaints'} ? 'active'"><span class="material-symbols-rounded">report</span><span th:text="#{nav.complaints}">Complaints</span></a>
-  <a href="/citizen/discussions" class="nav-link" th:classappend="${active == 'discussions'} ? 'active'"><span class="material-symbols-rounded">forum</span><span th:text="#{nav.discussions}">Discussions</span></a>
-  <a href="/citizen/polls" class="nav-link" th:classappend="${active == 'polls'} ? 'active'"><span class="material-symbols-rounded">how_to_vote</span><span th:text="#{nav.polls}">Polls</span></a>
-  <a href="/citizen/suggestions" class="nav-link" th:classappend="${active == 'suggestions'} ? 'active'"><span class="material-symbols-rounded">lightbulb</span><span th:text="#{nav.suggestions}">Suggestion Box</span></a>
-  <a href="/citizen/leaderboard" class="nav-link" th:classappend="${active == 'leaderboard'} ? 'active'"><span class="material-symbols-rounded">trophy</span><span th:text="#{nav.leaderboard}">Leaderboard</span></a>
-  <div class="nav-section-label" th:text="#{nav.account}">Account</div>
-  <a href="/citizen/notifications" class="nav-link" th:classappend="${active == 'notifications'} ? 'active'"><span class="material-symbols-rounded">notifications</span><span th:text="#{nav.notifications}">Notifications</span></a>
-  <a href="/citizen/saved" class="nav-link" th:classappend="${active == 'saved'} ? 'active'"><span class="material-symbols-rounded">bookmark</span><span th:text="#{nav.saved}">Saved Items</span></a>
-  <a href="/citizen/verification" class="nav-link" th:classappend="${active == 'verification'} ? 'active'">
-    <span class="material-symbols-rounded">verified_user</span><span th:text="#{nav.verification}">Get Verified</span>
-    <span th:if="${citizen != null and citizen.verified}" class="verified-badge" style="margin-left:auto;"><span class="material-symbols-rounded">check</span></span>
-  </a>
-  <a href="/citizen/profile" class="nav-link" th:classappend="${active == 'profile'} ? 'active'"><span class="material-symbols-rounded">person</span><span th:text="#{nav.profile}">Profile &amp; Settings</span></a>
-  <form th:action="@{/citizen/theme/toggle}" method="post" class="theme-toggle-row">
-    <span class="material-symbols-rounded">dark_mode</span>
-    <span class="theme-toggle-label" th:text="#{nav.darkMode}">Dark mode</span>
-    <button type="submit" class="switch" th:classappend="${citizen != null and citizen.darkMode} ? 'on'" aria-label="Toggle dark mode">
-      <span class="switch-knob"></span>
-    </button>
-  </form>
-  <a href="/logout" class="nav-link"><span class="material-symbols-rounded">logout</span><span th:text="#{nav.logout}">Logout</span></a>
-</nav>
-
-<!-- ============ SIDEBAR: OFFICER ============ -->
-<nav th:fragment="sidebar-officer(active)" class="sidebar">
-  <a href="/" class="sidebar-brand">
-    <div class="brand-mark"><span class="material-symbols-rounded">account_balance</span></div>
-    <span th:text="#{brand.name}">OpenGovtBD</span>
-  </a>
-  <div class="nav-section-label" th:text="#{nav.officerWorkspace}">Officer Workspace</div>
-  <a href="/officer/dashboard" class="nav-link" th:classappend="${active == 'dashboard'} ? 'active'"><span class="material-symbols-rounded">space_dashboard</span><span th:text="#{nav.dashboard}">Dashboard</span></a>
-  <a href="/officer/complaints" class="nav-link" th:classappend="${active == 'complaints'} ? 'active'"><span class="material-symbols-rounded">assignment</span><span th:text="#{nav.complaintQueue}">Complaint Queue</span></a>
-  <a href="/officer/discussions" class="nav-link" th:classappend="${active == 'discussions'} ? 'active'"><span class="material-symbols-rounded">gavel</span><span th:text="#{nav.discussionApproval}">Discussion Approval</span></a>
-  <a href="/officer/suggestions" class="nav-link" th:classappend="${active == 'suggestions'} ? 'active'"><span class="material-symbols-rounded">rate_review</span><span th:text="#{nav.suggestionReview}">Suggestion Review</span></a>
-  <a href="/officer/polls/new" class="nav-link" th:classappend="${active == 'polls'} ? 'active'"><span class="material-symbols-rounded">how_to_vote</span><span th:text="#{nav.createPoll}">Create Poll</span></a>
-  <a href="/officer/services" class="nav-link" th:classappend="${active == 'services'} ? 'active'"><span class="material-symbols-rounded">apps</span><span th:text="#{nav.manageServices}">Manage Services</span></a>
-  <div class="nav-section-label" th:text="#{nav.account}">Account</div>
-  <div class="theme-toggle-row">
-    <span class="material-symbols-rounded">dark_mode</span>
-    <span class="theme-toggle-label" th:text="#{nav.darkMode}">Dark mode</span>
-    <button type="button" class="switch theme-fab" data-client-theme-toggle aria-label="Toggle dark mode">
-      <span class="switch-knob"></span>
-    </button>
-  </div>
-  <a href="/logout" class="nav-link"><span class="material-symbols-rounded">logout</span><span th:text="#{nav.logout}">Logout</span></a>
-</nav>
-
-<!-- ============ SIDEBAR: ADMIN ============ -->
-<nav th:fragment="sidebar-admin(active)" class="sidebar">
-  <a href="/" class="sidebar-brand">
-    <div class="brand-mark"><span class="material-symbols-rounded">account_balance</span></div>
-    <span th:text="#{brand.name}">OpenGovtBD</span>
-  </a>
-  <div class="nav-section-label" th:text="#{nav.superAdmin}">Super Admin</div>
-  <a href="/admin/dashboard" class="nav-link" th:classappend="${active == 'dashboard'} ? 'active'"><span class="material-symbols-rounded">space_dashboard</span><span th:text="#{nav.overview}">Overview</span></a>
-  <a href="/admin/users" class="nav-link" th:classappend="${active == 'users'} ? 'active'"><span class="material-symbols-rounded">group</span><span th:text="#{nav.citizensOfficers}">Citizens &amp; Officers</span></a>
-  <a href="/admin/services" class="nav-link" th:classappend="${active == 'services'} ? 'active'"><span class="material-symbols-rounded">apps</span><span th:text="#{nav.services}">Services</span></a>
-  <a href="/admin/discussions" class="nav-link" th:classappend="${active == 'discussions'} ? 'active'"><span class="material-symbols-rounded">forum</span><span th:text="#{nav.discussions}">Discussions</span></a>
-  <a href="/admin/reports" class="nav-link" th:classappend="${active == 'reports'} ? 'active'"><span class="material-symbols-rounded">summarize</span><span th:text="#{nav.reports}">Reports</span></a>
-  <a href="/admin/analytics" class="nav-link" th:classappend="${active == 'analytics'} ? 'active'"><span class="material-symbols-rounded">monitoring</span><span th:text="#{nav.analytics}">Analytics</span></a>
-  <div class="nav-section-label" th:text="#{nav.account}">Account</div>
-  <div class="theme-toggle-row">
-    <span class="material-symbols-rounded">dark_mode</span>
-    <span class="theme-toggle-label" th:text="#{nav.darkMode}">Dark mode</span>
-    <button type="button" class="switch theme-fab" data-client-theme-toggle aria-label="Toggle dark mode">
-      <span class="switch-knob"></span>
-    </button>
-  </div>
-  <a href="/logout" class="nav-link"><span class="material-symbols-rounded">logout</span><span th:text="#{nav.logout}">Logout</span></a>
-</nav>
-
-</body>
+    <!-- ============ SIDEBAR: ADMIN ============ -->
+    <nav th:fragment="sidebar-admin(active)" class="sidebar">
+      <a href="/" class="sidebar-brand">
+        <div class="brand-mark">
+          <span class="material-symbols-rounded">account_balance</span>
+        </div>
+        <span th:text="#{brand.name}">OpenGovtBD</span>
+      </a>
+      <div class="nav-section-label" th:text="#{nav.superAdmin}">
+        Super Admin
+      </div>
+      <a
+        href="/admin/dashboard"
+        class="nav-link"
+        th:classappend="${active == 'dashboard'} ? 'active'"
+        ><span class="material-symbols-rounded">space_dashboard</span
+        ><span th:text="#{nav.overview}">Overview</span></a
+      >
+      <a
+        href="/admin/users"
+        class="nav-link"
+        th:classappend="${active == 'users'} ? 'active'"
+        ><span class="material-symbols-rounded">group</span
+        ><span th:text="#{nav.citizensOfficers}"
+          >Citizens &amp; Officers</span
+        ></a
+      >
+      <a
+        href="/admin/services"
+        class="nav-link"
+        th:classappend="${active == 'services'} ? 'active'"
+        ><span class="material-symbols-rounded">apps</span
+        ><span th:text="#{nav.services}">Services</span></a
+      >
+      <a
+        href="/admin/discussions"
+        class="nav-link"
+        th:classappend="${active == 'discussions'} ? 'active'"
+        ><span class="material-symbols-rounded">forum</span
+        ><span th:text="#{nav.discussions}">Discussions</span></a
+      >
+      <a
+        href="/admin/reports"
+        class="nav-link"
+        th:classappend="${active == 'reports'} ? 'active'"
+        ><span class="material-symbols-rounded">summarize</span
+        ><span th:text="#{nav.reports}">Reports</span></a
+      >
+      <a
+        href="/admin/analytics"
+        class="nav-link"
+        th:classappend="${active == 'analytics'} ? 'active'"
+        ><span class="material-symbols-rounded">monitoring</span
+        ><span th:text="#{nav.analytics}">Analytics</span></a
+      >
+      <div class="nav-section-label" th:text="#{nav.account}">Account</div>
+      <a href="/credits" class="nav-link"
+        ><span class="material-symbols-rounded">groups</span
+        ><span th:text="#{nav.credits}">Credits</span></a
+      >
+      <div class="theme-toggle-row">
+        <span class="material-symbols-rounded">dark_mode</span>
+        <span class="theme-toggle-label" th:text="#{nav.darkMode}"
+          >Dark mode</span
+        >
+        <button
+          type="button"
+          class="icon-btn theme-fab"
+          data-client-theme-toggle
+          aria-label="Toggle dark mode"
+        >
+          <span class="material-symbols-rounded theme-icon">dark_mode</span>
+        </button>
+      </div>
+      <a href="/logout" class="nav-link"
+        ><span class="material-symbols-rounded">logout</span
+        ><span th:text="#{nav.logout}">Logout</span></a
+      >
+    </nav>
+  </body>
 </html>
