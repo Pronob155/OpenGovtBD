@@ -23,13 +23,13 @@
                 class="badge-tier"
                 th:classappend="'badge-tier-' + ${#strings.toLowerCase(citizen.badge.name())}"
                 style="font-size: 12px"
-                th:text="'Your Rank: #' + ${myrank}"
+                th:text="'Your Rank: #' + ${myRank}"
                 >Your Rank: #1</span
               >
               <a
                 class="lb2-filter-btn"
                 th:href="@{/citizen/leaderboard(period='month')}"
-                th:classappend="${period != 'month'} ? 'active' : ''"
+                th:classappend="${period == 'month'} ? 'active' : ''"
                 >This Month
                 <span class="material-symbols-rounded" style="font-size: 16px"
                   >expand_more</span
@@ -40,7 +40,7 @@
 
           <div
             class="card card-pad fade-up"
-            th:if="${selectedCitizen == null}"
+            th:if="${selectedCitizen != null}"
             style="
               margin-bottom: 18px;
               display: flex;
@@ -70,7 +70,7 @@
           <!-- ===== Top 3 profile cards + Overview panel ===== -->
           <div
             class="lb2-top-row fade-up d1"
-            th:if="${#lists.size(ranked) > 3}"
+            th:if="${#lists.size(ranked) >= 3}"
           >
             <!-- Card 1 -->
             <div class="lb2-profile-card rank-1">
@@ -182,7 +182,7 @@
                 <div class="lb2-progress-track">
                   <div
                     class="bar-blue"
-                    id="progressComplaint"
+                    id="progressComplaints"
                     style="width: 0%"
                   ></div>
                 </div>
@@ -219,6 +219,8 @@
             </div>
           </div>
 
+          <!-- ===== Bottom: Other citizens list + News sidebar ===== -->
+          <div class="lb2-bottom fade-up d2">
             <!-- Left: Other citizens list -->
             <div>
               <div class="lb2-other-header">
@@ -244,9 +246,9 @@
               <div class="card card-pad" style="padding: 8px 8px">
                 <div
                   th:each="c, iter : ${ranked}"
-                  th:if="${iter.index > 3}"
+                  th:if="${iter.index >= 3}"
                   class="lb2-citizen-row"
-                  th:classappend="${c.id = citizen.id} ? ' is-me'"
+                  th:classappend="${c.id == citizen.id} ? ' is-me'"
                 >
                   <div
                     class="lb2-citizen-avatar"
@@ -258,7 +260,7 @@
                   <div style="flex: 1; min-width: 0">
                     <div class="lb2-citizen-name">
                       <span
-                        th:text="${c.fullname} + (${c.id == citizen.id} ? ' (You)' : '')"
+                        th:text="${c.fullName} + (${c.id == citizen.id} ? ' (You)' : '')"
                         >Name</span
                       >
                       <span
@@ -283,13 +285,23 @@
                     >
                   </button>
                 </div>
+                <!-- Empty state if fewer than 4 -->
+                <div
+                  th:if="${#lists.size(ranked) < 4}"
+                  class="text-muted"
+                  style="padding: 24px; text-align: center; font-size: 13.5px"
+                >
+                  No additional citizens ranked yet — invite more people!
+                </div>
+              </div>
+            </div>
 
             <!-- Right: NEWS / Recent activity -->
             <div style="display: flex; flex-direction: column; gap: 20px">
               <div class="lb2-news-card">
                 <h4>NEWS <a href="/citizen/notifications">SHOW ALL</a></h4>
                 <div
-                  th:if="${#lists.isEmpty(recentactivity)}"
+                  th:if="${#lists.isEmpty(recentActivity)}"
                   class="text-muted"
                   style="font-size: 13px; text-align: center; padding: 16px 0"
                 >
@@ -297,21 +309,91 @@
                 </div>
                 <div
                   th:each="a, iter : ${recentActivity}"
-                  th:if="${iter.index <= 5}"
+                  th:if="${iter.index < 5}"
                   class="lb2-news-item"
                 >
                   <div
                     class="lb2-news-dot"
                     th:classappend="${iter.index % 5 == 0} ? 'blue' : (${iter.index % 5 == 1} ? 'green' : (${iter.index % 5 == 2} ? 'orange' : (${iter.index % 5 == 3} ? 'red' : 'purple')))"
-                    th:text="'+' + ${a.points}"
+                    th:text="'+' + ${a.points()}"
                   >
                     +5
                   </div>
                   <div>
-                    <div class="lb2-news-title" th:text="${a.description}">
+                    <div class="lb2-news-title" th:text="${a.description()}">
                       Activity description
                     </div>
                     <div class="lb2-news-sub">Points earned</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- How to earn points -->
+              <div class="lb2-news-card">
+                <h4>Earn Points</h4>
+                <div class="lb2-news-item">
+                  <div class="lb2-news-dot blue">
+                    <span
+                      class="material-symbols-rounded"
+                      style="font-size: 16px"
+                      >report</span
+                    >
+                  </div>
+                  <div>
+                    <div class="lb2-news-title">File a complaint</div>
+                    <div class="lb2-news-sub">+8 points</div>
+                  </div>
+                </div>
+                <div class="lb2-news-item">
+                  <div class="lb2-news-dot green">
+                    <span
+                      class="material-symbols-rounded"
+                      style="font-size: 16px"
+                      >task_alt</span
+                    >
+                  </div>
+                  <div>
+                    <div class="lb2-news-title">Complaint resolved</div>
+                    <div class="lb2-news-sub">+12 points</div>
+                  </div>
+                </div>
+                <div class="lb2-news-item">
+                  <div class="lb2-news-dot orange">
+                    <span
+                      class="material-symbols-rounded"
+                      style="font-size: 16px"
+                      >how_to_vote</span
+                    >
+                  </div>
+                  <div>
+                    <div class="lb2-news-title">Vote in a poll</div>
+                    <div class="lb2-news-sub">+5 points</div>
+                  </div>
+                </div>
+                <div class="lb2-news-item">
+                  <div class="lb2-news-dot purple">
+                    <span
+                      class="material-symbols-rounded"
+                      style="font-size: 16px"
+                      >forum</span
+                    >
+                  </div>
+                  <div>
+                    <div class="lb2-news-title">Start a discussion</div>
+                    <div class="lb2-news-sub">+10 points</div>
+                  </div>
+                </div>
+                <div class="lb2-news-item">
+                  <div class="lb2-news-dot red">
+                    <span
+                      class="material-symbols-rounded"
+                      style="font-size: 16px"
+                      >lightbulb</span
+                    >
+                  </div>
+                  <div>
+                    <div class="lb2-news-title">Submit a suggestion</div>
+                    <div class="lb2-news-sub">+15 points</div>
                   </div>
                 </div>
               </div>
@@ -332,13 +414,13 @@
             : 0;
 
         // Simulate progress percentages based on rank percentile
-        var complaintsP = Math.min(100, pct + 10)
+        var complaintsP = Math.min(100, pct + 10);
         var discussionsP = Math.min(100, Math.max(20, pct - 5));
         var suggestionsP = Math.min(100, Math.max(10, pct - 20));
 
         setTimeout(function () {
           var el1 = document.getElementById("progressComplaints");
-          var el2 = document.getElementById("progressDiscussion");
+          var el2 = document.getElementById("progressDiscussions");
           var el3 = document.getElementById("progressSuggestions");
           if (el1) {
             el1.style.width = complaintsP + "%";
@@ -353,8 +435,9 @@
           var v2 = document.getElementById("progressDiscussionsVal");
           var v3 = document.getElementById("progressSuggestionsVal");
           if (v1) v1.textContent = complaintsP + "%";
-          if (v2) v2.textContent = discussionsP + "%"
+          if (v2) v2.textContent = discussionsP + "%";
           if (v3) v3.textContent = suggestionsP + "%";
+        }, 200);
       })();
     </script>
   </body>
