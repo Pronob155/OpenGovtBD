@@ -218,17 +218,17 @@ OpenGovtBD is built by a 5-member team, with each person owning a full vertical 
 | 💬 **Pronob Das** | Discussions & Suggestion Box |
 | 📋 **Anurag Barmon** | Complaints & Announcements |
 | 🗳️ **Shreya Golder** | Polls & Government Services |
-| 🔔 **Md Mahabub Rahaman** | Notifications & Admin Tools |
+| 🔔 **Md Mahabub Rahaman** | Notifications, Dashboard & Admin |
 
 ### Round-by-Round Breakdown
 
 | Round | Pritam | Pronob | Anurag | Shreya | Mahabub |
 | :---: | :--- | :--- | :--- | :--- | :--- |
-| **1**<br/>Models | Project Setup + Config | Discussion Models | Complaint Models | Poll & GovService Models | Notification/Admin Models |
+| **1**<br/>Models | Project Setup + Config | Discussion Models | Complaint Models | Poll & GovService Models | Notification/Admin Models/ |
 | **2**<br/>Repository | User Repository | Discussion Repository | Complaint Repository | Poll & GovService Repository | Notification Repository |
-| **3**<br/>Services | Auth Service | Discussion Services | Complaint Services | Poll & GovService Services | Notification/Reward/Analytics Services |
+| **3**<br/>Services | Auth Service | Discussion Services | Complaint Services | Poll & GovService Services | Notification/Reward/Analytics/Dashboard/Services |
 | **4**<br/>Controllers | Auth Controllers | Discussion Controllers | Complaint Controllers | Poll & GovService Controllers | Admin/Citizen/Officer Controllers |
-| **5**<br/>Templates | Auth Templates | Discussion Templates | Complaint Templates | Templates + CSS/JS | Dashboard & Notification Templates |
+| **5**<br/>Templates | Auth Templates | Discussion Templates | Complaint Templates | Templates + CSS/JS |Notifications, Dashboard & Admin |
 
 ### How We Work
 
