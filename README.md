@@ -206,6 +206,56 @@ mvn spring-boot:run
 
 ---
 
+## 👥 Team & Development Plan
+
+OpenGovtBD is built by a 5-member team, with each person owning a full vertical slice of the app — models, repository, service, controller, and templates for their module. Work moves in five rounds so everyone commits in parallel at every stage.
+
+### The Team
+
+| Member | Focus Area |
+| :--- | :--- |
+| 🔐 **Pritam Biswas** | Project Setup, Authentication & User Management |
+| 💬 **Pronob Das** | Discussions & Suggestion Box |
+| 📋 **Anurag Barmon** | Complaints & Announcements |
+| 🗳️ **Shreya Golder** | Polls & Government Services |
+| 🔔 **Md Mahabub Rahaman** | Notifications & Admin Tools |
+
+### Round-by-Round Breakdown
+
+| Round | Pritam | Pronob | Anurag | Shreya | Mahabub |
+| :---: | :--- | :--- | :--- | :--- | :--- |
+| **1**<br/>Models | Project Setup + Config | Discussion Models | Complaint Models | Poll & GovService Models | Notification/Admin Models |
+| **2**<br/>Repository | User Repository | Discussion Repository | Complaint Repository | Poll & GovService Repository | Notification Repository |
+| **3**<br/>Services | Auth Service | Discussion Services | Complaint Services | Poll & GovService Services | Notification/Reward/Analytics Services |
+| **4**<br/>Controllers | Auth Controllers | Discussion Controllers | Complaint Controllers | Poll & GovService Controllers | Admin/Citizen/Officer Controllers |
+| **5**<br/>Templates | Auth Templates | Discussion Templates | Complaint Templates | Templates + CSS/JS | Dashboard & Notification Templates |
+
+### How We Work
+
+- ✅ **One commit per round** — each commit is meaningful and self-contained
+- ✅ **Parallel rounds** — everyone pushes for the same round before the next one starts
+- ✅ **Communicate first** — sync with the team before starting a new round
+- ✅ **Stay in sync** — pull the latest changes before committing
+
+**Commit message format:**
+
+```
+feat(module): description
+
+# Example
+feat(discussion): add discussion and comment models
+```
+
+```mermaid
+flowchart LR
+    A[Round 1<br/>Models] --> B[Round 2<br/>Repository]
+    B --> C[Round 3<br/>Services]
+    C --> D[Round 4<br/>Controllers]
+    D --> E[Round 5<br/>Templates & Resources]
+```
+
+---
+
 ## ⚠️ Disclaimer
 
 This project is an **educational and portfolio demonstration** of a government platform concept.
