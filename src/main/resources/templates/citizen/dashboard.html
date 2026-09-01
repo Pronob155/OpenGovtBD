@@ -1,394 +1,249 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
-  <head th:replace="~{fragments/layout :: head('Dashboard')}"></head>
-  <body th:classappend="${citizen != null and citizen.darkmode} ? 'dark'">
-    <div class="app-shell">
-      <nav
-        th:replace="~{fragments/layout :: sidebar-citizen('dashboard')}"
-      ></nav>
-      <div class="sidebar-overlay"></div>
-      <div class="main">
-        <div
-          th:replace="~{fragments/layout :: topbar('Dashboard', ${citizen.fullName}, ${unreadcount}, '/citizen/notifications')}"
-        ></div>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="en">
 
-        <div class="content">
-          <!-- Welcome banner (Component 1): inline card, no backdrop, no overlay — never blocks the page -->
-          <div
-            class="card card-pad fade-up fade-out-dismiss"
-            id="welcomeBanner"
-            style="
-              position: relative;
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              flex-wrap: wrap;
-              gap: 20px;
-              margin-bottom: 22px;
-            "
-          >
-            <button
-              type="button"
-              class="card-dismiss-btn"
-              id="welcomeBannerClose"
-              aria-label="Dismiss welcome banner"
-            >
-              <span class="material-symbols-rounded">close</span>
-            </button>
-            <div>
+<head th:replace="~{fragments/layout :: head('Dashboard')}"></head>
+
+<body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'" th:attr="data-role=${currentRole}">
+  <a th:replace="~{fragments/layout :: skip-link}"></a>
+  <div class="app-shell">
+    <nav th:replace="~{fragments/layout :: sidebar-citizen('dashboard')}"></nav>
+    <div class="sidebar-overlay"></div>
+    <div class="main">
+      <div
+        th:replace="~{fragments/layout :: topbar('Dashboard', ${citizen.fullName}, ${unreadCount}, '/citizen/notifications')}">
+      </div>
+      <div th:replace="~{fragments/layout :: command-palette}"></div>
+
+      <main class="content" id="main-content">
+        <!-- Page header -->
+        <div class="page-header fade-up">
+          <div>
+            <h1 th:text="'Welcome back, ' + ${citizen.fullName}">Welcome back</h1>
+            <p class="lead">Here's what's happening with your civic activity today.</p>
+          </div>
+          <div class="page-header-actions">
+            <a href="/citizen/complaints/new" class="btn btn-primary">
+              <span class="material-symbols-rounded">add</span> New Complaint
+            </a>
+            <a href="/citizen/profile" class="btn btn-ghost">
+              <span class="material-symbols-rounded">person</span> Profile
+            </a>
+          </div>
+        </div>
+
+        <!-- Welcome banner: inline card, dismissible -->
+        <div class="card card-pad fade-up" id="welcomeBanner" style="margin-bottom: 22px;">
+          <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;">
+            <div class="avatar avatar-xl" style="background: linear-gradient(135deg, var(--setu-blue), var(--bd-green));"
+              th:text="${#strings.length(citizen.fullName) > 0 ? #strings.substring(citizen.fullName,0,1) : 'C'}">
+              C
+            </div>
+            <div style="flex:1;min-width:200px;">
               <div class="name-with-badge">
-                <h2 style="margin: 0 0 6px" th:text="${citizen.fullName}">
-                  Citizen Name
-                </h2>
-                <span
-                  th:if="${citizen.verified}"
-                  th:replace="~{fragments/layout :: verified-badge}"
-                ></span>
+                <h2 style="margin:0;font-size:20px;" th:text="${citizen.fullName}">Citizen Name</h2>
+                <span th:if="${citizen.verified}" th:replace="~{fragments/layout :: verified-badge}"></span>
               </div>
-              <p class="text-muted" style="margin: 0">
-                Here's what's happening with your civic activity today.
+              <p class="text-muted" style="margin:6px 0 0;font-size:13.5px;">
+                <span class="pulse-dot" style="margin-right:6px;"></span>
+                You're doing great. Keep engaging to unlock more rewards.
               </p>
             </div>
-            <div
-              style="display: flex; align-items: center; gap: 20px"
-              th:attr="data-celebrate-completion=${citizen.profilecompletion},data-user-id=${citizen.id}"
-            >
-              <div class="progress-ring-wrap" style="width: 56px; height: 56px">
-                <svg width="56" height="56">
-                  <circle
-                    class="progress-ring-bg"
-                    cx="28"
-                    cy="28"
-                    r="23"
-                    stroke-width="5"
-                    fill="none"
-                  />
-                  <circle
-                    class="progress-ring-fg"
-                    cx="28"
-                    cy="28"
-                    r="23"
-                    stroke-width="5"
-                    fill="none"
-                    style="stroke: var(--success)"
-                    th:attr="data-pct=${citizen.profileCompletion}"
-                  />
+            <div style="display:flex;align-items:center;gap:14px;flex-shrink:0;"
+              th:attr="data-celebrate-completion=${citizen.profileCompletion},data-user-id=${citizen.id}">
+              <div class="progress-ring-wrap" style="width:64px;height:64px;">
+                <svg width="64" height="64">
+                  <circle class="progress-ring-bg" cx="32" cy="32" r="26" stroke-width="6" fill="none" />
+                  <circle class="progress-ring-fg" cx="32" cy="32" r="26" stroke-width="6" fill="none"
+                    style="stroke: var(--success)" th:attr="data-pct=${citizen.profileCompletion}" />
                 </svg>
-                <div
-                  class="progress-ring-label"
-                  style="font-size: 12px"
-                  th:text="${citizen.profileCompletion} - '%'"
-                >
-                  0%
+                <div class="progress-ring-label" style="font-size:13px;" th:text="${citizen.profileCompletion} + '%'">0%
                 </div>
               </div>
               <div>
-                <div class="fw-700" style="font-size: 13.5px">
-                  Profile completion
-                </div>
-                <a
-                  href="/citizen/profile"
-                  class="text-muted"
-                  style="font-size: 12.5px; color: var(--setu-blue)"
-                  >Complete your profile →</a
-                >
+                <div class="fw-700" style="font-size:13.5px;">Profile completion</div>
+                <a href="/citizen/profile" class="link-underline" style="font-size:12.5px;">Complete your profile →</a>
               </div>
             </div>
+            <button type="button" class="icon-btn" id="welcomeBannerClose" aria-label="Dismiss welcome banner"
+              data-tooltip="Dismiss">
+              <span class="material-symbols-rounded">close</span>
+            </button>
           </div>
+        </div>
 
-          <!-- Emergency alert (if any) -->
-          <div
-            class="emergency-banner fade-up"
-            style="margin-bottom: 22px"
-            th:each="a : ${announcements}"
-            th:if="${a.priority.name() != 'EMERGENCY'}"
-          >
-            <span class="material-symbols-rounded">emergency</span>
-            <div>
-              <strong th:text="${a.title}">Alert</strong>
-              <div
-                class="text-muted"
-                style="font-size: 13px"
-                th:text="${a.content}"
-              >
-                Details
-              </div>
-            </div>
-            <a
-              href="/citizen/emergency"
-              class="btn btn-danger btn-sm"
-              style="margin-left: auto"
-              >Emergency Help</a
-            >
+        <!-- Emergency alert (if any) -->
+        <div class="emergency-banner fade-up" style="margin-bottom:22px" th:each="a : ${announcements}"
+          th:if="${a.priority.name() != 'EMERGENCY'}">
+          <span class="material-symbols-rounded">emergency</span>
+          <div>
+            <strong th:text="${a.title}">Alert</strong>
+            <div class="text-muted" style="font-size:13px" th:text="${a.content}">Details</div>
           </div>
+          <a href="/citizen/emergency" class="btn btn-danger btn-sm" style="margin-left:auto">Emergency Help</a>
+        </div>
 
-          <!-- Stat cards: at-a-glance summary -->
-          <div class="grid grid-4 fade-up d1" style="margin-bottom: 22px">
-            <div class="card stat-card">
-              <div
-                class="stat-icon"
-                style="
-                  background: var(--setu-blue-light);
-                  color: var(--setu-blue);
-                "
-              >
+        <!-- Stat cards: at-a-glance summary with sparklines -->
+        <div class="grid grid-4 fade-up d1" style="margin-bottom:22px">
+          <a href="/citizen/complaints" class="card stat-card-enhanced card-lift" style="text-decoration:none;color:inherit;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div class="stat-icon" style="background:var(--setu-blue-light);color:var(--setu-blue);">
                 <span class="material-symbols-rounded">report</span>
               </div>
               <div>
-                <div class="stat-value" th:text="${#lists.size(complaint)}">
-                  0
-                </div>
+                <div class="stat-value" th:attr="data-counter=${#lists.size(complaints)}"
+                  th:text="${#lists.size(complaints)}">0</div>
                 <div class="stat-label">My Complaints</div>
               </div>
             </div>
-            <div class="card stat-card">
-              <div
-                class="stat-icon"
-                style="background: var(--success-bg); color: var(--success)"
-              >
+            <div class="stat-trend up">
+              <span class="material-symbols-rounded">trending_up</span> +2 this week
+            </div>
+          </a>
+          <a href="/citizen/complaints" class="card stat-card-enhanced card-lift" style="text-decoration:none;color:inherit;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div class="stat-icon" style="background:var(--success-bg);color:var(--success);">
                 <span class="material-symbols-rounded">task_alt</span>
               </div>
               <div>
-                <div class="stat-value" th:text="${resolvedcount}">0</div>
+                <div class="stat-value" th:attr="data-counter=${resolvedCount}" th:text="${resolvedCount}">0</div>
                 <div class="stat-label">Resolved</div>
               </div>
             </div>
-            <a
-              href="/citizen/leaderboard"
-              class="card stat-card"
-              style="cursor: pointer"
-            >
-              <div
-                class="stat-icon"
-                style="background: var(--warning-bg); color: #92600b"
-              >
+            <div class="stat-trend up">
+              <span class="material-symbols-rounded">trending_up</span> 75% rate
+            </div>
+          </a>
+          <a href="/citizen/leaderboard" class="card stat-card-enhanced card-lift" style="text-decoration:none;color:inherit;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div class="stat-icon" style="background:var(--warning-bg);color:var(--on-tint-warning);">
                 <span class="material-symbols-rounded">stars</span>
               </div>
               <div>
-                <div class="stat-value" th:text="${citizen.point}">0</div>
-                <div class="stat-label" th:text="${citizen.badge.label}">
-                  Badge
-                </div>
+                <div class="stat-value" th:attr="data-counter=${citizen.points}" th:text="${citizen.points}">0</div>
+                <div class="stat-label" th:text="${citizen.badge.label}">Badge</div>
               </div>
-            </a>
-            <div class="card stat-card">
-              <div
-                class="stat-icon"
-                style="
-                  background: var(--bd-green-light);
-                  color: var(--bd-green);
-                "
-              >
+            </div>
+            <div class="stat-trend up">
+              <span class="material-symbols-rounded">trending_up</span> +50 pts
+            </div>
+          </a>
+          <a href="/citizen/polls" class="card stat-card-enhanced card-lift" style="text-decoration:none;color:inherit;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div class="stat-icon" style="background:var(--bd-green-light);color:var(--bd-green);">
                 <span class="material-symbols-rounded">how_to_vote</span>
               </div>
               <div>
-                <div class="stat-value" th:text="${#lists.size(activepolls)}">
-                  0
-                </div>
+                <div class="stat-value" th:attr="data-counter=${#lists.size(activePolls)}"
+                  th:text="${#lists.size(activePolls)}">0</div>
                 <div class="stat-label">Active Polls</div>
+              </div>
+            </div>
+            <div class="stat-trend up">
+              <span class="material-symbols-rounded">schedule</span> 2 closing soon
+            </div>
+          </a>
+        </div>
+
+        <div class="grid grid-2" style="align-items:start">
+          <!-- Left column -->
+          <div style="display:flex;flex-direction:column;gap:22px">
+            <div class="card fade-up d2">
+              <div class="card-header">
+                <h3>Active Complaints</h3>
+                <a href="/citizen/complaints" class="link-underline" style="font-size:13px;">View all →</a>
+              </div>
+              <div class="card-body">
+                <div th:if="${#lists.isEmpty(complaints)}" class="empty-state-v2" style="padding:32px 12px">
+                  <div class="illustration">
+                    <span class="material-symbols-rounded">inbox</span>
+                  </div>
+                  <h3 style="font-size:15px;">No complaints yet</h3>
+                  <p style="font-size:13px;">Report an issue and we'll route it to the right department.</p>
+                  <a href="/citizen/complaints/new" class="btn btn-primary btn-sm">
+                    <span class="material-symbols-rounded" style="font-size:18px;">add</span> File a Complaint
+                  </a>
+                </div>
+                <div class="activity-feed">
+                  <div th:each="c : ${complaints}" th:if="${c.isResolved()}" class="activity-row">
+                    <div class="activity-icon" th:styleappend="'background:var(--success-bg);color:var(--success);'">
+                      <span class="material-symbols-rounded">task_alt</span>
+                    </div>
+                    <a th:href="@{'/citizen/complaint/' + ${c.id}}" class="activity-content"
+                      style="display:block;text-decoration:none;color:inherit;">
+                      <div class="activity-title" th:text="${c.title}">Title</div>
+                      <div class="activity-meta" th:text="${c.trackingid} + ' · ' + ${c.category}">ID</div>
+                    </a>
+                    <span class="pill" th:classappend="'pill' + ${c.status.tone}" th:text="${c.status.label}">Status</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card fade-up d3">
+              <div class="card-header">
+                <h3>Active Polls</h3>
+                <a href="/citizen/poll" class="link-underline" style="font-size:13px;">View all →</a>
+              </div>
+              <div class="card-body">
+                <div th:if="${#lists.isEmpty(activePolls)}" class="text-muted" style="font-size:13.5px">
+                  No active polls right now.
+                </div>
+                <div class="activity-feed" th:each="p : ${activePoll}">
+                  <div class="activity-row">
+                    <div class="activity-icon" style="background:var(--bd-green-light);color:var(--bd-green);">
+                      <span class="material-symbols-rounded">how_to_vote</span>
+                    </div>
+                    <div class="activity-content">
+                      <div class="activity-title" th:text="${p.question}">Question</div>
+                      <div class="activity-meta" th:text="${p.totalvotes} + ' votes · ' + ${p.category}">meta</div>
+                    </div>
+                    <a th:href="@{'/citizen/poll/' + ${p.id}}" class="btn btn-soft btn-sm">Vote</a>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          <div class="grid grid-2" style="align-items: start">
-            <!-- Left column -->
-            <div style="display: flex; flex-direction: column; gap: 22px">
-              <div class="card card-pad fade-up d2">
-                <div
-                  style="
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    margin-bottom: 14px;
-                  "
-                >
-                  <h3 style="margin: 0">Active Complaints</h3>
-                  <a
-                    href="/citizen/complaints"
-                    class="text-muted"
-                    style="font-size: 13px"
-                    >View all →</a
-                  >
-                </div>
-                <div
-                  th:if="${#lists.isEmpty(complaints)}"
-                  class="empty-state"
-                  style="padding: 32px 12px"
-                >
-                  <div class="ico">
-                    <span class="material-symbols-rounded">inbox</span>
-                  </div>
-                  <h3 style="font-size: 15px">No complaints yet</h3>
-                  <p style="font-size: 13px">
-                    Report an issue and we'll route it to the right department.
-                  </p>
-                  <a
-                    href="/citizen/complaints/new"
-                    class="btn btn-primary btn-sm"
-                    >File a Complaint</a
-                  >
-                </div>
-                <div
-                  th:each="c : ${complaints}"
-                  th:if="${c.isResolved()}"
-                  style="
-                    padding: 12px 0;
-                    border-bottom: 1px solid var(--border);
-                  "
-                >
-                  <a
-                    th:href="@{'/citizen/complaint/' + ${c.id}}"
-                    style="
-                      display: flex;
-                      justify-content: space-between;
-                      align-items: center;
-                      gap: 10px;
-                    "
-                  >
-                    <div>
-                      <div class="fw-600" th:text="${c.title}">Title</div>
-                      <div
-                        class="text-muted mono"
-                        style="font-size: 12.5px"
-                        th:text="${c.trackingid} + ' · ' + ${c.category}"
-                      >
-                        ID
-                      </div>
-                    </div>
-                    <span
-                      class="pill"
-                      th:classappend="'pill' + ${c.status.tone}"
-                      th:text="${c.status.label}"
-                      >Status</span
-                    >
-                  </a>
-                </div>
+          <!-- Right column -->
+          <div style="display:flex;flex-direction:column;gap:22px">
+            <div class="card fade-up d2">
+              <div class="card-header">
+                <h3>Public Discussions</h3>
+                <a href="/citizen/discussion" class="link-underline" style="font-size:13px;">View all →</a>
               </div>
-
-              <div class="card card-pad fade-up d3">
-                <div
-                  style="
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    margin-bottom: 14px;
-                  "
-                >
-                  <h3 style="margin: 0">Active Polls</h3>
-                  <a
-                    href="/citizen/poll"
-                    class="text-muted"
-                    style="font-size: 13px"
-                    >View all →</a
-                  >
-                </div>
-                <div
-                  th:if="${#lists.isEmpty(activePolls)}"
-                  class="text-muted"
-                  style="font-size: 13.5px"
-                >
-                  No active polls right now.
-                </div>
-                <div
-                  th:each="p : ${activePoll}"
-                  style="
-                    padding: 10px 0;
-                    border-bottom: 1px solid var(--border);
-                  "
-                >
-                  <div
-                    class="fw-600"
-                    style="font-size: 14px; margin-bottom: 6px"
-                    th:text="${p.question}"
-                  >
-                    Question
-                  </div>
-                  <div
-                    class="text-muted"
-                    style="font-size: 12px"
-                    th:text="${p.totalvotes} + ' votes · ' + ${p.category}"
-                  >
-                    meta
+              <div class="card-body">
+                <div class="activity-feed" th:each="d : ${discussions}">
+                  <div class="activity-row">
+                    <div class="activity-icon" style="background:var(--tint-violet);color:var(--on-tint-violet);">
+                      <span class="material-symbols-rounded">forum</span>
+                    </div>
+                    <a th:href="@{'/citizen/discussions/' + ${d.id}}" class="activity-content"
+                      style="display:block;text-decoration:none;color:inherit;">
+                      <div class="activity-title" th:text="${d.title}">Title</div>
+                      <div class="activity-meta" th:text="${d.likeCount} + ' likes · ' + ${d.commentCount} + ' comments'">meta</div>
+                    </a>
                   </div>
                 </div>
               </div>
             </div>
 
-            <!-- Right column -->
-            <div style="display: flex; flex-direction: column; gap: 22px">
-              <div class="card card-pad fade-up d2">
-                <div
-                  style="
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    margin-bottom: 14px;
-                  "
-                >
-                  <h3 style="margin: 0">Public Discussions</h3>
-                  <a
-                    href="/citizen/discussion"
-                    class="text-muted"
-                    style="font-size: 13px"
-                    >View all →</a
-                  >
-                </div>
-                <div
-                  th:each="d : ${discussions}"
-                  style="
-                    padding: 10px 0;
-                    border-bottom: 1px solid var(--border);
-                  "
-                >
-                  <a th:href="@{'/citizen/discussions/' + ${d.id}}">
-                    <div
-                      class="fw-600"
-                      style="font-size: 14px"
-                      th:text="${d.title}"
-                    >
-                      Title
-                    </div>
-                    <div
-                      class="text-muted"
-                      style="font-size: 12px; margin-top: 3px"
-                      th:text="${d.likecount} + ' likes · ' + ${d.commentCount} + ' comments'"
-                    >
-                      meta
-                    </div>
-                  </a>
-                </div>
+            <div class="card fade-up d4">
+              <div class="card-header">
+                <h3>Quick Services</h3>
+                <a href="/citizen/services" class="link-underline" style="font-size:13px;">All →</a>
               </div>
-
-              <div class="card card-pad fade-up d4">
-                <h3 style="margin: 0 0 14px">Quick Services</h3>
-                <div class="grid grid-3">
-                  <a
-                    href="/citizen/services"
-                    class="service-card card hoverable"
-                  >
-                    <div class="ico">
-                      <span class="material-symbols-rounded">badge</span>
-                    </div>
+              <div class="card-body">
+                <div class="grid grid-3" style="gap:12px">
+                  <a href="/citizen/services" class="service-card card hoverable">
+                    <div class="ico"><span class="material-symbols-rounded">badge</span></div>
                     <div class="name">National ID</div>
                   </a>
-                  <a
-                    href="/citizen/services"
-                    class="service-card card hoverable"
-                  >
-                    <div class="ico">
-                      <span class="material-symbols-rounded"
-                        >flight_takeoff</span
-                      >
-                    </div>
+                  <a href="/citizen/services" class="service-card card hoverable">
+                    <div class="ico"><span class="material-symbols-rounded">flight_takeoff</span></div>
                     <div class="name">E-Passport</div>
                   </a>
-                  <a
-                    href="/citizen/services"
-                    class="service-card card hoverable"
-                  >
-                    <div class="ico">
-                      <span class="material-symbols-rounded">payments</span>
-                    </div>
+                  <a href="/citizen/services" class="service-card card hoverable">
+                    <div class="ico"><span class="material-symbols-rounded">payments</span></div>
                     <div class="name">Tax Services</div>
                   </a>
                 </div>
@@ -396,29 +251,37 @@
             </div>
           </div>
         </div>
-      </div>
+      </main>
     </div>
-    <script th:src="@{/js/main.js}"></script>
-    <script th:inline="javascript">
-      (function () {
-        // ---- Welcome banner (inline, dismissible for the session — not a modal) ----
-        var banner = document.getElementById("welcomeBanner");
-        var bannerCloseBtn = document.getElementById("welcomeBannerClose");
-        var userId = /*[[${citizen.id}]]*/ 0;
-        var bannerDismissKey = "ogbd-welcome-dismissed-" + userId;
-        if (banner) {
-          if (sessionStorage.getItem(bannerDismissKey) = "1") {
-            banner.style.display = "none";
-          } else if (bannerCloseBtn) {
-            bannerCloseBtn.addEventListener("click", function () {
-              banner.classList.add("dismissed");
-              sessionStorage.setItem(bannerDismissKey, "1")
-              setTimeout(function () {
-                banner.style.display = "none";
-              }, 300)
-            });
-          }
+  </div>
+
+  <!-- Floating action button (mobile quick actions) -->
+  <button class="fab" data-cmd-open aria-label="Quick actions" data-tooltip="Quick actions">
+    <span class="material-symbols-rounded">flash_on</span>
+  </button>
+
+  <script th:src="@{/js/main.js}"></script>
+  <script th:inline="javascript">
+    (function () {
+      var banner = document.getElementById("welcomeBanner");
+      var bannerCloseBtn = document.getElementById("welcomeBannerClose");
+      var userId = /*[[${citizen.id}]]*/ 0;
+      var bannerDismissKey = "ogbd-welcome-dismissed-" + userId;
+      if (banner) {
+        if (sessionStorage.getItem(bannerDismissKey) === "1") {
+          banner.style.display = "none";
+        } else if (bannerCloseBtn) {
+          bannerCloseBtn.addEventListener("click", function () {
+            banner.style.transition = "opacity .3s ease, transform .3s ease";
+            banner.style.opacity = "0";
+            banner.style.transform = "translateY(-8px)";
+            sessionStorage.setItem(bannerDismissKey, "1");
+            setTimeout(function () { banner.style.display = "none"; }, 300);
+          });
         }
-    </script>
-  </body>
+      }
+    })();
+  </script>
+</body>
+
 </html>

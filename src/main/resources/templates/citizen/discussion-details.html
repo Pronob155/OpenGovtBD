@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="en">
 <head th:replace="~{fragments/layout :: head('Discussion')}"></head>
-<body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'">
+<body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'" th:attr="data-role=${currentRole}">
+  <a th:replace="~{fragments/layout :: skip-link}"></a>
 <div class="app-shell">
   <nav th:replace="~{fragments/layout :: sidebar-citizen('discussions')}"></nav>
   <div class="sidebar-overlay"></div>
   <div class="main">
     <div th:replace="~{fragments/layout :: topbar('Discussion', ${citizen.fullName}, ${unreadCount}, '/citizen/notifications')}"></div>
-    <div class="content" style="max-width:760px;">
+    <main class="content content-md" id="main-content">
       <a href="/citizen/discussions" class="text-muted" style="font-size:13px;">&larr; Back to discussions</a>
 
       <div class="card card-pad" style="margin:16px 0 20px;">
@@ -43,7 +44,7 @@
               <span class="material-symbols-rounded">bookmark</span> <span th:text="${discussion.bookmarkedBy.contains(citizen.id)} ? 'Saved' : 'Save'">Save</span>
             </button>
           </form>
-          <button class="reaction-btn" type="button" onclick="navigator.clipboard.writeText(window.location.href); this.querySelector('span:last-child').textContent='Copied!';">
+          <button class="reaction-btn" type="button" data-copy-current-url>
             <span class="material-symbols-rounded">share</span> <span>Share</span>
           </button>
         </div>
@@ -106,7 +107,7 @@
           <div th:if="${#lists.isEmpty(discussion.comments)}" class="text-muted" style="font-size:13.5px;">No comments yet — be the first to comment.</div>
         </div>
       </div>
-    </div>
+    </main>
   </div>
 </div>
 <script th:src="@{/js/main.js}"></script>

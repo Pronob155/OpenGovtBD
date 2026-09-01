@@ -1,80 +1,153 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="en">
 <head th:replace="~{fragments/layout :: head('Discussions')}"></head>
-<body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'">
+<body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'" th:attr="data-role=${currentRole}">
+  <a th:replace="~{fragments/layout :: skip-link}"></a>
 <div class="app-shell">
   <nav th:replace="~{fragments/layout :: sidebar-citizen('discussions')}"></nav>
   <div class="sidebar-overlay"></div>
   <div class="main">
     <div th:replace="~{fragments/layout :: topbar('Public Discussions', ${citizen.fullName}, ${unreadCount}, '/citizen/notifications')}"></div>
-    <div class="content">
+    <div th:replace="~{fragments/layout :: command-palette}"></div>
+    <main class="content" id="main-content">
 
-      <div th:if="${param.created}" class="alert alert-info" style="margin-bottom:18px;" data-flash>
+      <div th:if="${param.created}" class="alert alert-info pop-in" style="margin-bottom:18px;" data-flash>
         <span class="material-symbols-rounded">hourglass_top</span>
         <span>Your discussion has been submitted and is awaiting officer approval before it goes public.</span>
       </div>
 
-      <div class="grid" style="grid-template-columns: 2.2fr 1fr; align-items:start;gap:22px;">
+      <div class="page-header fade-up">
         <div>
-          <div class="card card-pad" style="margin-bottom:18px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
-            <form th:action="@{/citizen/discussions}" method="get" style="display:flex;gap:10px;flex:1;min-width:220px;">
-              <input class="input" type="text" name="q" th:value="${q}" placeholder="Search discussions..."/>
+          <h1>Public Discussions</h1>
+          <p class="lead">Join the civic conversation. All discussions are officer-reviewed before going public.</p>
+        </div>
+      </div>
+
+      <div class="grid grid-split">
+        <div>
+          <!-- Search + filters bar -->
+          <div class="card card-pad fade-up d1" style="margin-bottom:18px;">
+            <form th:action="@{/citizen/discussions}" method="get" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+              <div class="search-bar" style="flex:1;min-width:220px;">
+                <span class="material-symbols-rounded">search</span>
+                <input type="text" name="q" th:value="${q}" placeholder="Search discussions..."/>
+              </div>
               <input type="hidden" name="sort" th:value="${sort}"/>
               <input type="hidden" name="category" th:value="${category}"/>
-              <button class="btn btn-ghost" type="submit"><span class="material-symbols-rounded">search</span></button>
+              <div class="segmented">
+                <button type="button" class="active">Latest</button>
+                <button type="button">Trending</button>
+                <button type="button">Top</button>
+              </div>
+              <select class="input" style="width:auto;" th:attr="onchange=|window.location='/citizen/discussions?sort='+this.value+'&category=${category}&q=${q}'|">
+                <option value="latest" th:selected="${sort == 'latest'}">Latest</option>
+                <option value="trending" th:selected="${sort == 'trending'}">Trending</option>
+                <option value="liked" th:selected="${sort == 'liked'}">Most Liked</option>
+              </select>
             </form>
-            <select class="input" style="width:auto;" th:attr="onchange=|window.location='/citizen/discussions?sort='+this.value+'&category=${category}&q=${q}'|">
-              <option value="latest" th:selected="${sort == 'latest'}">Latest</option>
-              <option value="trending" th:selected="${sort == 'trending'}">Trending</option>
-              <option value="liked" th:selected="${sort == 'liked'}">Most Liked</option>
-            </select>
+            <div class="chip-group" style="margin-top:14px;">
+              <button class="chip active">All</button>
+              <button class="chip">Infrastructure</button>
+              <button class="chip">Transportation</button>
+              <button class="chip">Governance</button>
+              <button class="chip">Health</button>
+              <button class="chip">Education</button>
+            </div>
           </div>
 
-          <div th:if="${#lists.isEmpty(discussions)}" class="card empty-state">
-            <div class="ico"><span class="material-symbols-rounded">forum</span></div>
+          <div th:if="${#lists.isEmpty(discussions)}" class="card empty-state-v2 fade-up">
+            <div class="illustration">
+              <span class="material-symbols-rounded">forum</span>
+            </div>
             <h3>No discussions found</h3>
             <p>Be the first to start a conversation on this topic.</p>
           </div>
 
-          <div class="card card-pad hoverable fade-up" style="margin-bottom:16px;" th:each="d : ${discussions}">
-            <div style="display:flex;justify-content:space-between;">
-              <span class="pill pill-muted" th:text="${d.category}">Category</span>
-              <span th:if="${d.pinned}" class="pill pill-warning"><span class="material-symbols-rounded" style="font-size:14px;">push_pin</span>Pinned</span>
+          <div class="card card-pad card-lift fade-up" style="margin-bottom:16px;" th:each="d : ${discussions}">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+              <span class="pill pill-info" th:text="${d.category}">Category</span>
+              <span th:if="${d.pinned}" class="pill pill-warning">
+                <span class="material-symbols-rounded" style="font-size:14px;">push_pin</span> Pinned
+              </span>
             </div>
-            <a th:href="@{'/citizen/discussions/' + ${d.id}}">
-              <h3 style="margin:10px 0 6px;" th:text="${d.title}">Title</h3>
+            <a th:href="@{'/citizen/discussions/' + ${d.id}}" style="text-decoration:none;color:inherit;">
+              <h3 style="margin:8px 0 6px;font-size:17px;" th:text="${d.title}">Title</h3>
             </a>
-            <p class="text-muted" style="font-size:13.5px;margin:0 0 12px;" th:text="${#strings.abbreviate(d.content, 160)}">content</p>
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-              <span class="text-muted" style="font-size:12.5px;" th:text="'by ' + ${userRepository.findFullName(d.authorId)}">author</span>
+            <p class="text-muted" style="font-size:13.5px;margin:0 0 14px;line-height:1.55;" th:text="${#strings.abbreviate(d.content, 160)}">content</p>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid var(--border);">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div class="avatar" style="width:28px;height:28px;font-size:12px;">U</div>
+                <span class="text-muted" style="font-size:12.5px;" th:text="'by ' + ${userRepository.findFullName(d.authorId)}">author</span>
+              </div>
               <div style="display:flex;gap:14px;font-size:13px;color:var(--muted);">
-                <span><span class="material-symbols-rounded" style="font-size:16px;">thumb_up</span> <span th:text="${d.likeCount}">0</span></span>
-                <span><span class="material-symbols-rounded" style="font-size:16px;">chat_bubble</span> <span th:text="${d.commentCount}">0</span></span>
+                <span class="mini-stat">
+                  <span class="material-symbols-rounded">thumb_up</span>
+                  <span th:text="${d.likeCount}">0</span>
+                </span>
+                <span class="mini-stat">
+                  <span class="material-symbols-rounded">chat_bubble</span>
+                  <span th:text="${d.commentCount}">0</span>
+                </span>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="card card-pad" style="position:sticky;top:88px;">
-          <h3 style="margin:0 0 14px;">Start a Discussion</h3>
+        <!-- Compose form -->
+        <div class="card card-pad fade-up d2" style="position:sticky;top:88px;height:fit-content;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+            <div class="avatar" style="background: linear-gradient(135deg, var(--setu-blue), var(--bd-green));">
+              <span class="material-symbols-rounded" style="font-size:18px;">edit</span>
+            </div>
+            <h3 style="margin:0;">Start a Discussion</h3>
+          </div>
           <form th:action="@{/citizen/discussions/new}" method="post">
-            <div class="field"><label>Title</label><input class="input" name="title" required/></div>
+            <div class="field">
+              <label>Title</label>
+              <input class="input" name="title" placeholder="What's your topic?" required/>
+            </div>
             <div class="field">
               <label>Category</label>
               <select class="input" name="category" required>
-                <option>Infrastructure</option><option>Transportation</option><option>Governance</option>
-                <option>Health</option><option>Education</option><option>Environment</option><option>Other</option>
+                <option>Infrastructure</option>
+                <option>Transportation</option>
+                <option>Governance</option>
+                <option>Health</option>
+                <option>Education</option>
+                <option>Environment</option>
+                <option>Other</option>
               </select>
             </div>
-            <div class="field"><label>What's on your mind?</label><textarea class="input" name="content" rows="4" required></textarea></div>
-            <button class="btn btn-primary btn-block" type="submit">Submit for Approval</button>
-            <p class="hint" style="text-align:center;">All discussions are reviewed by officers before going public.</p>
+            <div class="field">
+              <label>What's on your mind?</label>
+              <div class="compose-box">
+                <textarea name="content" placeholder="Share your thoughts..." data-mention-input rows="4" required></textarea>
+                <div class="compose-box-actions">
+                  <div class="left">
+                    <button type="button" class="tool" data-tooltip="Add emoji"><span class="material-symbols-rounded" style="font-size:18px;">add_reaction</span></button>
+                    <button type="button" class="tool" data-tooltip="Mention someone"><span class="material-symbols-rounded" style="font-size:18px;">alternate_email</span></button>
+                    <button type="button" class="tool" data-tooltip="Add attachment"><span class="material-symbols-rounded" style="font-size:18px;">attach_file</span></button>
+                  </div>
+                  <span class="text-muted" style="font-size:11.5px;">@ to mention</span>
+                </div>
+              </div>
+            </div>
+            <button class="btn btn-primary btn-block" type="submit" data-success-burst>
+              <span class="material-symbols-rounded" style="font-size:18px;">send</span> Submit for Approval
+            </button>
+            <p class="hint" style="text-align:center;margin-top:10px;">
+              <span class="material-symbols-rounded" style="font-size:14px;vertical-align:middle;">shield</span>
+              All discussions are reviewed by officers before going public.
+            </p>
           </form>
         </div>
       </div>
-    </div>
+    </main>
   </div>
 </div>
+<button class="fab" data-cmd-open aria-label="Quick actions">
+  <span class="material-symbols-rounded">flash_on</span>
+</button>
 <script th:src="@{/js/main.js}"></script>
 </body>
 </html>

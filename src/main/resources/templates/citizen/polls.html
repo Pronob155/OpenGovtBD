@@ -1,81 +1,120 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="en">
 <head th:replace="~{fragments/layout :: head('Polls')}"></head>
-<body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'">
+<body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'" th:attr="data-role=${currentRole}">
+  <a th:replace="~{fragments/layout :: skip-link}"></a>
 <div class="app-shell">
   <nav th:replace="~{fragments/layout :: sidebar-citizen('polls')}"></nav>
   <div class="sidebar-overlay"></div>
   <div class="main">
     <div th:replace="~{fragments/layout :: topbar('Public Polls', ${citizen.fullName}, ${unreadCount}, '/citizen/notifications')}"></div>
-    <div class="content">
-      <h2 style="margin:0 0 4px;">Public Polls</h2>
-      <p class="text-muted" style="margin:0 0 20px;">Have your say in official government decisions. Every citizen gets one vote per poll.</p>
-
-      <h3 style="margin:0 0 14px;">Active Polls</h3>
-      <div th:if="${#lists.isEmpty(activePolls)}" class="card empty-state">
-        <div class="ico"><span class="material-symbols-rounded">how_to_vote</span></div>
-        <h3>No active polls</h3><p>Check back soon for new government polls.</p>
-      </div>
-      <div class="grid grid-2" style="margin-bottom:36px;">
-        <div class="card card-pad fade-up" th:each="p : ${activePolls}">
-          <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
-            <span class="pill pill-info" th:text="${p.category}">Category</span>
-            <span class="text-muted" style="font-size:12px;" th:text="${p.totalVotes} + ' votes'">votes</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:start;gap:10px;margin-bottom:14px;">
-            <h4 style="margin:0;" th:text="${p.question}">Question</h4>
-            <form th:action="@{'/citizen/polls/' + ${p.id} + '/bookmark'}" method="post">
-              <button class="icon-btn" type="submit" th:title="${p.bookmarkedBy.contains(citizen.id)} ? 'Saved' : 'Save'">
-                <span class="material-symbols-rounded" th:style="${p.bookmarkedBy.contains(citizen.id)} ? 'color:var(--setu-blue);'">bookmark</span>
-              </button>
-            </form>
-          </div>
-
-          <form th:if="${!p.votedCitizens.contains(citizen.id)}" th:action="@{'/citizen/polls/' + ${p.id} + '/vote'}" method="post">
-            <div th:each="opt, iter : ${p.options}" style="margin-bottom:10px;">
-              <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;">
-                <input type="radio" name="optionIndex" th:value="${iter.index}" required/>
-                <span th:text="${opt.text}">Option</span>
-              </label>
-            </div>
-            <button class="btn btn-primary btn-block" type="submit">Cast Vote</button>
-          </form>
-
-          <div th:if="${p.votedCitizens.contains(citizen.id)}">
-            <div th:each="opt : ${p.options}" style="margin-bottom:12px;">
-              <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;">
-                <span th:text="${opt.text}">Option</span>
-                <span class="fw-700" th:text="${#numbers.formatDecimal(p.percentageFor(opt),1,1)} + '%'">0%</span>
-              </div>
-              <div class="progress-bar"><div th:attr="data-bar-pct=${p.percentageFor(opt)}" style="width:0;"></div></div>
-            </div>
-            <div class="alert alert-success" style="margin-top:6px;"><span class="material-symbols-rounded">how_to_vote</span>You've voted in this poll.</div>
-          </div>
-          <div th:if="${p.deadline}" class="text-muted" style="font-size:12px;margin-top:12px;">
-            Closes <span class="mono" th:text="${#temporals.format(p.deadline, 'dd MMM yyyy')}">date</span>
+    <div th:replace="~{fragments/layout :: command-palette}"></div>
+    <main class="content" id="main-content">
+      <div class="page-header fade-up">
+        <div>
+          <h1>Public Polls</h1>
+          <p class="lead">Have your say in official government decisions. Every citizen gets one vote per poll.</p>
+        </div>
+        <div class="page-header-actions">
+          <div class="segmented">
+            <button class="active">All</button>
+            <button>Active</button>
+            <button>Closed</button>
           </div>
         </div>
       </div>
 
-      <h3 style="margin:0 0 14px;">Poll Archive</h3>
-      <div th:if="${#lists.isEmpty(archivedPolls)}" class="text-muted" style="font-size:13.5px;">No archived polls yet.</div>
+      <h3 style="margin:24px 0 14px;">Active Polls</h3>
+      <div th:if="${#lists.isEmpty(activePolls)}" class="card empty-state-v2">
+        <div class="illustration">
+          <span class="material-symbols-rounded">how_to_vote</span>
+        </div>
+        <h3>No active polls</h3>
+        <p>Check back soon for new government polls where you can make your voice heard.</p>
+      </div>
+      <div class="grid grid-2" style="margin-bottom:36px;">
+        <div class="card card-pad card-lift fade-up" th:each="p : ${activePolls}">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <span class="pill pill-info" th:text="${p.category}">Category</span>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span class="mini-stat">
+                <span class="material-symbols-rounded">group</span>
+                <span th:text="${p.totalVotes}">0</span>
+              </span>
+              <form th:action="@{'/citizen/polls/' + ${p.id} + '/bookmark'}" method="post">
+                <button class="icon-btn" type="submit" th:title="${p.bookmarkedBy.contains(citizen.id)} ? 'Saved' : 'Save'">
+                  <span class="material-symbols-rounded" th:style="${p.bookmarkedBy.contains(citizen.id)} ? 'color:var(--setu-blue);'">bookmark</span>
+                </button>
+              </form>
+            </div>
+          </div>
+          <h4 style="margin:0 0 14px;font-size:16px;" th:text="${p.question}">Question</h4>
+
+          <form th:if="${!p.votedCitizens.contains(citizen.id)}" th:action="@{'/citizen/polls/' + ${p.id} + '/vote'}" method="post">
+            <div th:each="opt, iter : ${p.options}" style="margin-bottom:10px;">
+              <label class="poll-option">
+                <input type="radio" name="optionIndex" th:value="${iter.index}" required style="margin:0;"/>
+                <span th:text="${opt.text}">Option</span>
+              </label>
+            </div>
+            <button class="btn btn-primary btn-block" type="submit" data-success-burst style="margin-top:14px;">
+              <span class="material-symbols-rounded" style="font-size:18px;">how_to_vote</span> Cast Vote
+            </button>
+          </form>
+
+          <div th:if="${p.votedCitizens.contains(citizen.id)}">
+            <div th:each="opt : ${p.options}" style="margin-bottom:14px;">
+              <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;">
+                <span class="fw-600" th:text="${opt.text}">Option</span>
+                <span class="fw-700" style="color:var(--setu-blue);" th:text="${#numbers.formatDecimal(p.percentageFor(opt),1,1)} + '%'">0%</span>
+              </div>
+              <div class="progress-bar"><div th:attr="data-bar-pct=${p.percentageFor(opt)}" style="width:0;"></div></div>
+            </div>
+            <div class="alert alert-success" style="margin-top:14px;">
+              <span class="material-symbols-rounded">check_circle</span>
+              <span>You've voted in this poll. Thank you for participating!</span>
+            </div>
+          </div>
+          <div th:if="${p.deadline}" class="text-muted" style="font-size:12px;margin-top:14px;display:flex;align-items:center;gap:6px;">
+            <span class="material-symbols-rounded" style="font-size:14px;">schedule</span>
+            Closes <span style="font-family:var(--font-mono);" th:text="${#temporals.format(p.deadline, 'dd MMM yyyy')}">date</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:10px;margin:24px 0 14px;">
+        <h3 style="margin:0;">Poll Archive</h3>
+        <span class="pill pill-muted" th:text="${#lists.size(archivedPolls)} + ' closed'">0 closed</span>
+      </div>
+      <div th:if="${#lists.isEmpty(archivedPolls)}" class="text-muted" style="font-size:13.5px;padding:20px 0;">No archived polls yet.</div>
       <div class="grid grid-2">
         <div class="card card-pad" th:each="p : ${archivedPolls}">
-          <span class="pill pill-muted" style="margin-bottom:10px;">Closed</span>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <span class="pill pill-muted">
+              <span class="material-symbols-rounded" style="font-size:14px;">lock</span> Closed
+            </span>
+            <span class="mini-stat">
+              <span class="material-symbols-rounded">group</span>
+              <span th:text="${p.totalVotes}">0</span>
+            </span>
+          </div>
           <h4 style="margin:0 0 14px;" th:text="${p.question}">Question</h4>
           <div th:each="opt : ${p.options}" style="margin-bottom:10px;">
-            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;">
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;">
               <span th:text="${opt.text}">Option</span>
               <span class="fw-700" th:text="${#numbers.formatDecimal(p.percentageFor(opt),1,1)} + '%'">0%</span>
             </div>
             <div class="progress-bar"><div th:attr="data-bar-pct=${p.percentageFor(opt)}" style="width:0;"></div></div>
           </div>
-          <div class="text-muted" style="font-size:12px;" th:text="${p.totalVotes} + ' total participants'">meta</div>
+          <div class="text-muted" style="font-size:12px;margin-top:12px;" th:text="${p.totalVotes} + ' total participants'">meta</div>
         </div>
       </div>
-    </div>
+    </main>
   </div>
 </div>
+<button class="fab" data-cmd-open aria-label="Quick actions">
+  <span class="material-symbols-rounded">flash_on</span>
+</button>
 <script th:src="@{/js/main.js}"></script>
 </body>
 </html>

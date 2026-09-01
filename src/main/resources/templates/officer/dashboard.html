@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="en">
 <head th:replace="~{fragments/layout :: head('Officer Dashboard')}"></head>
-<body>
+<body th:attr="data-role=${currentRole}">
+  <a th:replace="~{fragments/layout :: skip-link}"></a>
 <div class="app-shell">
   <nav th:replace="~{fragments/layout :: sidebar-officer('dashboard')}"></nav>
   <div class="sidebar-overlay"></div>
   <div class="main">
     <div th:replace="~{fragments/layout :: topbar('Officer Dashboard', ${officer.fullName}, ${unreadCount}, '/officer/dashboard')}"></div>
-    <div class="content">
+    <main class="content" id="main-content">
 
       <div class="card card-pad fade-up" style="margin-bottom:22px;background:linear-gradient(120deg, var(--bd-green-light), var(--surface));display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
         <div>
@@ -23,9 +24,9 @@
 
       <p class="text-muted" style="margin:0 0 10px;font-size:13px;">Click any card below to filter the complaint queue.</p>
       <div class="grid grid-4 fade-up d1" style="margin-bottom:22px;">
-        <a th:href="@{/officer/complaints(filter='total')}" class="card stat-card"><div class="stat-icon" style="background:var(--setu-blue-light);color:var(--setu-blue);"><span class="material-symbols-rounded">assignment</span></div><div><div class="stat-value" th:text="${totalComplaints}">0</div><div class="stat-label">Total</div></div></a>
-        <a th:href="@{/officer/complaints(filter='pending')}" class="card stat-card"><div class="stat-icon" style="background:var(--warning-bg);color:#92600B;"><span class="material-symbols-rounded">hourglass_top</span></div><div><div class="stat-value" th:text="${pendingComplaints}">0</div><div class="stat-label">Pending</div></div></a>
-        <a th:href="@{/officer/complaints(filter='awaiting')}" class="card stat-card"><div class="stat-icon" style="background:var(--info-bg);color:var(--setu-blue);"><span class="material-symbols-rounded">pending_actions</span></div><div><div class="stat-value" th:text="${awaitingComplaints}">0</div><div class="stat-label">Awaiting</div></div></a>
+        <a th:href="@{/officer/complaints(filter='total')}" class="card stat-card"><div class="stat-icon" style="background:var(--setu-blue-light);color:var(--on-tint-blue);"><span class="material-symbols-rounded">assignment</span></div><div><div class="stat-value" th:text="${totalComplaints}">0</div><div class="stat-label">Total</div></div></a>
+        <a th:href="@{/officer/complaints(filter='pending')}" class="card stat-card"><div class="stat-icon" style="background:var(--warning-bg);color:var(--on-tint-warning);"><span class="material-symbols-rounded">hourglass_top</span></div><div><div class="stat-value" th:text="${pendingComplaints}">0</div><div class="stat-label">Pending</div></div></a>
+        <a th:href="@{/officer/complaints(filter='awaiting')}" class="card stat-card"><div class="stat-icon" style="background:var(--info-bg);color:var(--on-tint-blue);"><span class="material-symbols-rounded">pending_actions</span></div><div><div class="stat-value" th:text="${awaitingComplaints}">0</div><div class="stat-label">Awaiting</div></div></a>
         <a th:href="@{/officer/complaints(filter='resolved')}" class="card stat-card"><div class="stat-icon" style="background:var(--success-bg);color:var(--success);"><span class="material-symbols-rounded">task_alt</span></div><div><div class="stat-value" th:text="${resolvedComplaints}">0</div><div class="stat-label">Resolved</div></div></a>
       </div>
 
@@ -86,7 +87,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </main>
   </div>
 </div>
 <script th:src="@{/js/main.js}"></script>

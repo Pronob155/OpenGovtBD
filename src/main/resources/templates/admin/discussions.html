@@ -1,20 +1,22 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="en">
 <head th:replace="~{fragments/layout :: head('Discussions')}"></head>
-<body>
+<body th:attr="data-role=${currentRole}">
+  <a th:replace="~{fragments/layout :: skip-link}"></a>
 <div class="app-shell">
   <nav th:replace="~{fragments/layout :: sidebar-admin('discussions')}"></nav>
   <div class="sidebar-overlay"></div>
   <div class="main">
     <div th:replace="~{fragments/layout :: topbar('Discussions Oversight', ${admin.fullName}, ${unreadCount}, '/admin/dashboard')}"></div>
-    <div class="content">
+    <main class="content" id="main-content">
 
       <div class="grid grid-2" style="margin-bottom:22px;">
-        <div class="card stat-card"><div class="stat-icon" style="background:var(--setu-blue-light);color:var(--setu-blue);"><span class="material-symbols-rounded">forum</span></div><div><div class="stat-value" th:text="${#lists.size(discussions)}">0</div><div class="stat-label">Published Discussions</div></div></div>
-        <div class="card stat-card"><div class="stat-icon" style="background:var(--warning-bg);color:#92600B;"><span class="material-symbols-rounded">hourglass_top</span></div><div><div class="stat-value" th:text="${#lists.size(pending)}">0</div><div class="stat-label">Awaiting Officer Approval</div></div></div>
+        <div class="card stat-card"><div class="stat-icon" style="background:var(--setu-blue-light);color:var(--on-tint-blue);"><span class="material-symbols-rounded">forum</span></div><div><div class="stat-value" th:text="${#lists.size(discussions)}">0</div><div class="stat-label">Published Discussions</div></div></div>
+        <div class="card stat-card"><div class="stat-icon" style="background:var(--warning-bg);color:var(--on-tint-warning);"><span class="material-symbols-rounded">hourglass_top</span></div><div><div class="stat-value" th:text="${#lists.size(pending)}">0</div><div class="stat-label">Awaiting Officer Approval</div></div></div>
       </div>
 
       <div class="card">
+        <div class="table-wrap">
         <table class="data-table">
           <thead><tr><th>Title</th><th>Category</th><th>Likes</th><th>Comments</th><th>Status</th></tr></thead>
           <tbody>
@@ -32,8 +34,9 @@
           <tr th:if="${#lists.isEmpty(discussions)}"><td colspan="5" class="text-muted" style="text-align:center;padding:24px;">No discussions published yet.</td></tr>
           </tbody>
         </table>
+        </div>
       </div>
-    </div>
+    </main>
   </div>
 </div>
 <script th:src="@{/js/main.js}"></script>

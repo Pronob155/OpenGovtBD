@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="en">
 
 <head th:replace="~{fragments/layout :: head('Services')}"></head>
 
-<body>
+<body th:attr="data-role=${currentRole}">
+  <a th:replace="~{fragments/layout :: skip-link}"></a>
   <div class="app-shell">
     <nav th:replace="~{fragments/layout :: sidebar-admin('services')}"></nav>
     <div class="sidebar-overlay"></div>
@@ -11,10 +12,11 @@
       <div
         th:replace="~{fragments/layout :: topbar('Digital Services Oversight', ${admin.fullName}, ${unreadCount}, '/admin/dashboard')}">
       </div>
-      <div class="content">
+      <main class="content" id="main-content">
         <p class="text-muted" style="margin:0 0 20px;">Read-only view of every service officers have published across
           <span th:text="${#lists.size(categories)}">0</span> categories.</p>
         <div class="card">
+          <div class="table-wrap">
           <table class="data-table">
             <thead>
               <tr>
@@ -42,8 +44,9 @@
               </tr>
             </tbody>
           </table>
+          </div>
         </div>
-      </div>
+      </main>
     </div>
   </div>
   <script th:src="@{/js/main.js}"></script>

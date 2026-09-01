@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="en">
 <head th:replace="~{fragments/layout :: head('Complaint Queue')}"></head>
-<body>
+<body th:attr="data-role=${currentRole}">
+  <a th:replace="~{fragments/layout :: skip-link}"></a>
 <div class="app-shell">
   <nav th:replace="~{fragments/layout :: sidebar-officer('complaints')}"></nav>
   <div class="sidebar-overlay"></div>
   <div class="main">
     <div th:replace="~{fragments/layout :: topbar('Complaint Queue', ${officer.fullName}, ${unreadCount}, '/officer/dashboard')}"></div>
-    <div class="content">
+    <main class="content" id="main-content">
 
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
         <a th:href="@{/officer/complaints(filter='total')}" class="filter-chip" th:classappend="${selectedFilter == 'total'} ? 'active'">Total</a>
@@ -28,6 +29,7 @@
       </div>
 
       <div class="card" th:if="${not #lists.isEmpty(complaints)}">
+        <div class="table-wrap">
         <table class="data-table">
           <thead><tr><th>Tracking ID</th><th>Title</th><th>Category</th><th>Location</th><th>Status</th><th></th></tr></thead>
           <tbody>
@@ -41,8 +43,9 @@
           </tr>
           </tbody>
         </table>
+        </div>
       </div>
-    </div>
+    </main>
   </div>
 </div>
 <script th:src="@{/js/main.js}"></script>

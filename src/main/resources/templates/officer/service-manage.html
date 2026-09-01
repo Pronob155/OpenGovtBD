@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="en">
 
 <head th:replace="~{fragments/layout :: head('Manage Services')}"></head>
 
-<body>
+<body th:attr="data-role=${currentRole}">
+  <a th:replace="~{fragments/layout :: skip-link}"></a>
   <div class="app-shell">
     <nav th:replace="~{fragments/layout :: sidebar-officer('services')}"></nav>
     <div class="sidebar-overlay"></div>
@@ -11,7 +12,7 @@
       <div
         th:replace="~{fragments/layout :: topbar('Manage Digital Services', ${officer.fullName}, ${unreadCount}, '/officer/dashboard')}">
       </div>
-      <div class="content">
+      <main class="content" id="main-content">
 
         <div th:if="${param.created}" class="alert alert-success" style="margin-bottom:18px;" data-flash><span
             class="material-symbols-rounded">check_circle</span><span>Service created.</span></div>
@@ -20,7 +21,7 @@
         <div th:if="${param.deleted}" class="alert alert-info" style="margin-bottom:18px;" data-flash><span
             class="material-symbols-rounded">delete</span><span>Service removed.</span></div>
 
-        <div class="grid" style="grid-template-columns: 1fr 1.6fr; align-items:start;">
+        <div class="grid grid-split-reverse">
           <div class="card card-pad" style="position:sticky;top:88px;">
             <h3 style="margin:0 0 16px;">Add a New Service</h3>
             <form th:action="@{/officer/services}" method="post">
@@ -85,7 +86,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   </div>
   <script th:src="@{/js/main.js}"></script>

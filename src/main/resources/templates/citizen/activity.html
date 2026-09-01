@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="en">
 
 <head th:replace="~{fragments/layout :: head('My Activity')}"></head>
 
-<body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'">
+<body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'" th:attr="data-role=${currentRole}">
+  <a th:replace="~{fragments/layout :: skip-link}"></a>
 <div class="app-shell">
 
     <nav th:replace="~{fragments/layout :: sidebar-citizen('activity')}"></nav>
@@ -15,7 +16,7 @@
 
         <div th:replace="~{fragments/layout :: topbar('My Activity', ${citizen.fullName}, 0, '/citizen/notifications')}"></div>
 
-        <div class="content" style="max-width:760px;">
+        <main class="content content-md" id="main-content">
 
             <p class="text-muted" style="margin:0 0 20px;">
                 Every complaint, discussion, and suggestion you've submitted, in one place — including discussions still
@@ -72,7 +73,7 @@
 
             </div>
 
-        </div>
+        </main>
 
     </div>
 

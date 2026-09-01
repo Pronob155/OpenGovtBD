@@ -1,7 +1,8 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="en">
   <head th:replace="~{fragments/layout :: head('Register')}"></head>
-  <body class="neuform-page">
+  <body class="neuform-page" th:attr="data-role=${currentRole}">
+    <a th:replace="~{fragments/layout :: skip-link}"></a>
     <div class="auth-shell">
       <a href="/" class="auth-topbrand"
         ><div class="brand-mark">
@@ -20,7 +21,7 @@
       >
         <span class="material-symbols-rounded theme-icon">dark_mode</span>
       </button>
-      <div class="auth-form-side">
+      <main class="auth-form-side" id="main-content">
         <div class="auth-card neuform-card pop-in" style="padding: 20px">
           <h2
             class="auth-display-title"
@@ -113,7 +114,7 @@
             </p>
           </form>
         </div>
-      </div>
+      </main>
     </div>
     <script th:src="@{/js/main.js}"></script>
   </body>

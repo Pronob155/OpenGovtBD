@@ -5,6 +5,7 @@ import com.opengovtbd.repository.AnnouncementRepository;
 import com.opengovtbd.repository.UserRepository;
 import com.opengovtbd.service.*;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpStatus;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -185,12 +186,44 @@ public class CitizenController {
         return "redirect:/citizen/profile";
     }
 
+    /** No-JS fallback: flips the stored preference and returns to the caller. */
     @PostMapping("/theme/toggle")
     public String toggleTheme(HttpSession session, HttpServletRequest request) {
         Citizen citizen = SessionUser.requireCitizen(session, authService);
         citizen.setDarkMode(!citizen.isDarkMode());
+        return "redirect:" + safeReferer(request, "/citizen/dashboard");
+    }
+
+    /**
+     * Persists an explicit theme choice made by the in-page toggle, so the
+     * client-side preference and the stored one cannot drift apart. Returns
+     * 204 rather than a redirect because the caller is a background fetch.
+     */
+    @PostMapping("/theme/set")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseBody
+    public void setTheme(@RequestParam boolean dark, HttpSession session) {
+        SessionUser.requireCitizen(session, authService).setDarkMode(dark);
+    }
+
+    /**
+     * The Referer header is client-supplied, so feeding it straight into a
+     * redirect let an external page bounce a user off-site. Only same-origin
+     * paths are honoured; anything else falls back to the given default.
+     */
+    private String safeReferer(HttpServletRequest request, String fallback) {
         String referer = request.getHeader("Referer");
-        return "redirect:" + (referer != null && !referer.isBlank() ? referer : "/citizen/dashboard");
+        if (referer == null || referer.isBlank()) return fallback;
+        try {
+            java.net.URI uri = java.net.URI.create(referer);
+            String host = uri.getHost();
+            if (host != null && !host.equalsIgnoreCase(request.getServerName())) return fallback;
+            String path = uri.getPath();
+            if (path == null || !path.startsWith("/") || path.startsWith("//")) return fallback;
+            return uri.getQuery() == null ? path : path + "?" + uri.getQuery();
+        } catch (IllegalArgumentException ex) {
+            return fallback;
+        }
     }
 
     // ---------- Identity verification (NID + selfie, simulated AI check) ----------

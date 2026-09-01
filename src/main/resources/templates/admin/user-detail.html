@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="en">
 
 <head th:replace="~{fragments/layout :: head('User Profile')}"></head>
 
-<body>
+<body th:attr="data-role=${currentRole}">
+  <a th:replace="~{fragments/layout :: skip-link}"></a>
   <div class="app-shell">
     <nav th:replace="~{fragments/layout :: sidebar-admin('users')}"></nav>
     <div class="sidebar-overlay"></div>
@@ -11,7 +12,7 @@
       <div
         th:replace="~{fragments/layout :: topbar('User Profile', ${admin.fullName}, ${unreadCount}, '/admin/dashboard')}">
       </div>
-      <div class="content" style="max-width:820px;">
+      <main class="content content-lg" id="main-content">
         <a href="/admin/users" class="text-muted" style="font-size:13px;">&larr; Back to Citizens &amp; Officers</a>
 
         <div th:replace="~{fragments/layout :: flash}"></div>
@@ -134,7 +135,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   </div>
   <script th:src="@{/js/main.js}"></script>

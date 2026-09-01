@@ -1,14 +1,23 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="en">
+
 <head th:replace="~{fragments/layout :: head('Something Went Wrong')}"></head>
-<body>
-<div class="error-page">
-  <div class="pop-in">
-    <div class="error-code" style="font-size:64px;">Oops</div>
-    <h2 style="margin:10px 0 8px;">Something went wrong on our end.</h2>
-    <p class="text-muted" style="margin:0 0 24px;">Please try again, or head back to the homepage.</p>
-    <a href="/" class="btn btn-primary">Back to Home</a>
-  </div>
-</div>
+
+<body th:attr="data-role=${currentRole}">
+  <a th:replace="~{fragments/layout :: skip-link}"></a>
+  <main class="error-page" id="main-content">
+    <div class="error-panel pop-in">
+      <div class="error-code" aria-hidden="true">500</div>
+      <h1>We couldn't complete that request.</h1>
+      <p class="text-muted">Something failed on our side, not yours. Nothing you submitted has been lost — try the
+        action again, and if it keeps failing, report it so an officer can look into it.</p>
+      <div class="error-actions">
+        <a href="/" class="btn btn-primary">Back to home</a>
+        <button type="button" class="btn btn-ghost" data-history-back>Go back</button>
+      </div>
+    </div>
+  </main>
+  <script th:src="@{/js/main.js}"></script>
 </body>
+
 </html>

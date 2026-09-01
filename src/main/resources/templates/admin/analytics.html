@@ -1,7 +1,8 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="en">
   <head th:replace="~{fragments/layout :: head('Analytics')}"></head>
-  <body>
+  <body th:attr="data-role=${currentRole}">
+    <a th:replace="~{fragments/layout :: skip-link}"></a>
     <div class="app-shell">
       <nav th:replace="~{fragments/layout :: sidebar-admin('analytics')}"></nav>
       <div class="sidebar-overlay"></div>
@@ -9,7 +10,7 @@
         <div
           th:replace="~{fragments/layout :: topbar('Analytics Dashboard', ${admin.fullName}, ${unreadCount}, '/admin/dashboard')}"
         ></div>
-        <div class="content">
+        <main class="content" id="main-content">
           <div class="analytics-dark">
             <div class="grid grid-4 fade-up" style="margin-bottom: 22px">
               <div class="panel">
@@ -73,7 +74,7 @@
               </div>
             </div>
           </div>
-        </div>
+        </main>
       </div>
     </div>
 

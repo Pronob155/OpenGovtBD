@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="en">
 <head th:replace="~{fragments/layout :: head('File a Complaint')}"></head>
-<body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'">
+<body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'" th:attr="data-role=${currentRole}">
+  <a th:replace="~{fragments/layout :: skip-link}"></a>
 <div class="app-shell">
   <nav th:replace="~{fragments/layout :: sidebar-citizen('complaints')}"></nav>
   <div class="sidebar-overlay"></div>
   <div class="main">
     <div th:replace="~{fragments/layout :: topbar('File a Complaint', ${citizen.fullName}, ${unreadCount}, '/citizen/notifications')}"></div>
-    <div class="content" style="max-width:720px;">
+    <main class="content content-sm" id="main-content">
       <a href="/citizen/complaints" class="text-muted" style="font-size:13px;">&larr; Back to complaints</a>
       <h2 style="margin:14px 0 4px;">File a New Complaint</h2>
       <p class="text-muted" style="margin:0 0 24px;">Give us the details and we'll route it to the right department.</p>
@@ -56,10 +57,15 @@
             <input type="file" multiple style="display:none;"/>
           </div>
         </div>
-        <div class="field checkbox-row"><input type="checkbox" onclick="this.checked=true;"/> Use my current GPS location (optional)</div>
+        <!-- This box carried onclick="this.checked=true", which made it
+             impossible to clear once ticked. -->
+        <div class="field checkbox-row">
+          <input type="checkbox" id="useGps" name="useGps" />
+          <label for="useGps">Use my current GPS location (optional)</label>
+        </div>
         <button type="submit" class="btn btn-primary btn-block">Submit Complaint <span class="material-symbols-rounded">send</span></button>
       </form>
-    </div>
+    </main>
   </div>
 </div>
 <script th:src="@{/js/main.js}"></script>

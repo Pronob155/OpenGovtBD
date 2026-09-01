@@ -1,0 +1,22 @@
+{
+  "extends": ["stylelint-config-standard"],
+  "rules": {
+    "no-descending-specificity": null,
+    "selector-class-pattern": null,
+    "custom-property-pattern": null,
+    "no-duplicate-selectors": null,
+    "at-rule-no-unknown": [true, {
+      "ignoreAtRules": ["apply", "variants", "responsive", "screen", "tailwind"]
+    }],
+    "declaration-block-no-redundant-longhand-properties": null,
+    "shorthand-property-no-redundant-values": null,
+    "color-function-notation": null,
+    "alpha-value-notation": null,
+    "hue-degree-notation": null,
+    "media-feature-range-notation": null,
+    "selector-not-notation": null,
+    "import-notation": null,
+    "value-keyword-case": null
+  },
+  "ignoreFiles": ["**/node_modules/**", "**/target/**", "**/dist/**"]
+}
