@@ -1,7 +1,8 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="en">
   <head th:replace="~{fragments/layout :: head('Manage Users')}"></head>
-  <body>
+  <body th:attr="data-role=${currentRole}">
+    <a th:replace="~{fragments/layout :: skip-link}"></a>
     <div class="app-shell">
       <nav th:replace="~{fragments/layout :: sidebar-admin('users')}"></nav>
       <div class="sidebar-overlay"></div>
@@ -9,7 +10,7 @@
         <div
           th:replace="~{fragments/layout :: topbar('Citizens & Officers', ${admin.fullName}, ${unreadCount}, '/admin/dashboard')}"
         ></div>
-        <div class="content">
+        <main class="content" id="main-content">
           <form
             method="get"
             th:action="@{/admin/users}"
@@ -42,6 +43,7 @@
             Citizens (<span th:text="${#lists.size(citizens)}">0</span>)
           </h3>
           <div class="card" style="margin-bottom: 32px">
+            <div class="table-wrap">
             <table class="data-table">
               <thead>
                 <tr>
@@ -98,10 +100,12 @@
                 </tr>
               </tbody>
             </table>
+            </div>
           </div>
 
           <h3 style="margin: 0 0 14px">Government Officers</h3>
           <div class="card">
+            <div class="table-wrap">
             <table class="data-table">
               <thead>
                 <tr>
@@ -137,8 +141,9 @@
                 </tr>
               </tbody>
             </table>
+            </div>
           </div>
-        </div>
+        </main>
       </div>
     </div>
     <script th:src="@{/js/main.js}"></script>

@@ -21,6 +21,9 @@ public class GlobalModelAttributes {
         this.textRenderer = textRenderer;
     }
 
+    /** How many notifications the topbar dropdown previews before "View all". */
+    private static final int TOPBAR_NOTIFICATION_PREVIEW = 4;
+
     @ModelAttribute
     public void addSharedAttributes(HttpServletRequest request, Model model) {
         model.addAttribute("textRenderer", textRenderer);
@@ -28,8 +31,14 @@ public class GlobalModelAttributes {
         if (session == null) return;
         Object role = session.getAttribute("role");
         Object userId = session.getAttribute("userId");
-        if (role instanceof Role && userId instanceof Long id) {
+        if (role instanceof Role r && userId instanceof Long id) {
             model.addAttribute("unreadCount", notificationService.unreadCount(id));
+            // The topbar dropdown used to render three hard-coded sample
+            // notifications for every user; it now previews the real feed.
+            model.addAttribute("recentNotifications", notificationService.forUser(id).stream()
+                    .limit(TOPBAR_NOTIFICATION_PREVIEW)
+                    .toList());
+            model.addAttribute("currentRole", r.name());
         }
     }
 }

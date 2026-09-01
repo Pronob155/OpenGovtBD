@@ -1,270 +1,427 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="en">
+
 <head th:replace="~{fragments/layout :: head('Home')}"></head>
-<body>
 
-<nav class="public-nav">
-  <div class="container row">
-    <a href="/" class="brand">
-      <div class="brand-mark"><span class="material-symbols-rounded">account_balance</span></div>
-      <div th:text="#{brand.name}">OpenGovtBD <span class="brand-bn">উন্মুক্ত সরকার</span></div>
-    </a>
-    <div class="public-nav-links" style="display:flex;align-items:center;gap:14px;">
-      <div th:replace="~{fragments/layout :: lang-switch}"></div>
-      <button type="button" class="icon-btn theme-fab" data-client-theme-toggle aria-label="Toggle dark mode"><span class="material-symbols-rounded theme-icon">dark_mode</span></button>
-      <a href="/login" class="btn btn-ghost">Log in</a>
-      <a href="/register" class="btn btn-primary">Get Started</a>
-    </div>
-  </div>
-</nav>
+<body th:attr="data-role=${currentRole}">
 
-<section class="hero">
-  <div class="hero-bg hero-bg-day" aria-hidden="true"></div>
-  <div class="hero-bg hero-bg-night" aria-hidden="true"></div>
-  <div class="hero-overlay hero-overlay-day" aria-hidden="true"></div>
-  <div class="hero-overlay hero-overlay-night" aria-hidden="true"></div>
-  <div class="container hero-grid">
-    <div class="fade-up">
-      <div class="hero-eyebrow"><span class="material-symbols-rounded" style="font-size:16px;">verified</span><span th:text="#{landing.hero.eyebrow}">Official Platform-Government of Bangladesh</span></div>
-      <h1 th:text="#{landing.hero.title}">The digital bridge between citizens and government.</h1>
-      <p class="lead" th:text="#{landing.hero.lead}">File complaints, join public discussions, vote in official polls, and track government services — all in one secure, transparent platform built for every citizen.</p>
-      <div class="hero-cta">
-        <a href="/register" class="btn btn-primary" th:text="#{landing.hero.cta.primary} + ' →'">Create Citizen Account →</a>
-        <a href="/login?tab=officer" class="btn btn-outline" th:text="#{landing.hero.cta.secondary}">Officer / Admin Login</a>
-      </div>
-      <div class="hero-stats">
-        <div class="hero-stat"><div class="num" th:text="${totalCitizens} + '+'">0</div><div class="label" th:text="#{landing.stat.citizens}">Registered Citizens</div></div>
-        <div class="hero-stat"><div class="num" th:text="${totalComplaints}">0</div><div class="label" th:text="#{landing.stat.complaints}">Complaints Filed</div></div>
-        <div class="hero-stat"><div class="num" th:text="${resolutionRate} + '%'">0%</div><div class="label" th:text="#{landing.stat.resolution}">Resolution Rate</div></div>
+  <a th:replace="~{fragments/layout :: skip-link}"></a>
+
+  <nav class="public-nav">
+    <div class="container row">
+      <a href="/" class="brand">
+        <div class="brand-mark"><span class="material-symbols-rounded">account_balance</span></div>
+        <div><span th:text="#{brand.name}">OpenGovtBD</span> <span class="brand-bn">উন্মুক্ত সরকার</span></div>
+      </a>
+      <div class="public-nav-links" style="display:flex;align-items:center;gap:14px;">
+        <div th:replace="~{fragments/layout :: lang-switch}"></div>
+        <button type="button" class="icon-btn" data-cmd-open aria-label="Quick search" data-tooltip="Quick search (Ctrl+K)">
+          <span class="material-symbols-rounded">search</span>
+        </button>
+        <button type="button" class="icon-btn theme-fab" data-client-theme-toggle aria-label="Toggle dark mode"><span
+            class="material-symbols-rounded theme-icon">dark_mode</span></button>
+        <a href="/login" class="btn btn-ghost">Log in</a>
+        <a href="/register" class="btn btn-primary">Get Started</a>
       </div>
     </div>
+  </nav>
 
-    <!-- Signature: the Setu bridge — citizen and government joined by a living connection -->
-    <div class="fade-up d2 bridge-wrap">
-      <svg viewBox="0 0 480 340" style="width:100%;height:auto;">
-        <defs>
-          <linearGradient id="arcGrad" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stop-color="#0B4F8A"/>
-            <stop offset="1" stop-color="#046A38"/>
-          </linearGradient>
-        </defs>
-        <path id="bridgeArc" d="M 80 240 Q 240 60 400 240" fill="none" stroke="url(#arcGrad)" stroke-width="4" stroke-linecap="round" opacity="0.35"/>
-        <path d="M 80 240 Q 240 60 400 240" fill="none" stroke="url(#arcGrad)" stroke-width="4" stroke-dasharray="10 14" stroke-linecap="round"/>
-        <!-- pylons -->
-        <line x1="80" y1="240" x2="80" y2="290" stroke="#0B4F8A" stroke-width="4" stroke-linecap="round"/>
-        <line x1="400" y1="240" x2="400" y2="290" stroke="#046A38" stroke-width="4" stroke-linecap="round"/>
-        <circle r="6" fill="#0B4F8A" class="bridge-flow-dot" style="offset-path: path('M 80 240 Q 240 60 400 240');"/>
-        <circle r="6" fill="#046A38" class="bridge-flow-dot d2" style="offset-path: path('M 80 240 Q 240 60 400 240');"/>
-        <circle r="6" fill="#0B4F8A" class="bridge-flow-dot d3" style="offset-path: path('M 80 240 Q 240 60 400 240');"/>
-      </svg>
-      <div style="display:flex;justify-content:space-between;padding:0 24px;margin-top:-28px;">
-        <div class="bridge-node citizen"><div class="dot"><span class="material-symbols-rounded" style="font-size:28px;">groups</span></div>Citizens</div>
-        <div class="bridge-node gov"><div class="dot"><span class="material-symbols-rounded" style="font-size:28px;">account_balance</span></div>Government</div>
+  <main id="main-content">
+
+  <section class="hero">
+    <div class="hero-bg hero-bg-day" aria-hidden="true"></div>
+    <div class="hero-bg hero-bg-night" aria-hidden="true"></div>
+    <div class="hero-overlay hero-overlay-day" aria-hidden="true"></div>
+    <div class="hero-overlay hero-overlay-night" aria-hidden="true"></div>
+    <div class="container hero-grid">
+      <div class="fade-up">
+        <div class="hero-eyebrow"><span class="material-symbols-rounded" style="font-size:16px;">verified</span><span
+            th:text="#{landing.hero.eyebrow}">Official Platform-Government of Bangladesh</span></div>
+        <h1 th:text="#{landing.hero.title}">The digital bridge between citizens and government.</h1>
+        <p class="lead" th:text="#{landing.hero.lead}">File complaints, join public discussions, vote in official polls,
+          and track government services — all in one secure, transparent platform built for every citizen.</p>
+        <div class="hero-cta">
+          <a href="/register" class="btn btn-primary btn-glow" th:text="#{landing.hero.cta.primary} + ' →'">Create Citizen
+            Account →</a>
+          <a href="/login?tab=officer" class="btn btn-outline" th:text="#{landing.hero.cta.secondary}">Officer / Admin
+            Login</a>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="num" th:attr="data-counter=${totalCitizens}" data-counter-suffix="+"
+              th:text="${totalCitizens} + '+'">0</div>
+            <div class="label" th:text="#{landing.stat.citizens}">Registered Citizens</div>
+          </div>
+          <div class="hero-stat">
+            <div class="num" th:attr="data-counter=${totalComplaints}" th:text="${totalComplaints}">0</div>
+            <div class="label" th:text="#{landing.stat.complaints}">Complaints Filed</div>
+          </div>
+          <div class="hero-stat">
+            <div class="num" th:attr="data-counter=${resolutionRate}" data-counter-suffix="%"
+              th:text="${resolutionRate} + '%'">0%</div>
+            <div class="label" th:text="#{landing.stat.resolution}">Resolution Rate</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Signature: the Setu bridge — citizen and government joined by a living connection -->
+      <div class="fade-up d2 bridge-wrap">
+        <svg viewBox="0 0 480 340" style="width:100%;height:auto;">
+          <defs>
+            <linearGradient id="arcGrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#0B4F8A" />
+              <stop offset="1" stop-color="#046A38" />
+            </linearGradient>
+          </defs>
+          <path id="bridgeArc" d="M 80 240 Q 240 60 400 240" fill="none" stroke="url(#arcGrad)" stroke-width="4"
+            stroke-linecap="round" opacity="0.35" />
+          <path d="M 80 240 Q 240 60 400 240" fill="none" stroke="url(#arcGrad)" stroke-width="4"
+            stroke-dasharray="10 14" stroke-linecap="round" />
+          <!-- pylons -->
+          <line x1="80" y1="240" x2="80" y2="290" stroke="#0B4F8A" stroke-width="4" stroke-linecap="round" />
+          <line x1="400" y1="240" x2="400" y2="290" stroke="#046A38" stroke-width="4" stroke-linecap="round" />
+          <circle r="6" fill="#0B4F8A" class="bridge-flow-dot"
+            style="offset-path: path('M 80 240 Q 240 60 400 240');" />
+          <circle r="6" fill="#046A38" class="bridge-flow-dot d2"
+            style="offset-path: path('M 80 240 Q 240 60 400 240');" />
+          <circle r="6" fill="#0B4F8A" class="bridge-flow-dot d3"
+            style="offset-path: path('M 80 240 Q 240 60 400 240');" />
+        </svg>
+        <div style="display:flex;justify-content:space-between;padding:0 24px;margin-top:-28px;">
+          <div class="bridge-node citizen">
+            <div class="dot"><span class="material-symbols-rounded" style="font-size:28px;">groups</span></div>Citizens
+          </div>
+          <div class="bridge-node gov">
+            <div class="dot"><span class="material-symbols-rounded" style="font-size:28px;">account_balance</span></div>
+            Government
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- Team / Credits -->
-<section class="container" id="team" style="padding: 20px 24px 70px;text-align:center;scroll-margin-top:90px;">
-  <span class="section-eyebrow" style="justify-content:center;width:100%;"><span class="n">01 /</span><span th:text="#{landing.team.eyebrow}">Meet the builders</span></span>
-  <h2 class="section-heading" th:text="#{landing.team.title}">The team behind OpenGovtBD</h2>
-  <p class="section-sub" style="margin-left:auto;margin-right:auto;" th:text="#{landing.team.subtitle}">A student team that designed, built, and tested this platform end to end.</p>
-  <div class="team-grid">
-    <div class="card team-card hoverable reveal">
-      <div class="team-avatar-ring"><img src="/img/team/pritam.jpg" alt="Pritam" class="team-avatar" loading="lazy"/></div>
-      <div class="team-name">Pritam</div>
-      <div class="team-role">Contributor</div>
-      <a href="https://github.com/pbs002-s" target="_blank" rel="noopener" class="team-github">
-        <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.5 7.5 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
-        GitHub
-      </a>
-    </div>
-    <div class="card team-card hoverable reveal">
-      <div class="team-avatar-ring"><img src="/img/team/pronob.jpg" alt="Pronob" class="team-avatar" loading="lazy"/></div>
-      <div class="team-name">Pronob</div>
-      <div class="team-role">Contributor</div>
-      <a href="https://github.com/Pronob155" target="_blank" rel="noopener" class="team-github">
-        <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.5 7.5 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
-        GitHub
-      </a>
-    </div>
-    <div class="card team-card hoverable reveal">
-      <div class="team-avatar-ring"><img src="/img/team/shreya.jpg" alt="Shreya" class="team-avatar" loading="lazy"/></div>
-      <div class="team-name">Shreya</div>
-      <div class="team-role">Contributor</div>
-      <a href="https://github.com/Shreyalien" target="_blank" rel="noopener" class="team-github">
-        <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.5 7.5 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
-        GitHub
-      </a>
-    </div>
-    <div class="card team-card hoverable reveal">
-      <div class="team-avatar-ring"><img src="/img/team/mahabub.jpg" alt="Mahabub" class="team-avatar" loading="lazy"/></div>
-      <div class="team-name">Mahabub</div>
-      <div class="team-role">Contributor</div>
-      <a href="https://github.com/mahabub-rahaman-001" target="_blank" rel="noopener" class="team-github">
-        <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.5 7.5 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
-        GitHub
-      </a>
-    </div>
-    <div class="card team-card hoverable reveal">
-      <div class="team-avatar-ring"><img src="/img/team/anurag.jpg" alt="Anurag" class="team-avatar" loading="lazy"/></div>
-      <div class="team-name">Anurag</div>
-      <div class="team-role">Contributor</div>
-      <a href="https://github.com/anurag387" target="_blank" rel="noopener" class="team-github">
-        <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.5 7.5 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
-        GitHub
-      </a>
-    </div>
-  </div>
-</section>
-
-<!-- Services preview -->
-<section class="container" style="padding: 20px 24px 70px;text-align:center;">
-  <span class="section-eyebrow" style="justify-content:center;width:100%;"><span class="n">02 /</span><span>What you can do</span></span>
-  <h2 class="section-heading" th:text="#{landing.services.title}">Everything a citizen needs, in one place</h2>
-  <p class="section-sub" style="margin-left:auto;margin-right:auto;" th:text="#{landing.services.subtitle}">A single, secure account for reporting issues, joining public conversations, and reaching every government e-service.</p>
-  <div class="bento-grid" style="text-align:left;">
-    <div class="card card-pad hoverable tilt reveal bento-large">
-      <div class="stat-icon" style="background:var(--setu-blue-light);color:var(--setu-blue);margin-bottom:14px;"><span class="material-symbols-rounded">report</span></div>
-      <h3 style="margin:0 0 8px;">Report an Issue</h3>
-      <p class="text-muted" style="margin:0;">Submit complaints with photos and location, then track every step until resolution.</p>
-    </div>
-    <div class="card card-pad hoverable tilt reveal bento-small">
-      <div class="stat-icon" style="background:var(--bd-green-light);color:var(--bd-green);margin-bottom:14px;"><span class="material-symbols-rounded">forum</span></div>
-      <h3 style="margin:0 0 8px;">Join the Conversation</h3>
-      <p class="text-muted" style="margin:0;">Discuss local issues, vote in official polls, and see verified government responses.</p>
-    </div>
-    <div class="card card-pad hoverable tilt reveal bento-small">
-      <div class="stat-icon" style="background:var(--warning-bg);color:#92600B;margin-bottom:14px;"><span class="material-symbols-rounded">apps</span></div>
-      <h3 style="margin:0 0 8px;">Access Digital Services</h3>
-      <p class="text-muted" style="margin:0;">One tap to NID, passport, land records, tax, and more official government services — curated by real officers.</p>
-    </div>
-    <div class="card card-pad hoverable tilt reveal bento-small">
-      <div class="stat-icon" style="background:#EDE9FE;color:#6D28D9;margin-bottom:14px;"><span class="material-symbols-rounded">verified_user</span></div>
-      <h3 style="margin:0 0 8px;">Get Verified</h3>
-      <p class="text-muted" style="margin:0;">Upload your NID and a selfie to earn a trusted blue Verified badge across the platform.</p>
-    </div>
-    <div class="card card-pad hoverable tilt reveal bento-small">
-      <div class="stat-icon" style="background:#FCE7F3;color:#BE185D;margin-bottom:14px;"><span class="material-symbols-rounded">trophy</span></div>
-      <h3 style="margin:0 0 8px;">Earn Recognition</h3>
-      <p class="text-muted" style="margin:0;">Climb the civic leaderboard by contributing, voting, and getting complaints resolved.</p>
-    </div>
-    <div class="card card-pad hoverable tilt reveal bento-small">
-      <div class="stat-icon" style="background:var(--info-bg);color:var(--setu-blue);margin-bottom:14px;"><span class="material-symbols-rounded">translate</span></div>
-      <h3 style="margin:0 0 8px;">Bangla &amp; English</h3>
-      <p class="text-muted" style="margin:0;">Use the platform comfortably in the language you prefer, switched instantly.</p>
-    </div>
-  </div>
-</section>
-
-<!-- How it works -->
-<section class="container" style="padding-bottom:70px;text-align:center;">
-  <span class="section-eyebrow" style="justify-content:center;width:100%;"><span class="n">03 /</span><span>Simple process</span></span>
-  <h2 class="section-heading" th:text="#{landing.howitworks.title}">How OpenGovtBD works</h2>
-  <p class="section-sub" style="margin-left:auto;margin-right:auto;" th:text="#{landing.howitworks.subtitle}">From sign-up to resolution — a transparent, trackable journey.</p>
-  <div class="steps-grid">
-    <div class="card step-card reveal"><div class="step-num">1</div><h4 style="margin:0 0 8px;">Create an account</h4><p class="text-muted" style="font-size:13.5px;margin:0;">Register with your NID and phone number in under two minutes.</p></div>
-    <div class="card step-card reveal"><div class="step-num">2</div><h4 style="margin:0 0 8px;">Get verified</h4><p class="text-muted" style="font-size:13.5px;margin:0;">Upload your NID and a selfie to unlock the full platform.</p></div>
-    <div class="card step-card reveal"><div class="step-num">3</div><h4 style="margin:0 0 8px;">Take action</h4><p class="text-muted" style="font-size:13.5px;margin:0;">File complaints, vote, discuss, and access services.</p></div>
-    <div class="card step-card reveal"><div class="step-num">4</div><h4 style="margin:0 0 8px;">Track results</h4><p class="text-muted" style="font-size:13.5px;margin:0;">Follow every update in real time until it's resolved.</p></div>
-  </div>
-</section>
-
-<!-- Stats band -->
-<section class="container" style="padding-bottom:70px;">
-  <div class="stats-band reveal">
-    <div><div class="num" th:text="${totalCitizens} + '+'">0</div><div class="label">Citizens onboarded</div></div>
-    <div><div class="num" th:text="${totalComplaints} + '+'">0</div><div class="label">Complaints filed</div></div>
-    <div><div class="num" th:text="${resolutionRate} + '%'">0%</div><div class="label">Resolution rate</div></div>
-    <div><div class="num">24/7</div><div class="label">Platform availability</div></div>
-  </div>
-</section>
-
-<!-- Testimonials -->
-<section class="container" style="padding-bottom:70px;text-align:center;">
-  <span class="section-eyebrow" style="justify-content:center;width:100%;"><span class="n">04 /</span><span>Citizen voices</span></span>
-  <h2 class="section-heading" th:text="#{landing.testimonials.title}">Trusted by citizens across Bangladesh</h2>
-  <p class="section-sub" style="margin-left:auto;margin-right:auto;" th:text="#{landing.testimonials.subtitle}">Real feedback from citizens using the platform to get things done.</p>
-  <div class="grid grid-3" style="text-align:left;">
-    <div class="card testimonial-card reveal">
-      <div class="stars">★★★★★</div>
-      <p class="quote">"I reported a broken streetlight and it was fixed within a week. I could track every step — something I never expected from a government platform."</p>
-      <div class="testimonial-person"><div class="avatar">TA</div><div><div class="fw-700" style="font-size:13.5px;">Tanvir Ahmed</div><div class="text-muted" style="font-size:12px;">Savar, Dhaka</div></div></div>
-    </div>
-    <div class="card testimonial-card reveal">
-      <div class="stars">★★★★★</div>
-      <p class="quote">"The discussion boards actually get official responses. My suggestion about NID reminders was implemented within a quarter."</p>
-      <div class="testimonial-person"><div class="avatar">MS</div><div><div class="fw-700" style="font-size:13.5px;">Mitu Sultana</div><div class="text-muted" style="font-size:12px;">Boalia, Rajshahi</div></div></div>
-    </div>
-    <div class="card testimonial-card reveal">
-      <div class="stars">★★★★★</div>
-      <p class="quote">"Getting verified took two minutes and now my voice on public polls actually counts. The Bangla interface makes it easy for my whole family to use."</p>
-      <div class="testimonial-person"><div class="avatar">RI</div><div><div class="fw-700" style="font-size:13.5px;">Rakibul Islam</div><div class="text-muted" style="font-size:12px;">Agrabad, Chattogram</div></div></div>
-    </div>
-  </div>
-</section>
-
-
-<section class="container" style="padding-bottom:70px;" th:if="${not #lists.isEmpty(announcements)}">
-  <span class="section-eyebrow"><span class="n">05 /</span><span>Latest updates</span></span>
-  <h2 style="margin-bottom:18px;">Latest Announcements</h2>
-  <div class="grid grid-3">
-    <div class="card card-pad-sm reveal" th:each="a : ${announcements}">
-      <span class="pill"
-            th:classappend="${a.priority.name() == 'EMERGENCY'} ? 'pill-error' : (${a.priority.name() == 'IMPORTANT'} ? 'pill-warning' : 'pill-info')"
-            th:text="${a.priority}">NORMAL</span>
-      <h4 style="margin:10px 0 6px;" th:text="${a.title}">Title</h4>
-      <p class="text-muted" style="font-size:13.5px;margin:0;" th:text="${a.content}">Content</p>
-    </div>
-  </div>
-</section>
-
-<!-- Final CTA -->
-<section class="container" style="padding-bottom:70px;">
-  <div class="cta-band reveal">
-    <h2 style="margin:0 0 10px;font-size:26px;" th:text="#{landing.cta.title}">Join thousands of citizens making their voice heard</h2>
-    <p style="margin:0 0 24px;opacity:.9;" th:text="#{landing.cta.subtitle}">Create your free account in minutes and start engaging with your government today.</p>
-    <a href="/register" class="btn" style="background:#fff;color:var(--setu-blue-dark);" th:text="#{landing.cta.button}">Get Started Free</a>
-  </div>
-</section>
-
-<footer class="footer-v2">
-  <div class="container">
-    <div class="footer-grid">
-      <div class="footer-col">
-        <a href="/" class="brand" style="margin-bottom:12px;">
-          <div class="brand-mark"><span class="material-symbols-rounded">account_balance</span></div>
-          <div th:text="#{brand.name}">OpenGovtBD</div>
+  <!-- Team / Credits -->
+  <section class="container" id="team" style="padding: 20px 24px 70px;text-align:center;scroll-margin-top:90px;">
+    <span class="section-eyebrow" style="justify-content:center;width:100%;"><span class="n">01 /</span><span
+        th:text="#{landing.team.eyebrow}">Meet the builders</span></span>
+    <h2 class="section-heading" th:text="#{landing.team.title}">The team behind OpenGovtBD</h2>
+    <p class="section-sub" style="margin-left:auto;margin-right:auto;" th:text="#{landing.team.subtitle}">A student team
+      that designed, built, and tested this platform end to end.</p>
+    <div class="team-grid">
+      <div class="card team-card hoverable reveal">
+        <div class="team-avatar-ring"><img src="/img/team/pritam.jpg" alt="Pritam" class="team-avatar" loading="lazy" />
+        </div>
+        <div class="team-name">Pritam</div>
+        <div class="team-role">Contributor</div>
+        <a href="https://github.com/pbs002-s" target="_blank" rel="noopener" class="team-github">
+          <svg viewBox="0 0 16 16">
+            <path
+              d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.5 7.5 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z" />
+          </svg>
+          GitHub
         </a>
-        <p class="text-muted" style="font-size:13.5px;max-width:280px;" th:text="#{footer.tagline}">A transparent digital bridge between citizens and the Government of Bangladesh.</p>
       </div>
-      <div class="footer-col">
-        <h5 th:text="#{footer.forCitizens}">For Citizens</h5>
-        <a href="/register">Create an account</a>
-        <a href="/login">Log in</a>
-        <a href="/register">File a complaint</a>
+      <div class="card team-card hoverable reveal">
+        <div class="team-avatar-ring"><img src="/img/team/pronob.jpg" alt="Pronob" class="team-avatar" loading="lazy" />
+        </div>
+        <div class="team-name">Pronob</div>
+        <div class="team-role">Contributor</div>
+        <a href="https://github.com/Pronob155" target="_blank" rel="noopener" class="team-github">
+          <svg viewBox="0 0 16 16">
+            <path
+              d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.5 7.5 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z" />
+          </svg>
+          GitHub
+        </a>
       </div>
-      <div class="footer-col">
-        <h5 th:text="#{footer.forGovernment}">For Government</h5>
-        <a href="/login?tab=officer">Officer login</a>
-        <a href="/login?tab=admin">Admin login</a>
+      <div class="card team-card hoverable reveal">
+        <div class="team-avatar-ring"><img src="/img/team/shreya.jpg" alt="Shreya" class="team-avatar" loading="lazy" />
+        </div>
+        <div class="team-name">Shreya</div>
+        <div class="team-role">Contributor</div>
+        <a href="https://github.com/Shreyalien" target="_blank" rel="noopener" class="team-github">
+          <svg viewBox="0 0 16 16">
+            <path
+              d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.5 7.5 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z" />
+          </svg>
+          GitHub
+        </a>
       </div>
-      <div class="footer-col">
-        <h5 th:text="#{footer.legal}">Legal</h5>
-        <a href="https://github.com/pbs002-s/OpenGovtBD" target="_blank" rel="noopener">Source code</a>
-        <a href="/404">Privacy (demo)</a>
+      <div class="card team-card hoverable reveal">
+        <div class="team-avatar-ring"><img src="/img/team/mahabub.jpg" alt="Mahabub" class="team-avatar"
+            loading="lazy" /></div>
+        <div class="team-name">Mahabub</div>
+        <div class="team-role">Contributor</div>
+        <a href="https://github.com/mahabub-rahaman-001" target="_blank" rel="noopener" class="team-github">
+          <svg viewBox="0 0 16 16">
+            <path
+              d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.5 7.5 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z" />
+          </svg>
+          GitHub
+        </a>
+      </div>
+      <div class="card team-card hoverable reveal">
+        <div class="team-avatar-ring"><img src="/img/team/anurag.jpg" alt="Anurag" class="team-avatar" loading="lazy" />
+        </div>
+        <div class="team-name">Anurag</div>
+        <div class="team-role">Contributor</div>
+        <a href="https://github.com/anurag387" target="_blank" rel="noopener" class="team-github">
+          <svg viewBox="0 0 16 16">
+            <path
+              d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.5 7.5 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z" />
+          </svg>
+          GitHub
+        </a>
       </div>
     </div>
-    <div class="footer-bottom">
-      <span>© 2026 OpenGovtBD — Government of Bangladesh. Built for transparency and public participation.</span>
-      <span>Demo platform for educational purposes. <a href="https://github.com/pbs002-s/OpenGovtBD" target="_blank" rel="noopener" style="color:var(--setu-blue);font-weight:600;">View source on GitHub &rarr;</a></span>
+  </section>
+
+  <!-- Services preview -->
+  <section class="container" style="padding: 20px 24px 70px;text-align:center;">
+    <span class="section-eyebrow" style="justify-content:center;width:100%;"><span class="n">02 /</span><span>What you
+        can do</span></span>
+    <h2 class="section-heading" th:text="#{landing.services.title}">Everything a citizen needs, in one place</h2>
+    <p class="section-sub" style="margin-left:auto;margin-right:auto;" th:text="#{landing.services.subtitle}">A single,
+      secure account for reporting issues, joining public conversations, and reaching every government e-service.</p>
+    <div class="bento-grid" style="text-align:left;">
+      <div class="card card-pad hoverable tilt reveal bento-large">
+        <div class="stat-icon" style="background:var(--setu-blue-light);color:var(--on-tint-blue);margin-bottom:14px;">
+          <span class="material-symbols-rounded">report</span></div>
+        <h3 style="margin:0 0 8px;">Report an Issue</h3>
+        <p class="text-muted" style="margin:0;">Submit complaints with photos and location, then track every step until
+          resolution.</p>
+      </div>
+      <div class="card card-pad hoverable tilt reveal bento-small">
+        <div class="stat-icon" style="background:var(--bd-green-light);color:var(--on-tint-green);margin-bottom:14px;">
+          <span class="material-symbols-rounded">forum</span></div>
+        <h3 style="margin:0 0 8px;">Join the Conversation</h3>
+        <p class="text-muted" style="margin:0;">Discuss local issues, vote in official polls, and see verified
+          government responses.</p>
+      </div>
+      <div class="card card-pad hoverable tilt reveal bento-small">
+        <div class="stat-icon" style="background:var(--warning-bg);color:var(--on-tint-warning);margin-bottom:14px;">
+          <span class="material-symbols-rounded">apps</span></div>
+        <h3 style="margin:0 0 8px;">Access Digital Services</h3>
+        <p class="text-muted" style="margin:0;">One tap to NID, passport, land records, tax, and more official
+          government services — curated by real officers.</p>
+      </div>
+      <div class="card card-pad hoverable tilt reveal bento-small">
+        <div class="stat-icon" style="background:var(--tint-violet);color:var(--on-tint-violet);margin-bottom:14px;">
+          <span class="material-symbols-rounded">verified_user</span></div>
+        <h3 style="margin:0 0 8px;">Get Verified</h3>
+        <p class="text-muted" style="margin:0;">Upload your NID and a selfie to earn a trusted blue Verified badge
+          across the platform.</p>
+      </div>
+      <div class="card card-pad hoverable tilt reveal bento-small">
+        <div class="stat-icon" style="background:var(--tint-pink);color:var(--on-tint-pink);margin-bottom:14px;"><span
+            class="material-symbols-rounded">trophy</span></div>
+        <h3 style="margin:0 0 8px;">Earn Recognition</h3>
+        <p class="text-muted" style="margin:0;">Climb the civic leaderboard by contributing, voting, and getting
+          complaints resolved.</p>
+      </div>
+      <div class="card card-pad hoverable tilt reveal bento-small">
+        <div class="stat-icon" style="background:var(--info-bg);color:var(--on-tint-blue);margin-bottom:14px;"><span
+            class="material-symbols-rounded">translate</span></div>
+        <h3 style="margin:0 0 8px;">Bangla &amp; English</h3>
+        <p class="text-muted" style="margin:0;">Use the platform comfortably in the language you prefer, switched
+          instantly.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="container" style="padding-bottom:70px;text-align:center;">
+    <span class="section-eyebrow" style="justify-content:center;width:100%;"><span class="n">03 /</span><span>Simple
+        process</span></span>
+    <h2 class="section-heading" th:text="#{landing.howitworks.title}">How OpenGovtBD works</h2>
+    <p class="section-sub" style="margin-left:auto;margin-right:auto;" th:text="#{landing.howitworks.subtitle}">From
+      sign-up to resolution — a transparent, trackable journey.</p>
+    <div class="steps-grid">
+      <div class="card step-card reveal">
+        <div class="step-num">1</div>
+        <h4 style="margin:0 0 8px;">Create an account</h4>
+        <p class="text-muted" style="font-size:13.5px;margin:0;">Register with your NID and phone number in under two
+          minutes.</p>
+      </div>
+      <div class="card step-card reveal">
+        <div class="step-num">2</div>
+        <h4 style="margin:0 0 8px;">Get verified</h4>
+        <p class="text-muted" style="font-size:13.5px;margin:0;">Upload your NID and a selfie to unlock the full
+          platform.</p>
+      </div>
+      <div class="card step-card reveal">
+        <div class="step-num">3</div>
+        <h4 style="margin:0 0 8px;">Take action</h4>
+        <p class="text-muted" style="font-size:13.5px;margin:0;">File complaints, vote, discuss, and access services.
+        </p>
+      </div>
+      <div class="card step-card reveal">
+        <div class="step-num">4</div>
+        <h4 style="margin:0 0 8px;">Track results</h4>
+        <p class="text-muted" style="font-size:13.5px;margin:0;">Follow every update in real time until it's resolved.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats band -->
+  <section class="container" style="padding-bottom:70px;">
+    <div class="stats-band reveal">
+      <div>
+        <div class="num" th:attr="data-counter=${totalCitizens}" data-counter-suffix="+"
+          th:text="${totalCitizens} + '+'">0</div>
+        <div class="label">Citizens onboarded</div>
+      </div>
+      <div>
+        <div class="num" th:attr="data-counter=${totalComplaints}" data-counter-suffix="+"
+          th:text="${totalComplaints} + '+'">0</div>
+        <div class="label">Complaints filed</div>
+      </div>
+      <div>
+        <div class="num" th:attr="data-counter=${resolutionRate}" data-counter-suffix="%"
+          th:text="${resolutionRate} + '%'">0%</div>
+        <div class="label">Resolution rate</div>
+      </div>
+      <div>
+        <div class="num">24/7</div>
+        <div class="label">Platform availability</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="container section" style="text-align:center;">
+    <span class="section-eyebrow" style="justify-content:center;width:100%;"><span class="n">04 /</span><span>Citizen
+        voices</span></span>
+    <h2 class="section-heading" th:text="#{landing.testimonials.title}">Trusted by citizens across Bangladesh</h2>
+    <p class="section-sub" style="margin-left:auto;margin-right:auto;" th:text="#{landing.testimonials.subtitle}">Real
+      feedback from citizens using the platform to get things done.</p>
+
+    <div class="testimonial-wall">
+      <figure class="card testimonial-card testimonial-lead reveal">
+        <div class="stars" aria-label="Rated 5 out of 5" role="img">★★★★★</div>
+        <blockquote class="quote">"I reported a broken streetlight and it was fixed within a week. I could track every
+          step — something I never expected from a government platform."</blockquote>
+        <figcaption class="testimonial-person">
+          <div class="avatar">TA</div>
+          <div>
+            <div class="fw-700">Tanvir Ahmed</div>
+            <div class="text-muted">Savar, Dhaka</div>
+          </div>
+        </figcaption>
+      </figure>
+
+      <figure class="card testimonial-card reveal">
+        <div class="stars" aria-label="Rated 5 out of 5" role="img">★★★★★</div>
+        <blockquote class="quote">"The discussion boards actually get official responses. My suggestion about NID
+          reminders was implemented within a quarter."</blockquote>
+        <figcaption class="testimonial-person">
+          <div class="avatar">MS</div>
+          <div>
+            <div class="fw-700">Mitu Sultana</div>
+            <div class="text-muted">Boalia, Rajshahi</div>
+          </div>
+        </figcaption>
+      </figure>
+
+      <figure class="card testimonial-card reveal">
+        <div class="stars" aria-label="Rated 5 out of 5" role="img">★★★★★</div>
+        <blockquote class="quote">"Getting verified took two minutes and now my voice on public polls actually counts.
+          The Bangla interface makes it easy for my whole family to use."</blockquote>
+        <figcaption class="testimonial-person">
+          <div class="avatar">RI</div>
+          <div>
+            <div class="fw-700">Rakibul Islam</div>
+            <div class="text-muted">Agrabad, Chattogram</div>
+          </div>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+
+  <section class="container" style="padding-bottom:70px;" th:if="${not #lists.isEmpty(announcements)}">
+    <span class="section-eyebrow"><span class="n">05 /</span><span>Latest updates</span></span>
+    <h2 style="margin-bottom:18px;">Latest Announcements</h2>
+    <div class="grid grid-3">
+      <div class="card card-pad-sm reveal" th:each="a : ${announcements}">
+        <span class="pill"
+          th:classappend="${a.priority.name() == 'EMERGENCY'} ? 'pill-error' : (${a.priority.name() == 'IMPORTANT'} ? 'pill-warning' : 'pill-info')"
+          th:text="${a.priority}">NORMAL</span>
+        <h4 style="margin:10px 0 6px;" th:text="${a.title}">Title</h4>
+        <p class="text-muted" style="font-size:13.5px;margin:0;" th:text="${a.content}">Content</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <section class="container" style="padding-bottom:70px;">
+    <div class="cta-band reveal">
+      <h2 style="margin:0 0 10px;font-size:26px;" th:text="#{landing.cta.title}">Join thousands of citizens making their
+        voice heard</h2>
+      <p style="margin:0 0 24px;opacity:.9;" th:text="#{landing.cta.subtitle}">Create your free account in minutes and
+        start engaging with your government today.</p>
+      <a href="/register" class="btn" style="background:#fff;color:var(--setu-blue-dark);"
+        th:text="#{landing.cta.button}">Get Started Free</a>
+    </div>
+  </section>
+
+  </main>
+
+  <footer class="footer-v2">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <a href="/" class="brand" style="margin-bottom:12px;">
+            <div class="brand-mark"><span class="material-symbols-rounded">account_balance</span></div>
+            <div th:text="#{brand.name}">OpenGovtBD</div>
+          </a>
+          <p class="text-muted" style="font-size:13.5px;max-width:280px;" th:text="#{footer.tagline}">A transparent
+            digital bridge between citizens and the Government of Bangladesh.</p>
+        </div>
+        <div class="footer-col">
+          <h5 th:text="#{footer.forCitizens}">For Citizens</h5>
+          <a href="/register">Create an account</a>
+          <a href="/login">Log in</a>
+          <a href="/register">File a complaint</a>
+        </div>
+        <div class="footer-col">
+          <h5 th:text="#{footer.forGovernment}">For Government</h5>
+          <a href="/login?tab=officer">Officer login</a>
+          <a href="/login?tab=admin">Admin login</a>
+        </div>
+        <div class="footer-col">
+          <h5 th:text="#{footer.legal}">Legal</h5>
+          <a href="https://github.com/pbs002-s/OpenGovtBD" target="_blank" rel="noopener">Source code</a>
+          <a href="https://github.com/pbs002-s/OpenGovtBD/blob/main/License.md" target="_blank"
+            rel="noopener">Licence</a>
+          <span class="footer-note">Privacy policy and terms are not published for this demonstration build.</span>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 OpenGovtBD — Government of Bangladesh. Built for transparency and public participation.</span>
+        <span>Demo platform for educational purposes. <a href="https://github.com/pbs002-s/OpenGovtBD" target="_blank"
+            rel="noopener" style="color:var(--setu-blue);font-weight:600;">View source on GitHub &rarr;</a></span>
+      </div>
+    </div>
+  </footer>
+
+  <a href="/register" class="btn btn-primary floating-cta">Get Started <span class="material-symbols-rounded"
+      style="font-size:18px;">arrow_forward</span></a>
+
+  <div class="cmd-overlay" data-cmd-overlay>
+    <div class="cmd-palette" role="dialog" aria-modal="true" aria-label="Quick search">
+      <div class="cmd-input-wrap">
+        <span class="material-symbols-rounded">search</span>
+        <input type="search" placeholder="Type a command or search..." aria-label="Search commands and pages"
+          autocomplete="off" data-cmd-input />
+        <kbd>ESC</kbd>
+      </div>
+      <div class="cmd-results" role="listbox" data-cmd-results></div>
     </div>
   </div>
-</footer>
 
-<a href="/register" class="btn btn-primary floating-cta">Get Started <span class="material-symbols-rounded" style="font-size:18px;">arrow_forward</span></a>
-
-<script th:src="@{/js/main.js}"></script>
+  <script th:src="@{/js/main.js}"></script>
 </body>
+
 </html>

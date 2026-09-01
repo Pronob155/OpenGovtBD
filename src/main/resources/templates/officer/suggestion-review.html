@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="en">
 <head th:replace="~{fragments/layout :: head('Suggestion Review')}"></head>
-<body>
+<body th:attr="data-role=${currentRole}">
+  <a th:replace="~{fragments/layout :: skip-link}"></a>
 <div class="app-shell">
   <nav th:replace="~{fragments/layout :: sidebar-officer('suggestions')}"></nav>
   <div class="sidebar-overlay"></div>
   <div class="main">
     <div th:replace="~{fragments/layout :: topbar('Suggestion Review', ${officer.fullName}, ${unreadCount}, '/officer/dashboard')}"></div>
-    <div class="content">
+    <main class="content" id="main-content">
       <div class="grid grid-2">
         <div class="card card-pad fade-up" th:each="s : ${suggestions}">
           <div style="display:flex;justify-content:space-between;">
@@ -33,7 +34,7 @@
           </form>
         </div>
       </div>
-    </div>
+    </main>
   </div>
 </div>
 <script th:src="@{/js/main.js}"></script>

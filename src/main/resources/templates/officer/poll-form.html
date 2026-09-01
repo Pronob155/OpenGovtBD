@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="en">
 
 <head th:replace="~{fragments/layout :: head('Create Poll')}"></head>
 
-<body>
+<body th:attr="data-role=${currentRole}">
+  <a th:replace="~{fragments/layout :: skip-link}"></a>
   <div class="app-shell">
     <nav th:replace="~{fragments/layout :: sidebar-officer('polls')}"></nav>
     <div class="sidebar-overlay"></div>
@@ -11,7 +12,7 @@
       <div
         th:replace="~{fragments/layout :: topbar('Create Official Poll', ${officer.fullName}, ${unreadCount}, '/officer/dashboard')}">
       </div>
-      <div class="content" style="max-width:640px;">
+      <main class="content content-xs" id="main-content">
         <div class="card card-pad">
           <form th:action="@{/officer/polls/new}" method="post">
             <div class="field"><label>Poll Question</label><input class="input" name="question"
@@ -37,7 +38,7 @@
             <button class="btn btn-primary btn-block" type="submit">Publish Poll</button>
           </form>
         </div>
-      </div>
+      </main>
     </div>
   </div>
   <script th:src="@{/js/main.js}"></script>

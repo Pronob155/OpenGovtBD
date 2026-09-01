@@ -1,7 +1,8 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="en">
   <head th:replace="~{fragments/layout :: head('Notifications')}"></head>
-  <body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'">
+  <body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'" th:attr="data-role=${currentRole}">
+    <a th:replace="~{fragments/layout :: skip-link}"></a>
     <div class="app-shell">
       <nav
         th:replace="~{fragments/layout :: sidebar-citizen('notifications')}"
@@ -11,7 +12,7 @@
         <div
           th:replace="~{fragments/layout :: topbar('Notifications', ${citizen.fullName}, ${unreadCount}, '/citizen/notifications')}"
         ></div>
-        <div class="content" style="max-width: 760px">
+        <main class="content content-md" id="main-content">
           <div
             style="
               display: flex;
@@ -151,7 +152,7 @@
               >1</a
             >
           </div>
-        </div>
+        </main>
       </div>
     </div>
     <script th:src="@{/js/main.js}"></script>

@@ -1,19 +1,20 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="en">
 <head th:replace="~{fragments/layout :: head('Suggestion Box')}"></head>
-<body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'">
+<body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'" th:attr="data-role=${currentRole}">
+  <a th:replace="~{fragments/layout :: skip-link}"></a>
 <div class="app-shell">
   <nav th:replace="~{fragments/layout :: sidebar-citizen('suggestions')}"></nav>
   <div class="sidebar-overlay"></div>
   <div class="main">
     <div th:replace="~{fragments/layout :: topbar('Suggestion Box', ${citizen.fullName}, ${unreadCount}, '/citizen/notifications')}"></div>
-    <div class="content">
+    <main class="content" id="main-content">
 
       <div th:if="${param.submitted}" class="alert alert-success" style="margin-bottom:18px;" data-flash>
         <span class="material-symbols-rounded">check_circle</span> Your suggestion has been submitted for review. You earned 15 points!
       </div>
 
-      <div class="grid" style="grid-template-columns: 2.2fr 1fr; align-items:start;gap:22px;">
+      <div class="grid grid-split">
         <div>
           <h2 style="margin:0 0 4px;">Suggestion Box</h2>
           <p class="text-muted" style="margin:0 0 20px;">Help improve government services — every idea gets reviewed.</p>
@@ -53,7 +54,7 @@
           </form>
         </div>
       </div>
-    </div>
+    </main>
   </div>
 </div>
 <script th:src="@{/js/main.js}"></script>

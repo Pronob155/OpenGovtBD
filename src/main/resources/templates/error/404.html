@@ -1,14 +1,42 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="en">
+
 <head th:replace="~{fragments/layout :: head('Page Not Found')}"></head>
-<body>
-<div class="error-page">
-  <div class="pop-in">
-    <div class="error-code">404</div>
-    <h2 style="margin:10px 0 8px;">This page has wandered off the map.</h2>
-    <p class="text-muted" style="margin:0 0 24px;">The page you're looking for doesn't exist or may have been moved.</p>
-    <a href="/" class="btn btn-primary">Back to Home</a>
-  </div>
-</div>
+
+<body th:attr="data-role=${currentRole}">
+  <a th:replace="~{fragments/layout :: skip-link}"></a>
+  <main class="error-page" id="main-content">
+    <div class="error-panel pop-in">
+      <div class="error-code" aria-hidden="true">404</div>
+      <h1>This page has wandered off the map.</h1>
+      <p class="text-muted">The address you followed doesn't match anything on OpenGovtBD. It may have been moved,
+        or the link that brought you here may be out of date.</p>
+
+      <!-- A dead end with a single "Back to Home" button leaves the user to
+           re-navigate from scratch; these are the routes people actually
+           arrive here looking for. -->
+      <nav class="error-routes" aria-label="Suggested pages">
+        <a href="/citizen/dashboard" class="error-route">
+          <span class="material-symbols-rounded">space_dashboard</span>
+          <span><strong>Your dashboard</strong>Complaints, polls and activity in one place</span>
+        </a>
+        <a href="/citizen/services" class="error-route">
+          <span class="material-symbols-rounded">apps</span>
+          <span><strong>Government services</strong>Browse the full service catalogue</span>
+        </a>
+        <a href="/citizen/complaints/new" class="error-route">
+          <span class="material-symbols-rounded">report</span>
+          <span><strong>File a complaint</strong>Report an issue and track its progress</span>
+        </a>
+      </nav>
+
+      <div class="error-actions">
+        <a href="/" class="btn btn-primary">Back to home</a>
+        <button type="button" class="btn btn-ghost" data-history-back>Go back</button>
+      </div>
+    </div>
+  </main>
+  <script th:src="@{/js/main.js}"></script>
 </body>
+
 </html>

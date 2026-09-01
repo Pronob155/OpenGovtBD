@@ -1,0 +1,41 @@
+{
+  "root": true,
+  "env": {
+    "browser": true,
+    "es2022": true,
+    "node": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module"
+  },
+  "globals": {
+    "window": "readonly",
+    "document": "readonly",
+    "localStorage": "readonly",
+    "sessionStorage": "readonly",
+    "navigator": "readonly",
+    "console": "readonly",
+    "setTimeout": "readonly",
+    "clearTimeout": "readonly",
+    "setInterval": "readonly",
+    "clearInterval": "readonly",
+    "requestAnimationFrame": "readonly",
+    "IntersectionObserver": "readonly",
+    "URL": "readonly",
+    "URLSearchParams": "readonly",
+    "CustomEvent": "readonly",
+    "fetch": "readonly",
+    "performance": "readonly",
+    "Promise": "readonly",
+    "Math": "readonly"
+  },
+  "rules": {
+    "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+    "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "prefer-const": "warn",
+    "no-var": "error",
+    "eqeqeq": ["error", "always"],
+    "no-implicit-globals": "off"
+  }
+}

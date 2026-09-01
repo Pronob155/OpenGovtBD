@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="en">
 <head th:replace="~{fragments/layout :: head('Complaint Details')}"></head>
-<body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'">
+<body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'" th:attr="data-role=${currentRole}">
+  <a th:replace="~{fragments/layout :: skip-link}"></a>
 <div class="app-shell">
   <nav th:replace="~{fragments/layout :: sidebar-citizen('complaints')}"></nav>
   <div class="sidebar-overlay"></div>
   <div class="main">
     <div th:replace="~{fragments/layout :: topbar('Complaint Details', ${citizen.fullName}, ${unreadCount}, '/citizen/notifications')}"></div>
-    <div class="content" style="max-width:900px;">
+    <main class="content content-xl" id="main-content">
       <a href="/citizen/complaints" class="text-muted" style="font-size:13px;">&larr; Back to complaints</a>
 
       <div th:if="${submitted}" class="alert alert-success" style="margin:16px 0;" data-flash>
@@ -70,7 +71,7 @@
 
       <div class="card card-pad" style="margin-bottom:22px;" th:if="${complaint.rating != null}">
         <h3 style="margin:0 0 8px;">Your Feedback</h3>
-        <div style="color:#F5A623;font-size:20px;margin-bottom:6px;" th:text="${'★'.repeat(complaint.rating)} + ${'☆'.repeat(5 - complaint.rating)}">★★★★★</div>
+        <div class="rating-stars" th:text="${'★'.repeat(complaint.rating)} + ${'☆'.repeat(5 - complaint.rating)}">★★★★★</div>
         <p class="text-muted" th:text="${complaint.feedback}">feedback</p>
       </div>
 
@@ -136,7 +137,7 @@
           <div th:if="${#lists.isEmpty(complaint.comments)}" class="text-muted" style="font-size:13.5px;">No comments yet — be the first to comment.</div>
         </div>
       </div>
-    </div>
+    </main>
   </div>
 </div>
 <script th:src="@{/js/main.js}"></script>

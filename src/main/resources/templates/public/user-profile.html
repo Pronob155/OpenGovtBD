@@ -1,11 +1,14 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="en">
 
 <head th:replace="~{fragments/layout :: head('Profile')}"></head>
 
-<body style="background:var(--bg);min-height:100vh;">
-  <div class="container" style="max-width:640px;padding-top:40px;padding-bottom:60px;">
-    <a href="javascript:history.back()" class="text-muted" style="font-size:13px;">&larr; Back</a>
+<body class="standalone-page" th:attr="data-role=${currentRole}">
+  <a th:replace="~{fragments/layout :: skip-link}"></a>
+  <main class="container content-xs standalone-main" id="main-content">
+    <button type="button" class="back-link" data-history-back>
+      <span class="material-symbols-rounded">arrow_back</span> Back
+    </button>
 
     <div class="card card-pad fade-up" style="margin-top:16px;text-align:center;">
       <div class="avatar" style="width:88px;height:88px;font-size:30px;border-radius:22px;margin:0 auto 16px;"
@@ -37,7 +40,7 @@
         Member since <span class="mono" th:text="${#temporals.format(profileUser.createdAt, 'MMMM yyyy')}">date</span>
       </div>
     </div>
-  </div>
+  </main>
   <script th:src="@{/js/main.js}"></script>
 </body>
 

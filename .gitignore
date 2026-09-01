@@ -1,0 +1,55 @@
+# Java / Maven
+target/
+*.class
+*.jar
+*.war
+*.ear
+.mvn/
+.idea/
+*.iml
+*.iws
+*.ipr
+.project
+.classpath
+.settings/
+.factorypath
+
+# Node / Frontend tooling
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+.pnpm-debug.log
+
+# IDE
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Build outputs
+dist/
+build/
+out/
+*.min.js
+*.min.css
+
+# Logs
+*.log
+
+# OS
+.AppleDouble
+.LSOverride
+
+# Test
+test result/
+test-result/
+coverage/
+
+# Local config
+.env
+.env.local
+*.local

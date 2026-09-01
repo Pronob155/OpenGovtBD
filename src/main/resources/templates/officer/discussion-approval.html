@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="en">
 <head th:replace="~{fragments/layout :: head('Discussion Approval')}"></head>
-<body>
+<body th:attr="data-role=${currentRole}">
+  <a th:replace="~{fragments/layout :: skip-link}"></a>
 <div class="app-shell">
   <nav th:replace="~{fragments/layout :: sidebar-officer('discussions')}"></nav>
   <div class="sidebar-overlay"></div>
   <div class="main">
     <div th:replace="~{fragments/layout :: topbar('Discussion Moderation', ${officer.fullName}, ${unreadCount}, '/officer/dashboard')}"></div>
-    <div class="content">
+    <main class="content" id="main-content">
 
       <h3 style="margin:0 0 14px;">Pending Approval</h3>
       <div th:if="${#lists.isEmpty(pending)}" class="card empty-state" style="margin-bottom:32px;">
@@ -32,6 +33,7 @@
 
       <h3 style="margin:0 0 14px;">Published Discussions</h3>
       <div class="card">
+        <div class="table-wrap">
         <table class="data-table">
           <thead><tr><th>Title</th><th>Category</th><th>Likes</th><th>Comments</th><th>Status</th><th></th></tr></thead>
           <tbody>
@@ -55,6 +57,7 @@
           </tr>
           </tbody>
         </table>
+        </div>
       </div>
 
       <h3 style="margin:24px 0 14px;">Add an Official Response</h3>
@@ -67,7 +70,7 @@
           </form>
         </div>
       </div>
-    </div>
+    </main>
   </div>
 </div>
 <script th:src="@{/js/main.js}"></script>

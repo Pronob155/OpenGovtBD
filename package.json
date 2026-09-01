@@ -1,0 +1,28 @@
+{
+  "name": "opengovtbd-frontend",
+  "version": "1.0.0",
+  "description": "OpenGovtBD frontend assets — CSS design system, vanilla JS, and theming.",
+  "private": true,
+  "scripts": {
+    "lint:css": "stylelint \"src/main/resources/static/css/**/*.css\"",
+    "lint:js": "eslint \"src/main/resources/static/js/**/*.js\"",
+    "format:css": "prettier --write \"src/main/resources/static/css/**/*.css\"",
+    "format:js": "prettier --write \"src/main/resources/static/js/**/*.js\"",
+    "format": "npm run format:css && npm run format:js",
+    "lint": "npm run lint:css && npm run lint:js",
+    "minify:css": "cleancss -o src/main/resources/static/css/style.min.css src/main/resources/static/css/style.css",
+    "minify:js": "terser src/main/resources/static/js/main.js -o src/main/resources/static/js/main.min.js",
+    "build:assets": "npm run minify:css && npm run minify:js"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.5",
+    "stylelint": "^16.2.1",
+    "stylelint-config-standard": "^36.0.0",
+    "cleancss-cli": "^5.6.3",
+    "terser": "^5.30.0"
+  },
+  "dependencies": {
+    "motion": "^13.1.1"
+  }
+}

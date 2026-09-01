@@ -1,44 +1,79 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="en">
 <head th:replace="~{fragments/layout :: head('My Complaints')}"></head>
-<body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'">
+<body th:classappend="${citizen != null and citizen.darkMode} ? 'dark'" th:attr="data-role=${currentRole}">
+  <a th:replace="~{fragments/layout :: skip-link}"></a>
 <div class="app-shell">
   <nav th:replace="~{fragments/layout :: sidebar-citizen('complaints')}"></nav>
   <div class="sidebar-overlay"></div>
   <div class="main">
     <div th:replace="~{fragments/layout :: topbar('My Complaints', ${citizen.fullName}, ${unreadCount}, '/citizen/notifications')}"></div>
-    <div class="content">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+    <div th:replace="~{fragments/layout :: command-palette}"></div>
+    <main class="content" id="main-content">
+      <div class="page-header fade-up">
         <div>
-          <h2 style="margin:0;">My Complaints</h2>
-          <p class="text-muted" style="margin:4px 0 0;">Track every complaint you've filed, from submission to resolution.</p>
+          <h1>My Complaints</h1>
+          <p class="lead">Track every complaint you've filed, from submission to resolution.</p>
         </div>
-        <a href="/citizen/complaints/new" class="btn btn-primary"><span class="material-symbols-rounded">add</span>File New Complaint</a>
+        <div class="page-header-actions">
+          <a href="/citizen/complaints/new" class="btn btn-primary">
+            <span class="material-symbols-rounded">add</span> File New Complaint
+          </a>
+        </div>
       </div>
 
-      <div th:if="${#lists.isEmpty(complaints)}" class="card empty-state">
-        <div class="ico"><span class="material-symbols-rounded">inbox</span></div>
+      <!-- Sticky filter bar -->
+      <div class="sticky-filter fade-up d1">
+        <div class="search-bar">
+          <span class="material-symbols-rounded">search</span>
+          <input type="text" placeholder="Search complaints by title, ID, or category..." />
+          <kbd>Ctrl+K</kbd>
+        </div>
+        <div class="chip-group" style="margin-top:12px;">
+          <button class="chip active">All <span th:text="${#lists.size(complaints)}">0</span></button>
+          <button class="chip"><span class="material-symbols-rounded" style="font-size:14px;">schedule</span> In Progress</button>
+          <button class="chip"><span class="material-symbols-rounded" style="font-size:14px;">check_circle</span> Resolved</button>
+          <button class="chip"><span class="material-symbols-rounded" style="font-size:14px;">pending</span> Pending</button>
+        </div>
+      </div>
+
+      <div th:if="${#lists.isEmpty(complaints)}" class="card empty-state-v2 fade-up">
+        <div class="illustration">
+          <span class="material-symbols-rounded">inbox</span>
+        </div>
         <h3>No complaints filed yet</h3>
-        <p>When you report an issue, it will show up here with full status tracking.</p>
-        <a href="/citizen/complaints/new" class="btn btn-primary">File Your First Complaint</a>
+        <p>When you report an issue, it will show up here with full status tracking and real-time updates from officers.</p>
+        <a href="/citizen/complaints/new" class="btn btn-primary">
+          <span class="material-symbols-rounded">add</span> File Your First Complaint
+        </a>
       </div>
 
       <div class="grid grid-2" th:if="${not #lists.isEmpty(complaints)}">
-        <a th:each="c : ${complaints}" th:href="@{'/citizen/complaints/' + ${c.id}}" class="card card-pad hoverable fade-up">
-          <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:10px;">
+        <a th:each="c : ${complaints}" th:href="@{'/citizen/complaints/' + ${c.id}}" class="card card-pad hoverable fade-up" style="text-decoration:none;color:inherit;">
+          <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:10px;gap:10px;">
             <span class="pill" th:classappend="'pill-' + ${c.status.tone}" th:text="${c.status.label}">Status</span>
-            <span class="text-muted mono" style="font-size:12px;" th:text="${c.trackingId}">ID</span>
+            <span class="text-muted" style="font-size:12px;font-family:var(--font-mono);" th:text="${c.trackingId}">ID</span>
           </div>
           <h4 style="margin:0 0 6px;" th:text="${c.title}">Title</h4>
-          <p class="text-muted" style="font-size:13px;margin:0 0 10px;" th:text="${#strings.abbreviate(c.description, 110)}">Description</p>
-          <div style="display:flex;gap:8px;font-size:12px;color:var(--muted);">
-            <span th:text="${c.category}">Category</span> · <span th:text="${c.division} + ', ' + ${c.district}">Location</span>
+          <p class="text-muted" style="font-size:13px;margin:0 0 12px;line-height:1.5;" th:text="${#strings.abbreviate(c.description, 110)}">Description</p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--muted);">
+            <span class="mini-stat">
+              <span class="material-symbols-rounded">category</span>
+              <span th:text="${c.category}">Category</span>
+            </span>
+            <span class="mini-stat">
+              <span class="material-symbols-rounded">location_on</span>
+              <span th:text="${c.division} + ', ' + ${c.district}">Location</span>
+            </span>
           </div>
         </a>
       </div>
-    </div>
+    </main>
   </div>
 </div>
+<button class="fab" data-cmd-open aria-label="Quick actions">
+  <span class="material-symbols-rounded">flash_on</span>
+</button>
 <script th:src="@{/js/main.js}"></script>
 </body>
 </html>

@@ -46,6 +46,10 @@ public class AdminController {
         model.addAttribute("citizens", userRepository.findAllCitizens());
         model.addAttribute("officers", userRepository.findAllOfficers());
         model.addAttribute("servicesCount", govServiceService.count());
+        // Rounded here rather than in the template: Thymeleaf's restricted
+        // expression context forbids T(java.lang.Math) calls.
+        model.addAttribute("resolutionRate", Math.round(analyticsService.resolutionRate()));
+        model.addAttribute("recentComplaints", analyticsService.recentComplaints(6));
         return "admin/dashboard";
     }
 
